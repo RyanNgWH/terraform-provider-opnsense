@@ -51,7 +51,7 @@ type getCategoryType struct {
 
 // Helper functions
 
-// SearchCategory searches the OPNsense firewall for the category with a matching name
+// SearchCategory searches the OPNsense firewall for the category with a matching name, returning its uuid if it exists
 func SearchCategory(client *opnsense.Client, name string) (string, error) {
 	path := fmt.Sprintf("%s/%s/%s", firewall.Module, controller, searchCategoryCommand)
 
