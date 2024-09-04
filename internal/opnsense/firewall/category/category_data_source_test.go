@@ -20,28 +20,34 @@ func TestAccCategoryDataSource(t *testing.T) {
 			{
 				Config: acctest.ProviderConfig + testAccCategoryIdDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("name"), knownvalue.StringExact("perm_test_acc_data_source")),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("auto"), knownvalue.Bool(false)),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("color"), knownvalue.StringExact("")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("auto"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("color"), knownvalue.StringExact("000000")),
 				},
 			},
 			// Read testing (via name)
 			{
 				Config: acctest.ProviderConfig + testAccCategoryNameDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("name"), knownvalue.StringExact("perm_test_acc_data_source")),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("auto"), knownvalue.Bool(false)),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("color"), knownvalue.StringExact("")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("auto"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("color"), knownvalue.StringExact("000000")),
 				},
 			},
 		},
 	})
 }
 
-// testAccCategoryIdDataSourceConfig imports a category as a data source by its id
+// testAccCategoryIdDataSourceConfig creates a category before importing it as a data source by its id.
 const testAccCategoryIdDataSourceConfig = `
+	resource "opnsense_firewall_category" "test_acc_resource" {
+		name  = "test_acc_category_resource"
+		auto  = true
+		color = "000000"
+	}
+
 	data "opnsense_firewall_category" "test_acc_data_source_id" {
-		id = "483aa27a-dad0-4285-b68c-f87abd37f41d"
+		id = opnsense_firewall_category.test_acc_resource.id
 	}
 
 	output "test_acc_alias_host_id" {
@@ -49,10 +55,16 @@ const testAccCategoryIdDataSourceConfig = `
 	}
 `
 
-// testAccCategoryNameDataSourceConfig imports a category as a data source by its name
+// testAccCategoryNameDataSourceConfig creates a category before importing it as a data source by its name.
 const testAccCategoryNameDataSourceConfig = `
+	resource "opnsense_firewall_category" "test_acc_resource" {
+		name  = "test_acc_category_resource"
+		auto  = true
+		color = "000000"
+	}
+
 	data "opnsense_firewall_category" "test_acc_data_source_name" {
-		name = "perm_test_acc_data_source"
+		name = opnsense_firewall_category.test_acc_resource.name
 	}
 
 	output "test_acc_alias_host_name" {
