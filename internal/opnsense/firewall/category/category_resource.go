@@ -8,6 +8,7 @@ import (
 	"terraform-provider-opnsense/internal/opnsense/firewall"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -20,8 +21,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource              = &categoryResource{}
-	_ resource.ResourceWithConfigure = &categoryResource{}
+	_ resource.Resource                = &categoryResource{}
+	_ resource.ResourceWithConfigure   = &categoryResource{}
+	_ resource.ResourceWithImportState = &categoryResource{}
 )
 
 // NewCategoryResource is a helper function to simplify the provider implementation.
@@ -244,4 +246,27 @@ func (r *categoryResource) Delete(ctx context.Context, req resource.DeleteReques
 		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("Failed to delete alias - %s", err))
 	}
 	tflog.Info(ctx, "Successfully deleted firewall alias")
+}
+
+// ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
+func (r *categoryResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Info(ctx, "Importing firewall category")
+
+	// Get category UUID from name
+	tflog.Debug(ctx, "Getting category UUID", map[string]interface{}{"name": req.ID})
+
+	uuid, err := SearchCategory(r.client, req.ID)
+	if err != nil {
+		resp.Diagnostics.AddError("Import category error", fmt.Sprintf("Failed to get category UUID - %s", err))
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tflog.Debug(ctx, "Successfully got category UUID", map[string]any{"success": true})
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), uuid)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
 }
