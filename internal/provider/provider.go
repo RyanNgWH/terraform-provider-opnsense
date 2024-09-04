@@ -15,6 +15,7 @@ import (
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/alias"
+	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 )
 
 // Ensure OpnsenseProvider satisfies various provider interfaces.
@@ -250,6 +251,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		alias.NewAliasDataSource,
+		category.NewCategoryDataSource,
 	}
 }
 
