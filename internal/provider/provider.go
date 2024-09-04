@@ -244,6 +244,7 @@ func (p *opnsenseProvider) Configure(ctx context.Context, req provider.Configure
 func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		alias.NewAliasResource,
+		category.NewCategoryResource,
 	}
 }
 
