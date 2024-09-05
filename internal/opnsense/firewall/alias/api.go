@@ -263,11 +263,11 @@ func addAlias(client *opnsense.Client, alias alias) (string, error) {
 	var addItemResponse addItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&addItemResponse)
 	if err != nil {
-		return "", fmt.Errorf("add item error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("add alias error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(addItemResponse.Result) == "failed" {
-		return "", fmt.Errorf("add item error: failed to add alias to OPNsense - failed validations: %+v", addItemResponse.Validations)
+		return "", fmt.Errorf("add alias error: failed to add alias to OPNsense - failed validations: %+v", addItemResponse.Validations)
 	}
 
 	return addItemResponse.Uuid, nil
@@ -296,11 +296,11 @@ func setAlias(client *opnsense.Client, alias alias, uuid string) error {
 	var setItemResponse setItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&setItemResponse)
 	if err != nil {
-		return fmt.Errorf("set item error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("set alias error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(setItemResponse.Result) == "failed" {
-		return fmt.Errorf("set item error: failed to update alias on OPNsense - failed validations: %+v", setItemResponse.Validations)
+		return fmt.Errorf("set alias error: failed to update alias on OPNsense - failed validations: %+v", setItemResponse.Validations)
 	}
 
 	return nil
@@ -313,7 +313,7 @@ func deleteAlias(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("set alias error: failed to marshal json body - %s", err)
+		return fmt.Errorf("delete alias error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -322,17 +322,17 @@ func deleteAlias(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("set alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("delete alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var resp delItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("set item error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("delete alias error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("delete item error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("delete alias error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }
