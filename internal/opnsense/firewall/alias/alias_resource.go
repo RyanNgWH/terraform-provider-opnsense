@@ -102,9 +102,6 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"name": schema.StringAttribute{
 				Required:    true,
 				Description: "The name of the alias",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
 			},
 			"type": schema.StringAttribute{
 				Required: true,
