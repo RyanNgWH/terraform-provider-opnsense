@@ -175,7 +175,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 		uuid, err := getAliasUuid(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get alias error", fmt.Sprintf("Failed to get alias UUID - %s", err))
+			resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("Failed to read alias - %s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -192,7 +192,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	alias, err := getAlias(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get alias error", fmt.Sprintf("Failed to get alias - %s", err))
+		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("Failed to read alias - %s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -260,5 +260,5 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	tflog.Debug(ctx, "Saved alias information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Succesfully read firewall alias", map[string]interface{}{"success": true})
+	tflog.Info(ctx, "Successfully read firewall alias", map[string]interface{}{"success": true})
 }
