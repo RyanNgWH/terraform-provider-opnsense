@@ -198,13 +198,13 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	interfaces := utils.StringListTerraformToGo(plan.Interfaces)
 
 	// Sort lists for predictable output
-	sort.Strings(categories)
+	sort.Strings(categoryUuids)
 	sort.Strings(content)
 	sort.Strings(interfaces)
 
 	// Replace empty lists with nil values
-	if len(categories) <= 0 {
-		categories = nil
+	if len(categoryUuids) <= 0 {
+		categoryUuids = nil
 	}
 	if len(content) <= 0 {
 		content = nil
