@@ -75,7 +75,7 @@ func TestAccAliasResource_host(t *testing.T) {
 	})
 }
 
-// testAccAliasHostResourceConfig defines an alias resource of type `host`
+// testAccAliasHostResourceConfig defines an alias resource of type `host`.
 const testAccAliasHostResourceConfig = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		enabled = true
@@ -89,7 +89,7 @@ const testAccAliasHostResourceConfig = `
 	}
 `
 
-// testAccAliasHostResourceConfig defines an alias resource of type `host`
+// testAccAliasHostResourceConfig defines an alias resource of type `host`.
 const testAccAliasHostResourceModifiedConfig = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		enabled = false

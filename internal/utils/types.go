@@ -2,7 +2,7 @@ package utils
 
 import "github.com/hashicorp/terraform-plugin-framework/types"
 
-// BoolToInt converts a `true` value to `1` and a `false` value to `0`
+// BoolToInt converts a `true` value to `1` and a `false` value to `0`.
 func BoolToInt(b bool) uint8 {
 	if b {
 		return 1
@@ -10,7 +10,7 @@ func BoolToInt(b bool) uint8 {
 	return 0
 }
 
-// StringListTerraformToGo converts a slice of terraform's `types.String` to a Go slice of strings
+// StringListTerraformToGo converts a slice of terraform's `types.String` to a Go slice of strings.
 func StringListTerraformToGo(terraformList []types.String) []string {
 	var result []string
 	for _, element := range terraformList {
@@ -19,7 +19,7 @@ func StringListTerraformToGo(terraformList []types.String) []string {
 	return result
 }
 
-// StringListGoToTerraform converts a Go slice of strings to a slice of terraform's `types.String`
+// StringListGoToTerraform converts a Go slice of strings to a slice of terraform's `types.String`.
 func StringListGoToTerraform(goList []string) []types.String {
 	var result []types.String
 	for _, element := range goList {

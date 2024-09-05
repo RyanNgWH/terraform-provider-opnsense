@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// ClientOpts specifies the options of the clients
+// ClientOpts specifies the options of the clients.
 type ClientOpts struct {
 	Endpoint  string
 	ApiKey    string
@@ -20,7 +20,7 @@ type ClientOpts struct {
 	Insecure  bool
 }
 
-// Client implements an API client for the OPNsense API
+// Client implements an API client for the OPNsense API.
 type Client struct {
 	httpClient *http.Client
 	endpoint   *url.URL
@@ -28,7 +28,7 @@ type Client struct {
 	apiSecret  string
 }
 
-// isSupportedHttpMethod checks if the supplied method is a supported HTTP method
+// isSupportedHttpMethod checks if the supplied method is a supported HTTP method.
 func isSupportedHttpMethod(method string) bool {
 	validMethods := []string{
 		"GET",
@@ -43,7 +43,7 @@ func isSupportedHttpMethod(method string) bool {
 	return false
 }
 
-// NewClient creates and initialises a client instance
+// NewClient creates and initialises a client instance.
 func NewClient(opts ClientOpts) (*Client, error) {
 	apiEndpoint, err := url.ParseRequestURI(strings.Trim(opts.Endpoint, "/") + "/api/")
 	if err != nil {
@@ -75,7 +75,7 @@ func NewClient(opts ClientOpts) (*Client, error) {
 	}, nil
 }
 
-// DoRequest performs a HTTP request against the client's OPNsense API endpoint
+// DoRequest performs a HTTP request against the client's OPNsense API endpoint.
 func (c *Client) DoRequest(method string, path string, reqBody []byte) (*http.Response, error) {
 	if !isSupportedHttpMethod(method) {
 		return nil, fmt.Errorf("%s is not a currently supported method", method)
@@ -88,7 +88,7 @@ func (c *Client) DoRequest(method string, path string, reqBody []byte) (*http.Re
 	reqUrl := c.endpoint.String() + path
 
 	// Create http request for the OPNsense API
-	req, err := http.NewRequest(string(method), reqUrl, bytes.NewReader(reqBody))
+	req, err := http.NewRequest(method, reqUrl, bytes.NewReader(reqBody))
 	if err != nil {
 		return nil, errors.New("Unable to create http request for the OPNsense API. Error: " + err.Error())
 	}

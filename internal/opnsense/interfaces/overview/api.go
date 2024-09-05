@@ -13,6 +13,7 @@ const (
 )
 
 // HTTP request bodies
+
 type interfacesInfoRequestBody struct {
 	Current      int32
 	RowCount     int32
@@ -21,6 +22,7 @@ type interfacesInfoRequestBody struct {
 }
 
 // HTTP response types
+
 type interfacesInfoResponse struct {
 	Rows     []interfaceResponse `json:"rows"`
 	RowCount int32               `json:"rowCount"`
@@ -34,7 +36,7 @@ type interfaceResponse struct {
 
 // Helper functions
 
-// CheckInterfaceExists searches the OPNsense firewall for the interface with a matching identifier
+// CheckInterfaceExists searches the OPNsense firewall for the interface with a matching identifier.
 func CheckInterfaceExists(client *opnsense.Client, identifier string) (bool, error) {
 	path := fmt.Sprintf("%s/%s/%s", interfaces.Module, controller, interfacesInfoCommand)
 

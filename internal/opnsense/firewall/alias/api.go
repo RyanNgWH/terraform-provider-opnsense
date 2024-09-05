@@ -24,6 +24,7 @@ const (
 )
 
 // HTTP errors
+
 type getAliasStatusCodeError struct{}
 
 func (e getAliasStatusCodeError) Error() string {
@@ -31,6 +32,7 @@ func (e getAliasStatusCodeError) Error() string {
 }
 
 // HTTP request bodies
+
 type aliasHttpBody struct {
 	Alias aliasRequest `json:"alias"`
 }
@@ -49,6 +51,7 @@ type aliasRequest struct {
 }
 
 // HTTP response types
+
 type getAliasUuidResponse struct {
 	Uuid string `json:"uuid"`
 }
@@ -107,7 +110,7 @@ type aliasResponse struct {
 
 // Helper functions
 
-// aliasToHttpBody converts an Alias object to an aliasHttpBody object for sending to the OPNsense API
+// aliasToHttpBody converts an Alias object to an aliasHttpBody object for sending to the OPNsense API.
 func aliasToHttpBody(alias alias) aliasHttpBody {
 	return aliasHttpBody{
 		Alias: aliasRequest{
@@ -124,7 +127,7 @@ func aliasToHttpBody(alias alias) aliasHttpBody {
 	}
 }
 
-// getAliasUuid searches the OPNsense firewall for the UUID of the alias with a matching name
+// getAliasUuid searches the OPNsense firewall for the UUID of the alias with a matching name.
 func getAliasUuid(client *opnsense.Client, name string) (string, error) {
 	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, controller, getAliasUuidCommand, name)
 
@@ -153,7 +156,7 @@ func getAliasUuid(client *opnsense.Client, name string) (string, error) {
 	return uuidResponse.Uuid, nil
 }
 
-// getAlias searches the OPNsense firewall for the alias with a matching UUID
+// getAlias searches the OPNsense firewall for the alias with a matching UUID.
 func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, controller, getAliasCommand, uuid)
 
@@ -273,7 +276,7 @@ func addAlias(client *opnsense.Client, alias alias) (string, error) {
 	return addItemResponse.Uuid, nil
 }
 
-// setAlias updates an existing alias on the OPNsense firewall with a matching UUID
+// setAlias updates an existing alias on the OPNsense firewall with a matching UUID.
 func setAlias(client *opnsense.Client, alias alias, uuid string) error {
 	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, controller, setAliasCommand, uuid)
 
@@ -306,7 +309,7 @@ func setAlias(client *opnsense.Client, alias alias, uuid string) error {
 	return nil
 }
 
-// deleteAlias removes an existing alias from the OPNsense firewall with a matching UUID
+// deleteAlias removes an existing alias from the OPNsense firewall with a matching UUID.
 func deleteAlias(client *opnsense.Client, uuid string) error {
 	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, controller, deleteAliasCommand, uuid)
 

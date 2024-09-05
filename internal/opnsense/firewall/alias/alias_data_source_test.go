@@ -62,7 +62,7 @@ func TestAccAliasDataSource_host(t *testing.T) {
 	})
 }
 
-// testAccAliasHostDataSourceIdConfig creates an alias resource and imports it as a data source via its id
+// testAccAliasHostDataSourceIdConfig creates an alias resource and imports it as a data source via its id.
 const testAccAliasHostDataSourceIdConfig = `
 	resource "opnsense_firewall_alias" "test_acc_data_source_host" {
 		enabled = true
@@ -84,7 +84,7 @@ const testAccAliasHostDataSourceIdConfig = `
 	}
 `
 
-// testAccAliasHostDataSourceNameConfig creates an alias resource and imports it as a data source via its name
+// testAccAliasHostDataSourceNameConfig creates an alias resource and imports it as a data source via its name.
 const testAccAliasHostDataSourceNameConfig = `
 	resource "opnsense_firewall_alias" "test_acc_data_source_host" {
 		enabled = true
