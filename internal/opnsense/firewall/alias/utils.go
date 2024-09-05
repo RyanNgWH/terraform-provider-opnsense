@@ -37,6 +37,7 @@ type alias struct {
 }
 
 // Alias values
+
 func getAliasTypes() []string {
 	return []string{
 		"host",
@@ -57,7 +58,7 @@ func getAliasTypes() []string {
 
 // Helper functions
 
-// freqFloatToObject converts an updateFreq value from a float64 value to an updateFreqType value
+// freqFloatToObject converts an updateFreq value from a float64 value to an updateFreqType value.
 func freqFloatToObject(freqFloat float64) map[string]attr.Value {
 	days, hours := math.Modf(freqFloat)
 	hours = hours * 24
@@ -68,7 +69,7 @@ func freqFloatToObject(freqFloat float64) map[string]attr.Value {
 	}
 }
 
-// protoContains checks if the specified protoList contains the specified proto
+// protoContains checks if the specified protoList contains the specified proto.
 func protoContains(protoList []string, proto string) bool {
 	for _, protocol := range protoList {
 		if strings.EqualFold(protocol, proto) {
@@ -78,7 +79,7 @@ func protoContains(protoList []string, proto string) bool {
 	return false
 }
 
-// verifyCategories checks if the specified categories exist on the OPNsense firewall and returns their respective uuids
+// verifyCategories checks if the specified categories exist on the OPNsense firewall and returns their respective uuids.
 func getCategoryUuids(client *opnsense.Client, categoriesList []string) ([]string, error) {
 	var categoryUuids []string
 	for _, cat := range categoriesList {
@@ -92,7 +93,7 @@ func getCategoryUuids(client *opnsense.Client, categoriesList []string) ([]strin
 	return categoryUuids, nil
 }
 
-// verifyInterfaces checks if the specified interfaces exist on the OPNsense firewall
+// verifyInterfaces checks if the specified interfaces exist on the OPNsense firewall.
 func verifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, error) {
 	for _, iface := range interfacesList {
 		ifaceExists, err := overview.CheckInterfaceExists(client, iface)
@@ -107,7 +108,7 @@ func verifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, e
 	return true, nil
 }
 
-// createAlias creates an alias based on the specified plan
+// createAlias creates an alias based on the specified plan.
 func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourceModel) (alias, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 
@@ -197,13 +198,13 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	interfaces := utils.StringListTerraformToGo(plan.Interfaces)
 
 	// Sort lists for predictable output
-	sort.Strings(categories)
+	sort.Strings(categoryUuids)
 	sort.Strings(content)
 	sort.Strings(interfaces)
 
 	// Replace empty lists with nil values
-	if len(categories) <= 0 {
-		categories = nil
+	if len(categoryUuids) <= 0 {
+		categoryUuids = nil
 	}
 	if len(content) <= 0 {
 		content = nil

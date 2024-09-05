@@ -21,7 +21,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &categoryDataSource{}
 )
 
-// NewCategoryDataSource is a helper function to simplify the provider implementation
+// NewCategoryDataSource is a helper function to simplify the provider implementation.
 func NewCategoryDataSource() datasource.DataSource {
 	return &categoryDataSource{}
 }
@@ -52,7 +52,7 @@ func (d *categoryDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifer of the category",
+				Description: "Identifier of the category",
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
@@ -160,6 +160,6 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	tflog.Debug(ctx, "Saved category information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Succesfully read firewall category", map[string]interface{}{"success": true})
+	tflog.Info(ctx, "Successfully read firewall category", map[string]interface{}{"success": true})
 
 }

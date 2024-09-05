@@ -7,7 +7,7 @@ import (
 
 type Command string
 
-// Custom type for unmarshalling json string to float64
+// Custom type for unmarshalling json string to float64.
 type Float64AsString float64
 
 func (f *Float64AsString) UnmarshalJSON(data []byte) error {
@@ -25,7 +25,7 @@ func (f *Float64AsString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// Custom type for unmarshalling json string to uint8
+// Custom type for unmarshalling json string to uint8.
 type Uint8AsString float64
 
 func (f *Uint8AsString) UnmarshalJSON(data []byte) error {

@@ -35,7 +35,7 @@ var (
 	_ resource.ResourceWithImportState = &aliasResource{}
 )
 
-// NewAliasResource is a helper function to simplify the provider implementation
+// NewAliasResource is a helper function to simplify the provider implementation.
 func NewAliasResource() resource.Resource {
 	return &aliasResource{}
 }
@@ -84,7 +84,7 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifer of the alias",
+				Description: "Identifier of the alias",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -273,7 +273,7 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 	tflog.Info(ctx, "Successfully created firewall alias")
 }
 
-// Read resource information
+// Read resource information.
 func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
 	var state aliasResourceModel
 
@@ -343,7 +343,7 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 }
 
-// Update updates the resource on OPNsense and the Terraform state
+// Update updates the resource on OPNsense and the Terraform state.
 func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	tflog.Info(ctx, "Updating firewall alias")
 
@@ -393,7 +393,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	tflog.Info(ctx, "Successfully updated firewall alias")
 }
 
-// Delete removes the resource on OPNsense and from the Terraform state
+// Delete removes the resource on OPNsense and from the Terraform state.
 func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
 	tflog.Info(ctx, "Deleting firewall alias")
 
@@ -413,7 +413,7 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 }
 
-// ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource
+// ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *aliasResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
 	tflog.Info(ctx, "Importing firewall alias")
 

@@ -28,7 +28,7 @@ var TestAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 	"opnsense": providerserver.NewProtocol6WithError(provider.New("test")()),
 }
 
-// testAccPreCheck validates the necessary test API keys exist in the testing environment
+// testAccPreCheck validates the necessary test API keys exist in the testing environment.
 func TestAccPreCheck(t *testing.T) {
 	if env := os.Getenv("OPNSENSE_ENDPOINT"); env == "" {
 		t.Fatal("OPNSENSE_ENDPOINT must be set for acceptance tests")

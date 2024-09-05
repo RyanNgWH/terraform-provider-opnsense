@@ -24,7 +24,7 @@ var (
 	_ datasource.DataSourceWithConfigure = &aliasDataSource{}
 )
 
-// NewAliasDataSource is a helper function to simplify the provider implementation
+// NewAliasDataSource is a helper function to simplify the provider implementation.
 func NewAliasDataSource() datasource.DataSource {
 	return &aliasDataSource{}
 }
@@ -62,7 +62,7 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifer of the alias",
+				Description: "Identifier of the alias",
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:    true,
