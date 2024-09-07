@@ -18,7 +18,7 @@ func TestAccGeoIpDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing
 			{
-				Config: acctest.ProviderConfig + testAccGeoIpDataSourceConfig,
+				Config: testAccGeoIpDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias_geoip.test_acc_data_source", tfjsonpath.New("address_count"), knownvalue.Int64Exact(951473)),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias_geoip.test_acc_data_source", tfjsonpath.New("address_sources"), knownvalue.ObjectExact(map[string]knownvalue.Check{

@@ -18,7 +18,7 @@ func TestAccCategoryDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing (via id)
 			{
-				Config: acctest.ProviderConfig + testAccCategoryIdDataSourceConfig,
+				Config: testAccCategoryIdDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("auto"), knownvalue.Bool(true)),
@@ -27,7 +27,7 @@ func TestAccCategoryDataSource(t *testing.T) {
 			},
 			// Read testing (via name)
 			{
-				Config: acctest.ProviderConfig + testAccCategoryNameDataSourceConfig,
+				Config: testAccCategoryNameDataSourceConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("auto"), knownvalue.Bool(true)),

@@ -37,7 +37,7 @@ func TestAccCategoryResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: acctest.ProviderConfig + testAccCategoryResourceModifiedConfig,
+				Config: testAccCategoryResourceModifiedConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_category.test_acc_resource", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("opnsense_firewall_category.test_acc_resource", tfjsonpath.New("auto"), knownvalue.Bool(false)),
