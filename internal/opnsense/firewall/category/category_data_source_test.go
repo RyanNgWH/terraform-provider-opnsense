@@ -49,10 +49,6 @@ const testAccCategoryIdDataSourceConfig = `
 	data "opnsense_firewall_category" "test_acc_data_source_id" {
 		id = opnsense_firewall_category.test_acc_resource.id
 	}
-
-	output "test_acc_alias_host_id" {
-		value = data.opnsense_firewall_category.test_acc_data_source_id
-	}
 `
 
 // testAccCategoryNameDataSourceConfig creates a category before importing it as a data source by its name.
@@ -65,9 +61,5 @@ const testAccCategoryNameDataSourceConfig = `
 
 	data "opnsense_firewall_category" "test_acc_data_source_name" {
 		name = opnsense_firewall_category.test_acc_resource.name
-	}
-
-	output "test_acc_alias_host_name" {
-		value = data.opnsense_firewall_category.test_acc_data_source_name
 	}
 `
