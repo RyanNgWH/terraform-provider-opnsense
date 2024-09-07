@@ -47,7 +47,7 @@ resource "opnsense_firewall_alias" "resource_example" {
 
 ### Read-Only
 
-- `id` (String) Identifer of the alias
+- `id` (String) Identifier of the alias
 - `last_updated` (String) DateTime when alias was last updated
 
 <a id="nestedatt--proto"></a>

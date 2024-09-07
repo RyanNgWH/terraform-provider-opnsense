@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"time"
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
@@ -21,6 +22,7 @@ const (
 	addAliasCommand     opnsense.Command = "addItem"
 	setAliasCommand     opnsense.Command = "setItem"
 	deleteAliasCommand  opnsense.Command = "delItem"
+	getGeoIpCommand     opnsense.Command = "getGeoIP"
 )
 
 // HTTP errors
@@ -75,6 +77,12 @@ type delItemResponse struct {
 	Result string `json:"result"`
 }
 
+type getGeoIpResponse struct {
+	Alias struct {
+		GeoIp geoIpResponse `json:"geoip"`
+	} `json:"alias"`
+}
+
 type itemValidations struct {
 	Name   string      `json:"alias.name"`
 	Others interface{} `json:"-"`
@@ -106,6 +114,19 @@ type aliasResponse struct {
 		Selected uint8  `json:"selected"`
 	} `json:"categories"`
 	Description string `json:"description"`
+}
+
+type geoIpResponse struct {
+	AddressCount   int64 `json:"address_count"`
+	AddressSources struct {
+		Ipv4 string `json:"IPv4"`
+		Ipv6 string `json:"IPv6"`
+	} `json:"address_sources"`
+	FileCount         int64  `json:"file_count"`
+	LocationsFilename string `json:"locations_filename"`
+	Timestamp         string `json:"timestamp"`
+	Url               string `json:"url"`
+	Usages            int64  `json:"usages"`
 }
 
 // Helper functions
@@ -338,4 +359,52 @@ func deleteAlias(client *opnsense.Client, uuid string) error {
 		return fmt.Errorf("delete alias error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
+}
+
+// getGeoIp gets the GeoIP configuration from the OPNsense firewall.
+func getGeoIp(client *opnsense.Client) (*geoip, error) {
+	path := fmt.Sprintf("%s/%s/%s", firewall.Module, controller, getGeoIpCommand)
+
+	httpResp, err := client.DoRequest(http.MethodGet, path, nil)
+	if err != nil {
+		return nil, fmt.Errorf("OPNsense client error: %s", err)
+	}
+	switch httpResp.StatusCode {
+	case 200:
+	default:
+		return nil, fmt.Errorf("get geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+
+	}
+
+	var getGeoIpResponse getGeoIpResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&getGeoIpResponse)
+	if err != nil {
+		return nil, fmt.Errorf("get geoip error (http): %s", err)
+	}
+
+	// Convert timestamp to RFC3339 format
+	timestamp := ""
+	if getGeoIpResponse.Alias.GeoIp.Timestamp != "" {
+		tstamp, err := time.Parse("2006-01-02T15:04:05", getGeoIpResponse.Alias.GeoIp.Timestamp)
+		if err != nil {
+			return nil, fmt.Errorf("format timestamp error: %s", err)
+		}
+		timestamp = tstamp.Format(time.RFC3339)
+	}
+
+	return &geoip{
+		AddressCount: getGeoIpResponse.Alias.GeoIp.AddressCount,
+		AddressSources: struct {
+			Ipv4 string
+			Ipv6 string
+		}{
+			Ipv4: getGeoIpResponse.Alias.GeoIp.AddressSources.Ipv4,
+			Ipv6: getGeoIpResponse.Alias.GeoIp.AddressSources.Ipv6,
+		},
+		FileCount:         getGeoIpResponse.Alias.GeoIp.FileCount,
+		LocationsFilename: getGeoIpResponse.Alias.GeoIp.LocationsFilename,
+		Timestamp:         timestamp,
+		Url:               getGeoIpResponse.Alias.GeoIp.Url,
+		Usages:            getGeoIpResponse.Alias.GeoIp.Usages,
+	}, nil
 }
