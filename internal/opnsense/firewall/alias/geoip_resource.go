@@ -9,6 +9,7 @@ import (
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
 
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -17,8 +18,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource              = &geoIpResource{}
-	_ resource.ResourceWithConfigure = &geoIpResource{}
+	_ resource.Resource                = &geoIpResource{}
+	_ resource.ResourceWithConfigure   = &geoIpResource{}
+	_ resource.ResourceWithImportState = &geoIpResource{}
 )
 
 // NewGeoIpResource is a helper function to simplify the provider implementation.
@@ -249,4 +251,18 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+}
+
+// ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
+func (r *geoIpResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Info(ctx, "Importing firewall geoip configuration")
+
+	// Nothing special needs to be done since the geoip read function does not require any attributes.
+	// Setting url to an empty string to prevent terraform from throwing a missing resource import state
+	// error.
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("url"), "")...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 }
