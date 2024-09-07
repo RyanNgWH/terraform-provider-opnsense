@@ -260,6 +260,16 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
+	// Apply configuration on OPNsense
+	tflog.Debug(ctx, "Applying configuration on OPNsense")
+
+	err = applyConfig(r.client)
+	if err != nil {
+		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("Failed to apply create alias - %s", err))
+	} else {
+		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
+	}
+
 	// Update plan ID & last_updated fields
 	plan.Id = types.StringValue(uuid)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC3339))
@@ -379,6 +389,16 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
+	// Apply configuration on OPNsense
+	tflog.Debug(ctx, "Applying configuration on OPNsense")
+
+	err = applyConfig(r.client)
+	if err != nil {
+		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("Failed to apply update alias - %s", err))
+	} else {
+		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
+	}
+
 	// Update last_updated field (if change detected)
 	if !(reflect.DeepEqual(plan, state)) {
 		plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC3339))
@@ -410,6 +430,23 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	err := deleteAlias(r.client, state.Id.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("Failed to delete alias - %s", err))
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	// Apply configuration on OPNsense
+	tflog.Debug(ctx, "Applying configuration on OPNsense")
+
+	err = applyConfig(r.client)
+	if err != nil {
+		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("Failed to apply delete alias - %s", err))
+	} else {
+		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
+	}
+
+	if resp.Diagnostics.HasError() {
+		return
 	}
 }
 
