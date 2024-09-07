@@ -18,7 +18,7 @@ func TestAccAliasDataSource_host(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing (via id)
 			{
-				Config: acctest.ProviderConfig + testAccAliasHostDataSourceIdConfig,
+				Config: testAccAliasHostDataSourceIdConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_data_source")),
@@ -39,7 +39,7 @@ func TestAccAliasDataSource_host(t *testing.T) {
 			},
 			// Read testing (via name)
 			{
-				Config: acctest.ProviderConfig + testAccAliasHostDataSourceNameConfig,
+				Config: testAccAliasHostDataSourceNameConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_data_source")),

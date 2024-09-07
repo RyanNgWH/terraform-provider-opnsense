@@ -48,7 +48,7 @@ func TestAccAliasResource_host(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: acctest.ProviderConfig + testAccAliasHostResourceModifiedConfig,
+				Config: testAccAliasHostResourceModifiedConfig,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("enabled"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_resource")),
