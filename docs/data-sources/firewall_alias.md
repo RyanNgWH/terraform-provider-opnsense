@@ -29,7 +29,7 @@ data "opnsense_firewall_alias" "data_source_via_name" {
 
 ### Optional
 
-- `id` (String) Identifer of the alias
+- `id` (String) Identifier of the alias
 - `name` (String) The name of the alias
 
 ### Read-Only

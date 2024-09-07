@@ -29,7 +29,7 @@ data "opnsense_firewall_category" "data_source_via_name" {
 
 ### Optional
 
-- `id` (String) Identifer of the category
+- `id` (String) Identifier of the category
 - `name` (String) The name of the category
 
 ### Read-Only
