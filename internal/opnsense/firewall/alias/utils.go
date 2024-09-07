@@ -36,6 +36,19 @@ type alias struct {
 	Interfaces  []string
 }
 
+type geoip struct {
+	AddressCount   int64
+	AddressSources struct {
+		Ipv4 string
+		Ipv6 string
+	}
+	FileCount         int64
+	LocationsFilename string
+	Timestamp         string
+	Url               string
+	Usages            int64
+}
+
 // Alias values
 
 func getAliasTypes() []string {
