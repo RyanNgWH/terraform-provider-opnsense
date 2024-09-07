@@ -23,6 +23,8 @@ const (
 	setAliasCommand     opnsense.Command = "setItem"
 	deleteAliasCommand  opnsense.Command = "delItem"
 	getGeoIpCommand     opnsense.Command = "getGeoIP"
+	setGeoIPCommand     opnsense.Command = "set"
+	applyConfigCommand  opnsense.Command = "reconfigure"
 )
 
 // HTTP errors
@@ -50,6 +52,18 @@ type aliasRequest struct {
 	Interface   string  `json:"interface"`
 	Counters    uint8   `json:"counters"`
 	Description string  `json:"description"`
+}
+
+type setHttpRequest struct {
+	Alias setAliasRequest `json:"alias"`
+}
+
+type setAliasRequest struct {
+	GeoIp geoIpRequest `json:"geoip"`
+}
+
+type geoIpRequest struct {
+	Url string `json:"url"`
 }
 
 // HTTP response types
@@ -83,8 +97,22 @@ type getGeoIpResponse struct {
 	} `json:"alias"`
 }
 
+type setGeoIpResponse struct {
+	Result      string           `json:"result"`
+	Validations geoIpValidations `json:"validations"`
+}
+
+type applyConfigResponse struct {
+	Status string `json:"status"`
+}
+
 type itemValidations struct {
 	Name   string      `json:"alias.name"`
+	Others interface{} `json:"-"`
+}
+
+type geoIpValidations struct {
+	Url    string      `json:"alias.geoip.url"`
 	Others interface{} `json:"-"`
 }
 
@@ -407,4 +435,75 @@ func getGeoIp(client *opnsense.Client) (*geoip, error) {
 		Url:               getGeoIpResponse.Alias.GeoIp.Url,
 		Usages:            getGeoIpResponse.Alias.GeoIp.Usages,
 	}, nil
+}
+
+// setGeoIp sets the GeoIP url in the OPNsense firewall.
+func setGeoIp(client *opnsense.Client, url string) error {
+	path := fmt.Sprintf("%s/%s/%s", firewall.Module, controller, setGeoIPCommand)
+
+	// Generate API body
+	body := setHttpRequest{
+		Alias: setAliasRequest{
+			GeoIp: geoIpRequest{
+				Url: url,
+			},
+		},
+	}
+
+	reqBody, err := json.Marshal(body)
+	if err != nil {
+		return fmt.Errorf("set geoip error: failed to marshal json body - %s", err)
+	}
+
+	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
+	if err != nil {
+		return fmt.Errorf("OPNsense client error: %s", err)
+	}
+
+	if httpResp.StatusCode != 200 {
+		return fmt.Errorf("set geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+	}
+
+	var setGeoIpResponse setGeoIpResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&setGeoIpResponse)
+	if err != nil {
+		return fmt.Errorf("set geoip error (http): failed to decode http response - %s", err)
+	}
+
+	if strings.ToLower(setGeoIpResponse.Result) == "failed" {
+		return fmt.Errorf("set geoip error: failed to set geoip on OPNsense - failed validations: %+v", setGeoIpResponse.Validations)
+	}
+
+	return nil
+}
+
+// applyConfig applies the alias configuration on the OPNsense firewall.
+func applyConfig(client *opnsense.Client) error {
+	path := fmt.Sprintf("%s/%s/%s", firewall.Module, controller, applyConfigCommand)
+
+	// Generate empty body
+	reqBody, err := json.Marshal(nil)
+	if err != nil {
+		return fmt.Errorf("apply configuration error: failed to marshal json body - %s", err)
+	}
+
+	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
+	if err != nil {
+		return fmt.Errorf("OPNsense client error: %s", err)
+	}
+
+	if httpResp.StatusCode != 200 {
+		return fmt.Errorf("apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+	}
+
+	var resp applyConfigResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	if err != nil {
+		return fmt.Errorf("apply configuration error (http): failed to decode http response - %s", err)
+	}
+
+	if strings.ToLower(resp.Status) != "ok" {
+		return fmt.Errorf("apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
+	}
+	return nil
 }
