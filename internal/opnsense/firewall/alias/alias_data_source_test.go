@@ -78,10 +78,6 @@ const testAccAliasHostDataSourceIdConfig = `
 	data "opnsense_firewall_alias" "test_acc_data_source_host" {
 		id = opnsense_firewall_alias.test_acc_data_source_host.id
 	}
-
-	output "test_acc_alias_host" {
-		value = data.opnsense_firewall_alias.test_acc_data_source_host
-	}
 `
 
 // testAccAliasHostDataSourceNameConfig creates an alias resource and imports it as a data source via its name.
@@ -99,9 +95,5 @@ const testAccAliasHostDataSourceNameConfig = `
 
 	data "opnsense_firewall_alias" "test_acc_data_source_host" {
 		name = opnsense_firewall_alias.test_acc_data_source_host.name
-	}
-
-	output "test_acc_alias_host" {
-		value = data.opnsense_firewall_alias.test_acc_data_source_host
 	}
 `
