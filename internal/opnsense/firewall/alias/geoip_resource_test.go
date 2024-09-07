@@ -22,6 +22,18 @@ func TestAccGeoIpResource(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_alias_geoip.test_acc_resource", tfjsonpath.New("url"), knownvalue.StringExact("https://test.com")),
 				},
 			},
+			// ImportState testing
+			{
+				ResourceName:                         "opnsense_firewall_alias_geoip.test_acc_resource",
+				ImportState:                          true,
+				ImportStateId:                        "",
+				ImportStateVerify:                    true,
+				ImportStateVerifyIdentifierAttribute: "url",
+				// The last_updated attribute does not exist in the HashiCups
+				// API, therefore there is no value for it during import.
+				ImportStateVerifyIgnore: []string{"last_updated"},
+			},
+
 			// Update and Read testing
 			{
 				Config: testAccGeoIpResourceModifiedConfig,
