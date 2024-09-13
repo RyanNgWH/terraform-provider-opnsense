@@ -38,6 +38,7 @@ The provider uses the OPNsense API to perform operations on the OPNsense instanc
 
 The provider requires the following permissions on your OPNsense server.
 
+- `Interfaces: Groups: Edit`
 - `Firewall: Alias: Edit`
 - `Firewall: Categories`
 - `Status: Interfaces`
