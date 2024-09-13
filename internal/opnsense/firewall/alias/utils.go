@@ -106,21 +106,6 @@ func getCategoryUuids(client *opnsense.Client, categoriesList []string) ([]strin
 	return categoryUuids, nil
 }
 
-// verifyInterfaces checks if the specified interfaces exist on the OPNsense firewall.
-func verifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, error) {
-	for _, iface := range interfacesList {
-		ifaceExists, err := overview.CheckInterfaceExists(client, iface)
-		if err != nil {
-			return false, fmt.Errorf("failed to verify if interfaces exists on OPNsense - %s", err)
-		}
-
-		if !ifaceExists {
-			return false, nil
-		}
-	}
-	return true, nil
-}
-
 // createAlias creates an alias based on the specified plan.
 func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourceModel) (alias, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
@@ -147,7 +132,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 		interfaces := utils.StringListTerraformToGo(plan.Interfaces)
 
-		interfacesExist, err := verifyInterfaces(client, interfaces)
+		interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 		if err != nil {
 			diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify interfaces: %s", err))
 		}
