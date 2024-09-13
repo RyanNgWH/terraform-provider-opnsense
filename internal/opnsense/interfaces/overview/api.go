@@ -37,7 +37,7 @@ type interfaceResponse struct {
 // Helper functions
 
 // CheckInterfaceExists searches the OPNsense firewall for the interface with a matching identifier.
-func CheckInterfaceExists(client *opnsense.Client, identifier string) (bool, error) {
+func checkInterfaceExists(client *opnsense.Client, identifier string) (bool, error) {
 	path := fmt.Sprintf("%s/%s/%s", interfaces.Module, controller, interfacesInfoCommand)
 
 	body := interfacesInfoRequestBody{
