@@ -106,5 +106,10 @@ func (c *Client) DoRequest(method string, path string, reqBody []byte) (*http.Re
 	if err != nil {
 		return nil, errors.New("Failed to perform http request to the OPNsense API. Error: " + err.Error())
 	}
+
+	if resp.StatusCode == 403 {
+		return nil, errors.New("Unable to authenticate with the OPNsense API. Ensure that your credentials are valid and has the required privileges.")
+	}
+
 	return resp, nil
 }
