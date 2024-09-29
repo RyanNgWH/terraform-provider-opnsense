@@ -265,7 +265,7 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("Failed to apply create alias - %s", err))
+		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -394,7 +394,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("Failed to apply update alias - %s", err))
+		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -440,7 +440,7 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("Failed to apply delete alias - %s", err))
+		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
