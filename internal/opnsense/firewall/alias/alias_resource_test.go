@@ -38,12 +38,10 @@ func TestAccAliasResource_host(t *testing.T) {
 			},
 			// ImportState testing
 			{
-				ResourceName:      "opnsense_firewall_alias.test_acc_resource_host",
-				ImportState:       true,
-				ImportStateId:     "test_acc_alias_host_resource",
-				ImportStateVerify: true,
-				// The last_updated attribute does not exist in the HashiCups
-				// API, therefore there is no value for it during import.
+				ResourceName:            "opnsense_firewall_alias.test_acc_resource_host",
+				ImportState:             true,
+				ImportStateId:           "test_acc_alias_host_resource",
+				ImportStateVerify:       true,
 				ImportStateVerifyIgnore: []string{"last_updated"},
 			},
 			// Update and Read testing
