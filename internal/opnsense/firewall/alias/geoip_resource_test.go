@@ -29,9 +29,7 @@ func TestAccGeoIpResource(t *testing.T) {
 				ImportStateId:                        "",
 				ImportStateVerify:                    true,
 				ImportStateVerifyIdentifierAttribute: "url",
-				// The last_updated attribute does not exist in the HashiCups
-				// API, therefore there is no value for it during import.
-				ImportStateVerifyIgnore: []string{"last_updated"},
+				ImportStateVerifyIgnore:              []string{"last_updated"},
 			},
 
 			// Update and Read testing
