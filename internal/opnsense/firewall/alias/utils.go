@@ -92,20 +92,6 @@ func protoContains(protoList []string, proto string) bool {
 	return false
 }
 
-// verifyCategories checks if the specified categories exist on the OPNsense firewall and returns their respective uuids.
-func getCategoryUuids(client *opnsense.Client, categoriesList []string) ([]string, error) {
-	var categoryUuids []string
-	for _, cat := range categoriesList {
-		uuid, err := category.SearchCategory(client, cat)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get category from OPNsense - %s", err)
-		}
-
-		categoryUuids = append(categoryUuids, uuid)
-	}
-	return categoryUuids, nil
-}
-
 // createAlias creates an alias based on the specified plan.
 func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourceModel) (alias, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
@@ -117,7 +103,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 	categories := utils.StringListTerraformToGo(plan.Categories)
 
-	categoryUuids, err := getCategoryUuids(client, categories)
+	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
 		diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify categories - %s", err))
 	}
