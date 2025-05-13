@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
@@ -88,7 +89,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 	tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
 
 	// Create one-to-one NAT rule from plan
-	tflog.Debug(ctx, "Creating one-to-one NAT object from plan", map[string]interface{}{"plan": plan})
+	tflog.Debug(ctx, "Creating one-to-one NAT object from plan", map[string]any{"plan": plan})
 
 	// Sort lists for predictable output
 	sort.Strings(categoryUuids)
@@ -96,6 +97,12 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 	// Replace empty lists with nil values
 	if len(categoryUuids) <= 0 {
 		categoryUuids = nil
+	}
+
+	// Check for default nat reflection
+	natReflection := strings.ToLower(plan.NatReflection.ValueString())
+	if natReflection == "default" {
+		natReflection = ""
 	}
 
 	oneToOneNat := oneToOneNat{
@@ -109,7 +116,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		DestinationNet: plan.DestinationNet.ValueString(),
 		DestinationNot: plan.DestinationNot.ValueBool(),
 		External:       plan.External.ValueString(),
-		NatRefection:   plan.External.ValueString(),
+		NatRefection:   natReflection,
 		Categories:     categoryUuids,
 		Description:    plan.DestinationNet.ValueString(),
 	}
