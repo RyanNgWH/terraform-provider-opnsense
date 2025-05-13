@@ -94,8 +94,8 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 			"log": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `true`",
-				Default:             booldefault.StaticBool(true),
+				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`",
+				Default:             booldefault.StaticBool(false),
 			},
 			"sequence": schema.Int32Attribute{
 				Optional:            true,
