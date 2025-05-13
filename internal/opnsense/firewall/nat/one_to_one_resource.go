@@ -127,8 +127,8 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 			},
 			"source_net": schema.StringAttribute{
-				Required:    true,
-				Description: "The internal subnet for this 1:1 mapping.",
+				Required:            true,
+				MarkdownDescription: "The internal subnet for this 1:1 mapping. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).",
 			},
 			"source_not": schema.BoolAttribute{
 				Optional:            true,
@@ -138,7 +138,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"destination_net": schema.StringAttribute{
 				Required:    true,
-				Description: "The 1:1 mapping will only be used for connections to or from the specified destination.",
+				Description: "The 1:1 mapping will only be used for connections to or from the specified destination. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).",
 			},
 			"destination_not": schema.BoolAttribute{
 				Optional:            true,
