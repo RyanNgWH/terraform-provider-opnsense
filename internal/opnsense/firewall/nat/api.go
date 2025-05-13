@@ -50,9 +50,9 @@ type getOneToOneNatResponse struct {
 }
 
 type oneToOneNatRuleResponse struct {
-	Enabled   uint8 `json:"enabled"`
-	Log       uint8 `json:"log"`
-	Sequence  int32 `json:"sequence"`
+	Enabled   uint8 `json:"enabled,string"`
+	Log       uint8 `json:"log,string"`
+	Sequence  int32 `json:"sequence,string"`
 	Interface map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
@@ -62,9 +62,9 @@ type oneToOneNatRuleResponse struct {
 		Selected uint8  `json:"selected"`
 	} `json:"type"`
 	SourceNet      string `json:"source_net"`
-	SourceNot      uint8  `json:"source_not"`
+	SourceNot      uint8  `json:"source_not,string"`
 	DestinationNet string `json:"destination_net"`
-	DestinationNot uint8  `json:"destination_not"`
+	DestinationNot uint8  `json:"destination_not,string"`
 	External       string `json:"external"`
 	NatReflection  map[string]struct {
 		Value    string `json:"value"`
