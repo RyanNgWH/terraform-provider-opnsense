@@ -12,6 +12,8 @@ import (
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
@@ -28,8 +30,9 @@ import (
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var (
-	_ resource.Resource              = &natOneToOneResource{}
-	_ resource.ResourceWithConfigure = &natOneToOneResource{}
+	_ resource.Resource                = &natOneToOneResource{}
+	_ resource.ResourceWithConfigure   = &natOneToOneResource{}
+	_ resource.ResourceWithImportState = &natOneToOneResource{}
 )
 
 // NewNatOneToOneResource is a helper function to simplify the provider implementation.
@@ -222,7 +225,7 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Create one-to-one NAT on OPNsense
-	tflog.Debug(ctx, "Creating one-to-one NAT entry on OPNsense", map[string]interface{}{"one-to-one NAT": oneToOneNat})
+	tflog.Debug(ctx, "Creating one-to-one NAT entry on OPNsense", map[string]any{"one-to-one NAT": oneToOneNat})
 
 	uuid, err := addOneToOneNat(r.client, oneToOneNat)
 	if err != nil {
@@ -332,7 +335,7 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Update one-to-one NAT rule on OPNsense
-	tflog.Debug(ctx, "Updating one-to-one NAT rule on OPNsense", map[string]interface{}{"one-to-one NAT rule": rule})
+	tflog.Debug(ctx, "Updating one-to-one NAT rule on OPNsense", map[string]any{"one-to-one NAT rule": rule})
 
 	err := setOneToOneNat(r.client, rule, state.Id.ValueString())
 	if err != nil {
@@ -398,6 +401,16 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
 
+	if resp.Diagnostics.HasError() {
+		return
+	}
+}
+
+// ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
+func (r *natOneToOneResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+	tflog.Info(ctx, "Importing firewall one-to-one NAT rule")
+
+	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}

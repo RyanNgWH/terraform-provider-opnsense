@@ -60,7 +60,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 	var diagnostics diag.Diagnostics
 
 	// Verify all categories exist
-	tflog.Debug(ctx, "Verifying categories", map[string]interface{}{
+	tflog.Debug(ctx, "Verifying categories", map[string]any{
 		"categories": plan.Categories,
 	})
 
@@ -74,7 +74,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
 
 	// Verify interface
-	tflog.Debug(ctx, "Verifying interface", map[string]interface{}{
+	tflog.Debug(ctx, "Verifying interface", map[string]any{
 		"interface": plan.Interface,
 	})
 
