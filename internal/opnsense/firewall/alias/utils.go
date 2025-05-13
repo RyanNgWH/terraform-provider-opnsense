@@ -186,17 +186,6 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	sort.Strings(content)
 	sort.Strings(interfaces)
 
-	// Replace empty lists with nil values
-	if len(categoryUuids) <= 0 {
-		categoryUuids = nil
-	}
-	if len(content) <= 0 {
-		content = nil
-	}
-	if len(interfaces) <= 0 {
-		interfaces = nil
-	}
-
 	alias := alias{
 		Enabled:     plan.Enabled.ValueBool(),
 		Name:        plan.Name.ValueString(),

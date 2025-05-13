@@ -78,6 +78,8 @@ func (r *aliasResource) Metadata(ctx context.Context, req resource.MetadataReque
 
 // Schema defines the schema for the resource.
 func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	emptyList, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Aliases are named lists of networks, hosts or ports that can be used as one entity by referencing the alias name in the various supported sections of the firewall. These aliases are particularly useful to condense firewall rules and minimize changes.",
 
@@ -190,21 +192,21 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the alias. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(basetypes.NewListNull(types.StringType)),
+				Default:     listdefault.StaticValue(emptyList),
 			},
 			"content": schema.ListAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The content of the alias. Ensure that the content are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(basetypes.NewListNull(types.StringType)),
+				Default:     listdefault.StaticValue(emptyList),
 			},
 			"interfaces": schema.ListAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "[Only for `dynipv6` type] The alias interfaces. Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.",
 				ElementType: types.StringType,
-				Default:     listdefault.StaticValue(basetypes.NewListNull(types.StringType)),
+				Default:     listdefault.StaticValue(emptyList),
 			},
 		},
 	}

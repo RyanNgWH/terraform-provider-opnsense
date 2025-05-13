@@ -201,7 +201,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	tflog.Debug(ctx, "Successfully got alias information", map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving alias information to state", map[string]interface{}{
+	tflog.Debug(ctx, "Saving alias information to state", map[string]any{
 		"enabled":     alias.Enabled,
 		"name":        alias.Name,
 		"type":        alias.Type,
@@ -259,6 +259,6 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved alias information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Successfully read firewall alias", map[string]interface{}{"success": true})
+	tflog.Debug(ctx, "Saved alias information to state", map[string]any{"success": true})
+	tflog.Info(ctx, "Successfully read firewall alias", map[string]any{"success": true})
 }

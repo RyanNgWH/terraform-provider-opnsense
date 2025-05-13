@@ -12,7 +12,7 @@ func BoolToInt(b bool) uint8 {
 
 // StringListTerraformToGo converts a slice of terraform's `types.String` to a Go slice of strings.
 func StringListTerraformToGo(terraformList []types.String) []string {
-	var result []string
+	result := make([]string, 0)
 	for _, element := range terraformList {
 		result = append(result, element.ValueString())
 	}
