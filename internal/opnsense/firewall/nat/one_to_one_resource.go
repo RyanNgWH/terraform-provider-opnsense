@@ -68,6 +68,8 @@ func (r *natOneToOneResource) Metadata(ctx context.Context, req resource.Metadat
 
 // Schema defines the schema for the resource.
 func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	defaultCategories, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "One-to-one NAT will translate two IPs one-to-one, rather than one-to-many as is most common.",
 
@@ -168,7 +170,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(basetypes.NewListNull(types.StringType)),
+				Default:     listdefault.StaticValue(defaultCategories),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,

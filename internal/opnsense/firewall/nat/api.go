@@ -2,9 +2,9 @@ package nat
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -184,7 +184,7 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 		}
 	}
 
-	var categories []string
+	categories := make([]string, 0)
 	for name, value := range response.Rule.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)

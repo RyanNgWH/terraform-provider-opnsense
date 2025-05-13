@@ -21,7 +21,7 @@ func StringListTerraformToGo(terraformList []types.String) []string {
 
 // StringListGoToTerraform converts a Go slice of strings to a slice of terraform's `types.String`.
 func StringListGoToTerraform(goList []string) []types.String {
-	var result []types.String
+	result := make([]types.String, 0)
 	for _, element := range goList {
 		result = append(result, types.StringValue(element))
 	}

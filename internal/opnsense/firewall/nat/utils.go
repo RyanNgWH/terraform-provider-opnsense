@@ -94,11 +94,6 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 	// Sort lists for predictable output
 	sort.Strings(categoryUuids)
 
-	// Replace empty lists with nil values
-	if len(categoryUuids) <= 0 {
-		categoryUuids = nil
-	}
-
 	// Check for default nat reflection
 	natReflection := strings.ToLower(plan.NatReflection.ValueString())
 	if natReflection == "default" {
