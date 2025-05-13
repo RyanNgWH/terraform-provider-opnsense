@@ -3,6 +3,7 @@ package opnsense
 import (
 	"encoding/json"
 	"errors"
+	"maps"
 	"strconv"
 	"strings"
 )
@@ -47,9 +48,9 @@ func (f *Uint8AsString) UnmarshalJSON(data []byte) error {
 
 // Custom type for unmarshalling OPNsense add item json responses
 type OpnsenseAddItemResponse struct {
-	Result      string                 `json:"result"`
-	Uuid        string                 `json:"uuid"`
-	Validations map[string]interface{} `json:"validations"`
+	Result      string         `json:"result"`
+	Uuid        string         `json:"uuid"`
+	Validations map[string]any `json:"validations"`
 }
 
 func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
@@ -70,9 +71,8 @@ func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
 		case "uuid":
 			res.Uuid = val.(string)
 		case "validations":
-			for k, v := range val.(map[string]interface{}) {
-				res.Validations[k] = v
-			}
+			res.Validations = make(map[string]any)
+			maps.Copy(res.Validations, val.(map[string]any))
 		}
 	}
 
