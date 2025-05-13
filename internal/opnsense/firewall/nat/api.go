@@ -174,7 +174,11 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 	var natReflection string
 	for name, value := range response.Rule.NatReflection {
 		if value.Selected == 1 {
-			natReflection = name
+			if strings.ToLower(value.Value) == "default" {
+				natReflection = "default"
+			} else {
+				natReflection = name
+			}
 			break
 		}
 	}
