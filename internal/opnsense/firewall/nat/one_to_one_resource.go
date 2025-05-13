@@ -283,6 +283,7 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 	state.Enabled = types.BoolValue(rule.Enabled)
 	state.Log = types.BoolValue(rule.Log)
 	state.Sequence = types.Int32Value(rule.Sequence)
+	state.Interface = types.StringValue(rule.Interface)
 	state.Type = types.StringValue(rule.Type)
 	state.SourceNet = types.StringValue(rule.SourceNet)
 	state.SourceNot = types.BoolValue(rule.SourceNot)
