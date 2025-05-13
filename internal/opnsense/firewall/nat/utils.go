@@ -118,7 +118,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		External:       plan.External.ValueString(),
 		NatRefection:   natReflection,
 		Categories:     categoryUuids,
-		Description:    plan.DestinationNet.ValueString(),
+		Description:    plan.Description.ValueString(),
 	}
 
 	tflog.Debug(ctx, "Successfully created one-to-one NAT object from plan", map[string]any{"success": true})
