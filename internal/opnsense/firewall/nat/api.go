@@ -150,7 +150,7 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("get one-to-one NAT rule error: one-to-one NAT rule with uuid `%s` does not exist. This is potentially because the one-to-one NAT rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing one-to-one NAT rule from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("get one-to-one NAT rule error: one-to-one NAT rule with uuid `%s` does not exist. If this occurs in a resource block, it is usually because the one-to-one NAT rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing one-to-one NAT rule from the terraform state to rectify the error.", uuid)
 		}
 		return nil, fmt.Errorf("get one-to-one NAT rule error (http): %s", err)
 	}
