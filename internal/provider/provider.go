@@ -260,6 +260,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		alias.NewGeoIpDataSource,
 		category.NewCategoryDataSource,
 		group.NewGroupDataSource,
+		nat.NewOneToOneNatDataSource,
 	}
 }
 
