@@ -96,7 +96,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 			"destination_not": schema.BoolAttribute{
 				Computed:            true,
-				MarkdownDescription: "Whether the destination matching should be inverted. Defaults to `false`",
+				MarkdownDescription: "Whether the destination matching should be inverted.",
 			},
 			"external": schema.StringAttribute{
 				Computed:    true,
