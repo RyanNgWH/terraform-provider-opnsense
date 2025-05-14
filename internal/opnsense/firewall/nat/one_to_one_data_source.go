@@ -32,7 +32,6 @@ type oneToOneNatDataSource struct {
 // oneToOneNatDataSourceModel describes the data source data model.
 type oneToOneNatDataSourceModel struct {
 	Id             types.String   `tfsdk:"id"`
-	LastUpdated    types.String   `tfsdk:"last_updated"`
 	Enabled        types.Bool     `tfsdk:"enabled"`
 	Log            types.Bool     `tfsdk:"log"`
 	Sequence       types.Int32    `tfsdk:"sequence"`
@@ -50,7 +49,7 @@ type oneToOneNatDataSourceModel struct {
 
 // Metadata returns the data source type name.
 func (d *oneToOneNatDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = fmt.Sprintf("%s_%s_%s", req.ProviderTypeName, firewall.TypeName, oneToOneController)
+	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, natController, oneToOneController)
 }
 
 // Schema defines the schema for the datasource.
