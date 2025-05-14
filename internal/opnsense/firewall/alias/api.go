@@ -240,28 +240,28 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		}
 	}
 
-	var protos []string
+	protos := make([]string, 0)
 	for name, value := range aliasResponse.Alias.Proto {
 		if value.Selected == 1 {
 			protos = append(protos, name)
 		}
 	}
 
-	var interfaces []string
+	interfaces := make([]string, 0)
 	for name, value := range aliasResponse.Alias.AliasInterface {
 		if value.Selected == 1 && strings.ToLower(value.Value) != "none" {
 			interfaces = append(interfaces, name)
 		}
 	}
 
-	var contents []string
+	contents := make([]string, 0)
 	for name, value := range aliasResponse.Alias.Content {
 		if value.Selected == 1 && value.Value != "" {
 			contents = append(contents, name)
 		}
 	}
 
-	var categories []string
+	categories := make([]string, 0)
 	for name, value := range aliasResponse.Alias.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)

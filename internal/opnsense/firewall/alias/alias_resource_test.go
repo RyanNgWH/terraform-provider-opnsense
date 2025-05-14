@@ -33,7 +33,7 @@ func TestAccAliasResource_host(t *testing.T) {
 						"ipv6": knownvalue.Bool(false),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{knownvalue.StringExact("1.1.1.1")})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.Null()),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
 				},
 			},
 			// ImportState testing
@@ -65,7 +65,7 @@ func TestAccAliasResource_host(t *testing.T) {
 						knownvalue.StringExact("1.1.1.1"),
 						knownvalue.StringExact("2.2.2.2"),
 					})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.Null()),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
 				},
 			},
 			// Delete testing automatically occurs in TestCase
@@ -95,8 +95,8 @@ func TestAccAliasResource_defaults(t *testing.T) {
 						"ipv4": knownvalue.Bool(false),
 						"ipv6": knownvalue.Bool(false),
 					})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.Null()),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.Null()),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
 				},
 			},
 			// ImportState testing

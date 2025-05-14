@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"reflect"
 	"sort"
 	"strings"
 
@@ -172,10 +171,11 @@ func getGroup(client *opnsense.Client, uuid string) (*group, error) {
 	var resp getGroupResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
+		var jsonTypeError *json.UnmarshalTypeError
+		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
+			return nil, fmt.Errorf("get group error: group with uuid `%s` does not exist. This is potentially because the group is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing group from the terraform state to rectify the error.", uuid)
+		}
 		return nil, fmt.Errorf("get group error (http): %s", err)
-	}
-	if reflect.DeepEqual(resp, getGroupResponse{}) {
-		return nil, fmt.Errorf("get group error: group with uuid `%s` does not exist", uuid)
 	}
 
 	// Extract values from response

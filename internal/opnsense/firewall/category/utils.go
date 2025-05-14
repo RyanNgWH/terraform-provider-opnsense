@@ -2,6 +2,9 @@ package category
 
 import (
 	"context"
+	"fmt"
+
+	"terraform-provider-opnsense/internal/opnsense"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
@@ -31,4 +34,18 @@ func createCategory(ctx context.Context, plan categoryResourceModel) category {
 	tflog.Debug(ctx, "Successfully created category object from plan", map[string]any{"success": true})
 
 	return category
+}
+
+// getCategoryUuids checks if the specified categories exist on the OPNsense firewall and returns their respective uuids.
+func GetCategoryUuids(client *opnsense.Client, categoriesList []string) ([]string, error) {
+	var categoryUuids []string
+	for _, cat := range categoriesList {
+		uuid, err := SearchCategory(client, cat)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get category from OPNsense - %s", err)
+		}
+
+		categoryUuids = append(categoryUuids, uuid)
+	}
+	return categoryUuids, nil
 }
