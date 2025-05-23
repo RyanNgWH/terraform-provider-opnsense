@@ -128,10 +128,9 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				ElementType: types.StringType,
 				Description: "The content of the alias",
 			},
-			"interface": schema.ListAttribute{
+			"interface": schema.StringAttribute{
 				Computed:    true,
 				Description: "[Only for `dynipv6` type] The interface for the v6 dynamic IP.",
-				ElementType: types.StringType,
 			},
 		},
 	}

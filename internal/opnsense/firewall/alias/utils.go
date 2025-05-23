@@ -111,13 +111,13 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
 
-	// Verify interfaces (if type is dynipv6)
+	// Verify interface (if type is dynipv6)
 	if plan.Type.Equal(types.StringValue("dynipv6")) {
 		if plan.Interface.ValueString() == "" {
 			diagnostics.AddAttributeError(path.Root("interface"), "Missing Required Attribute", "The `interface` attribute must be set when `type` is set to `dynipv6`")
 		}
 
-		tflog.Debug(ctx, "Verifying interface", map[string]interface{}{
+		tflog.Debug(ctx, "Verifying interface", map[string]any{
 			"interface": plan.Interface,
 		})
 
@@ -133,7 +133,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	}
 
 	// Create alias from plan
-	tflog.Debug(ctx, "Creating alias object from plan", map[string]interface{}{"plan": plan})
+	tflog.Debug(ctx, "Creating alias object from plan", map[string]any{"plan": plan})
 
 	// Compute update frequency
 	var planUpdateFreq updateFreqModel

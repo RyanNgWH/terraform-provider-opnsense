@@ -201,7 +201,7 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Description: "The content of the alias. Ensure that the content are in lexicographical order, else the provider will detect a change on every execution.",
 				Default:     listdefault.StaticValue(emptyList),
 			},
-			"interfaces": schema.StringAttribute{
+			"interface": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "[Only for `dynipv6` type] The interface for the v6 dynamic IP.",
