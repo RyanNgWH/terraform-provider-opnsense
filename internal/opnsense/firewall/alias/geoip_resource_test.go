@@ -34,7 +34,7 @@ func TestAccGeoIpResource(t *testing.T) {
 
 			// Update and Read testing
 			{
-				Config: testAccGeoIpResourceModifiedConfig,
+				Config: testAccGeoIpResourceConfig_modified,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_alias_geoip.test_acc_resource", tfjsonpath.New("url"), knownvalue.StringExact("https://hello.com")),
 				},
@@ -51,8 +51,8 @@ const testAccGeoIpResourceConfig = `
 	}
 `
 
-// testAccGeoIpResourceModifiedConfig defines a geoip resource.
-const testAccGeoIpResourceModifiedConfig = `
+// testAccGeoIpResourceConfig_modified defines a modified geoip resource.
+const testAccGeoIpResourceConfig_modified = `
 	resource "opnsense_firewall_alias_geoip" "test_acc_resource" {
 		url = "https://hello.com"
 	}

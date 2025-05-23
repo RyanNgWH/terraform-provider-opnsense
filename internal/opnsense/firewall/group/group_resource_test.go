@@ -40,7 +40,7 @@ func TestAccGroupResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccGroupDefaultResourceConfig,
+				Config: testAccGroupResourceConfig_default,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_group.test_acc_resource", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_ugroup")),
 					statecheck.ExpectKnownValue("opnsense_firewall_group.test_acc_resource", tfjsonpath.New("members"), knownvalue.ListExact([]knownvalue.Check{
@@ -71,8 +71,8 @@ const testAccGroupResourceConfig = `
 	}
 `
 
-// testAccGroupDefaultResourceConfig defines a group resource with only required fields.
-const testAccGroupDefaultResourceConfig = `
+// testAccGroupResourceConfig_default defines a group resource with only required fields.
+const testAccGroupResourceConfig_default = `
 	resource "opnsense_firewall_group" "test_acc_resource" {
 		name = "test_acc_ugroup"
 		members = [

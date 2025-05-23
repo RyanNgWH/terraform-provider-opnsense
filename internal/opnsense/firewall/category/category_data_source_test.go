@@ -18,7 +18,7 @@ func TestAccCategoryDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing (via id)
 			{
-				Config: testAccCategoryIdDataSourceConfig,
+				Config: testAccCategoryDataSourceConfig_id,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_id", tfjsonpath.New("auto"), knownvalue.Bool(true)),
@@ -27,7 +27,7 @@ func TestAccCategoryDataSource(t *testing.T) {
 			},
 			// Read testing (via name)
 			{
-				Config: testAccCategoryNameDataSourceConfig,
+				Config: testAccCategoryDataSourceConfig_name,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_category.test_acc_data_source_name", tfjsonpath.New("auto"), knownvalue.Bool(true)),
@@ -38,8 +38,8 @@ func TestAccCategoryDataSource(t *testing.T) {
 	})
 }
 
-// testAccCategoryIdDataSourceConfig creates a category before importing it as a data source by its id.
-const testAccCategoryIdDataSourceConfig = `
+// testAccCategoryDataSourceConfig_id creates a category before importing it as a data source by its id.
+const testAccCategoryDataSourceConfig_id = `
 	resource "opnsense_firewall_category" "test_acc_resource" {
 		name  = "test_acc_category_resource"
 		auto  = true
@@ -51,8 +51,8 @@ const testAccCategoryIdDataSourceConfig = `
 	}
 `
 
-// testAccCategoryNameDataSourceConfig creates a category before importing it as a data source by its name.
-const testAccCategoryNameDataSourceConfig = `
+// testAccCategoryDataSourceConfig_name creates a category before importing it as a data source by its name.
+const testAccCategoryDataSourceConfig_name = `
 	resource "opnsense_firewall_category" "test_acc_resource" {
 		name  = "test_acc_category_resource"
 		auto  = true

@@ -31,7 +31,7 @@ func TestAccOneToOneNatResource_Nat(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("external"), knownvalue.StringExact("3.3.3.3")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("default")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
-						knownvalue.StringExact("perm_test_acc_data_source"),
+						knownvalue.StringExact("perm_test_acc_category"),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("description"), knownvalue.StringExact("one-to-one nat rule for terraform resource testing")),
 				},
@@ -45,14 +45,14 @@ func TestAccOneToOneNatResource_Nat(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccOneToOneNatResourceModifiedConfig,
+				Config: testAccOneToOneNatResourceConfig_modified,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("enabled"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("log"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("sequence"), knownvalue.Int32Exact(3)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("interface"), knownvalue.StringExact("lan")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("type"), knownvalue.StringExact("nat")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_net"), knownvalue.StringExact("perm_test_acc_data_source")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_net"), knownvalue.StringExact("perm_test_acc_alias")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_not"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_net"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_not"), knownvalue.Bool(true)),
@@ -74,7 +74,7 @@ func TestAccOneToOneNatResource_Defaults(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccOneToOneNatResourceDefaultConfig,
+				Config: testAccOneToOneNatResourceConfig_default,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("log"), knownvalue.Bool(false)),
@@ -118,21 +118,21 @@ const testAccOneToOneNatResourceConfig = `
 		external        = "3.3.3.3"
 		nat_reflection  = "default"
 		categories = [
-			"perm_test_acc_data_source"
+			"perm_test_acc_category"
 		]
 		description = "one-to-one nat rule for terraform resource testing"
 	}
 `
 
-// testAccOneToOneNatResourceModifiedConfig defines a modified one-to-one NAT resource of type `nat`.
-const testAccOneToOneNatResourceModifiedConfig = `
+// testAccOneToOneNatResourceConfig_modified defines a modified one-to-one NAT resource of type `nat`.
+const testAccOneToOneNatResourceConfig_modified = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_resource_nat" {
 		enabled         = false
 		log             = false
 		sequence        = 3
 		interface       = "lan"
 		type            = "nat"
-		source_net      = "perm_test_acc_data_source"
+		source_net      = "perm_test_acc_alias"
 		source_not      = true
 		destination_net = "1.1.1.1"
 		destination_not = true
@@ -143,8 +143,8 @@ const testAccOneToOneNatResourceModifiedConfig = `
 	}
 `
 
-// testAccOneToOneNatResourceDefaultConfig defines a one-to-one NAT resource of type `nat` with default values.
-const testAccOneToOneNatResourceDefaultConfig = `
+// testAccOneToOneNatResourceConfig_default defines a one-to-one NAT resource of type `nat` with default values.
+const testAccOneToOneNatResourceConfig_default = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_resource_nat" {
 		interface       = "wan"
 		type            = "nat"
