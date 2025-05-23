@@ -89,6 +89,39 @@ func TestAccAliasDataSource_dynipv6(t *testing.T) {
 	})
 }
 
+func TestAccAliasDataSource_asn(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: acctest.TestAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing (via id)
+			{
+				Config: testAccAliasDataSourceConfig_asn_id,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_asn_data_source")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("type"), knownvalue.StringExact("asn")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("proto"), knownvalue.ObjectExact(map[string]knownvalue.Check{
+						"ipv4": knownvalue.Bool(true),
+						"ipv6": knownvalue.Bool(true),
+					})),
+				},
+			},
+			// Read testing (via name)
+			{
+				Config: testAccAliasDataSourceConfig_asn_name,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_asn_data_source")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("type"), knownvalue.StringExact("asn")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_asn", tfjsonpath.New("proto"), knownvalue.ObjectExact(map[string]knownvalue.Check{
+						"ipv4": knownvalue.Bool(true),
+						"ipv6": knownvalue.Bool(true),
+					})),
+				},
+			},
+		},
+	})
+}
+
 // testAccAliasDataSourceConfig_host_id creates an alias resource of type 'host' and imports it as a data source via its id.
 const testAccAliasDataSourceConfig_host_id = `
 	resource "opnsense_firewall_alias" "test_acc_data_source_host" {
@@ -125,7 +158,7 @@ const testAccAliasDataSourceConfig_host_name = `
 	}
 `
 
-// testAccAliasDataSourceConfig_dynipv6_id creates an alias resource of type 'dynipv6host' and imports it as a data source via its id.
+// testAccAliasDataSourceConfig_dynipv6_id creates an alias resource of type 'dynipv6host' (tests interface) and imports it as a data source via its id .
 const testAccAliasDataSourceConfig_dynipv6_id = `
 	resource "opnsense_firewall_alias" "test_acc_data_source_dynipv6" {
 		name = "test_acc_alias_dyn_data_source"
@@ -138,7 +171,7 @@ const testAccAliasDataSourceConfig_dynipv6_id = `
 	}
 `
 
-// testAccAliasDataSourceConfig_dynipv6_name creates an alias resource of type 'dynipv6host' and imports it as a data source via its name.
+// testAccAliasDataSourceConfig_dynipv6_name creates an alias resource of type 'dynipv6host' (tests interface) and imports it as a data source via its name (tests proto).
 const testAccAliasDataSourceConfig_dynipv6_name = `
 	resource "opnsense_firewall_alias" "test_acc_data_source_dynipv6" {
 		name = "test_acc_alias_dyn_data_source"
@@ -148,5 +181,37 @@ const testAccAliasDataSourceConfig_dynipv6_name = `
 
 	data "opnsense_firewall_alias" "test_acc_data_source_dynipv6" {
 		name = opnsense_firewall_alias.test_acc_data_source_dynipv6.name
+	}
+`
+
+// testAccAliasDataSourceConfig_asn_id creates an alias resource of type 'asn' (tests proto) and imports it as a data source via its id.
+const testAccAliasDataSourceConfig_asn_id = `
+	resource "opnsense_firewall_alias" "test_acc_data_source_asn" {
+		name = "test_acc_alias_asn_data_source"
+		type = "asn"
+		proto = {
+			ipv4 = true
+			ipv6 = true
+		}
+	}
+
+	data "opnsense_firewall_alias" "test_acc_data_source_asn" {
+		id = opnsense_firewall_alias.test_acc_data_source_asn.id
+	}
+`
+
+// testAccAliasDataSourceConfig_asn_name creates an alias resource of type 'asn' (tests proto) and imports it as a data source via its name.
+const testAccAliasDataSourceConfig_asn_name = `
+	resource "opnsense_firewall_alias" "test_acc_data_source_asn" {
+		name = "test_acc_alias_asn_data_source"
+		type = "asn"
+		proto = {
+			ipv4 = true
+			ipv6 = true
+		}
+	}
+
+	data "opnsense_firewall_alias" "test_acc_data_source_asn" {
+		name = opnsense_firewall_alias.test_acc_data_source_asn.name
 	}
 `
