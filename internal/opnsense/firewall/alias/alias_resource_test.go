@@ -109,6 +109,48 @@ func TestAccAliasResource_dynipv6(t *testing.T) {
 	})
 }
 
+func TestAccAliasResource_asn(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: acctest.TestAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: testAccAliasResourceConfig_asn,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_asn_resource")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("type"), knownvalue.StringExact("asn")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("proto"), knownvalue.ObjectExact(map[string]knownvalue.Check{
+						"ipv4": knownvalue.Bool(true),
+						"ipv6": knownvalue.Bool(true),
+					})),
+				},
+			},
+			// ImportState testing
+			{
+				ResourceName:            "opnsense_firewall_alias.test_acc_resource_host",
+				ImportState:             true,
+				ImportStateId:           "test_acc_alias_asn_resource",
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"last_updated"},
+			},
+			// Update testing
+			{
+				Config: testAccAliasResourceConfig_asn_modified,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_asn_resource")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("type"), knownvalue.StringExact("asn")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("proto"), knownvalue.ObjectExact(map[string]knownvalue.Check{
+						"ipv4": knownvalue.Bool(false),
+						"ipv6": knownvalue.Bool(false),
+					})),
+				},
+			},
+			// Delete testing automatically occurs in TestCase
+		},
+	})
+}
+
 func TestAccAliasResource_defaults(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
@@ -177,7 +219,7 @@ const testAccAliasResourceConfig_host_modified = `
 	}
 `
 
-// testAccAliasResourceConfig_dynipv6 defines an alias resource of type `dynipv6host`.
+// testAccAliasResourceConfig_dynipv6 defines an alias resource of type `dynipv6host` tests interface).
 const testAccAliasResourceConfig_dynipv6 = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		name = "test_acc_alias_dynipv6_resource"
@@ -186,12 +228,36 @@ const testAccAliasResourceConfig_dynipv6 = `
 	}
 `
 
-// testAccAliasResourceConfig_dynipv6_modified defines a modified alias resource of type `dynipv6host`.
+// testAccAliasResourceConfig_dynipv6_modified defines a modified alias resource of type `dynipv6host` (tests interface).
 const testAccAliasResourceConfig_dynipv6_modified = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		name = "test_acc_alias_dynipv6_resource"
 		type = "dynipv6host"
 		interface = "lan"
+	}
+`
+
+// testAccAliasResourceConfig_asn defines an alias resource of type `asn` (tests proto).
+const testAccAliasResourceConfig_asn = `
+	resource "opnsense_firewall_alias" "test_acc_resource_host" {
+		name = "test_acc_alias_asn_resource"
+		type = "asn"
+		proto = {
+			ipv4 = true
+			ipv6 = true
+		}
+	}
+`
+
+// testAccAliasResourceConfig_asn_modified defines a modified alias resource of type `asn` (tests proto).
+const testAccAliasResourceConfig_asn_modified = `
+	resource "opnsense_firewall_alias" "test_acc_resource_host" {
+		name = "test_acc_alias_asn_resource"
+		type = "asn"
+		proto = {
+			ipv4 = false
+			ipv6 = false
+		}
 	}
 `
 
