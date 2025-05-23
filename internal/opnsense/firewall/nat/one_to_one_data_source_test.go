@@ -32,7 +32,7 @@ func TestAccOneToOneNatDataSource(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("external"), knownvalue.StringExact("3.3.3.3")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("default")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
-						knownvalue.StringExact("perm_test_acc_data_source"),
+						knownvalue.StringExact("perm_test_acc_category"),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("description"), knownvalue.StringExact("one-to-one nat rule for terraform data source testing")),
 				},
@@ -56,7 +56,7 @@ const testAccOneToOneNatDataSourceIdConfig = `
 		external        = "3.3.3.3"
 		nat_reflection  = "default"
 		categories = [
-			"perm_test_acc_data_source"
+			"perm_test_acc_category"
 		]
 		description = "one-to-one nat rule for terraform data source testing"
 	}
