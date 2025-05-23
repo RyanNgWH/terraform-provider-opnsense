@@ -34,6 +34,9 @@ func TestAccAliasResource_host(t *testing.T) {
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{knownvalue.StringExact("1.1.1.1")})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
+						knownvalue.StringExact("perm_test_acc_category"),
+					})),
 				},
 			},
 			// ImportState testing
@@ -66,6 +69,7 @@ func TestAccAliasResource_host(t *testing.T) {
 						knownvalue.StringExact("2.2.2.2"),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{})),
 				},
 			},
 			// Delete testing automatically occurs in TestCase
@@ -122,6 +126,9 @@ const testAccAliasHostResourceConfig = `
 		description = "host alias for terraform resource testing"
 		content = [
 			"1.1.1.1"
+		]
+		categories = [
+			"perm_test_acc_category"
 		]
 	}
 `
