@@ -18,7 +18,7 @@ func TestAccGroupDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing (via id)
 			{
-				Config: testAccGroupIdDataSourceConfig,
+				Config: testAccGroupDataSourceConfig_id,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_group.test_acc_data_source_id", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_group")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_group.test_acc_data_source_id", tfjsonpath.New("members"), knownvalue.ListExact([]knownvalue.Check{
@@ -33,7 +33,7 @@ func TestAccGroupDataSource(t *testing.T) {
 			},
 			// Read testing (via name)
 			{
-				Config: testAccGroupNameDataSourceConfig,
+				Config: testAccGroupDataSourceConfig_name,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("data.opnsense_firewall_group.test_acc_data_source_name", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_group")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_group.test_acc_data_source_name", tfjsonpath.New("members"), knownvalue.ListExact([]knownvalue.Check{
@@ -50,8 +50,8 @@ func TestAccGroupDataSource(t *testing.T) {
 	})
 }
 
-// testAccGroupIdDataSourceConfig creates a group before importing it as a data source by its id.
-const testAccGroupIdDataSourceConfig = `
+// testAccGroupDataSourceConfig_id creates a group before importing it as a data source by its id.
+const testAccGroupDataSourceConfig_id = `
 	resource "opnsense_firewall_group" "test_acc_resource" {
 		name = "test_acc_group"
 		members = [
@@ -69,8 +69,8 @@ const testAccGroupIdDataSourceConfig = `
 	}
 `
 
-// testAccGroupNameDataSourceConfig creates a group before importing it as a data source by its name.
-const testAccGroupNameDataSourceConfig = `
+// testAccGroupDataSourceConfig_name creates a group before importing it as a data source by its name.
+const testAccGroupDataSourceConfig_name = `
 	resource "opnsense_firewall_group" "test_acc_resource" {
 		name = "test_acc_group"
 		members = [

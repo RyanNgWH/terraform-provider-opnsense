@@ -18,7 +18,7 @@ func TestAccOneToOneNatDataSource(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Read testing (via id)
 			{
-				Config: testAccOneToOneNatDataSourceIdConfig,
+				Config: testAccOneToOneNatDataSourceConfig_id,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("log"), knownvalue.Bool(true)),
@@ -41,8 +41,8 @@ func TestAccOneToOneNatDataSource(t *testing.T) {
 	})
 }
 
-// testAccOneToOneNatDataSourceIdConfig creates a one-to-one nat resource and imports it as a data source via its id.
-const testAccOneToOneNatDataSourceIdConfig = `
+// testAccOneToOneNatDataSourceConfig_id creates a one-to-one nat resource and imports it as a data source via its id.
+const testAccOneToOneNatDataSourceConfig_id = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_data_source" {
 		enabled         = true
 		log             = true

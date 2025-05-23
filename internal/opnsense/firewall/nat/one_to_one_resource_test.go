@@ -45,7 +45,7 @@ func TestAccOneToOneNatResource_Nat(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccOneToOneNatResourceModifiedConfig,
+				Config: testAccOneToOneNatResourceConfig_modified,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("enabled"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("log"), knownvalue.Bool(false)),
@@ -74,7 +74,7 @@ func TestAccOneToOneNatResource_Defaults(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccOneToOneNatResourceDefaultConfig,
+				Config: testAccOneToOneNatResourceConfig_default,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("log"), knownvalue.Bool(false)),
@@ -124,8 +124,8 @@ const testAccOneToOneNatResourceConfig = `
 	}
 `
 
-// testAccOneToOneNatResourceModifiedConfig defines a modified one-to-one NAT resource of type `nat`.
-const testAccOneToOneNatResourceModifiedConfig = `
+// testAccOneToOneNatResourceConfig_modified defines a modified one-to-one NAT resource of type `nat`.
+const testAccOneToOneNatResourceConfig_modified = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_resource_nat" {
 		enabled         = false
 		log             = false
@@ -143,8 +143,8 @@ const testAccOneToOneNatResourceModifiedConfig = `
 	}
 `
 
-// testAccOneToOneNatResourceDefaultConfig defines a one-to-one NAT resource of type `nat` with default values.
-const testAccOneToOneNatResourceDefaultConfig = `
+// testAccOneToOneNatResourceConfig_default defines a one-to-one NAT resource of type `nat` with default values.
+const testAccOneToOneNatResourceConfig_default = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_resource_nat" {
 		interface       = "wan"
 		type            = "nat"

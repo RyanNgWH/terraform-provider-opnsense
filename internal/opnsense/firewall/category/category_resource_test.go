@@ -35,7 +35,7 @@ func TestAccCategoryResource(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccCategoryResourceModifiedConfig,
+				Config: testAccCategoryResourceConfig_modified,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_category.test_acc_resource", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_category_resource")),
 					statecheck.ExpectKnownValue("opnsense_firewall_category.test_acc_resource", tfjsonpath.New("auto"), knownvalue.Bool(false)),
@@ -56,8 +56,8 @@ const testAccCategoryResourceConfig = `
 	}
 `
 
-// testAccCategoryResourceModifiedConfig defines a category resource with a modified name.
-const testAccCategoryResourceModifiedConfig = `
+// testAccCategoryResourceConfig_modified defines a category resource with a modified name.
+const testAccCategoryResourceConfig_modified = `
 	resource "opnsense_firewall_category" "test_acc_resource" {
 		name  = "test_acc_category_resource"
 	}
