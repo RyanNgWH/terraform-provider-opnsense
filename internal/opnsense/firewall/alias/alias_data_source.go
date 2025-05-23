@@ -46,7 +46,7 @@ type aliasDataSourceModel struct {
 	Proto       types.Object   `tfsdk:"proto"`
 	Categories  []types.String `tfsdk:"categories"`
 	Content     []types.String `tfsdk:"content"`
-	Interfaces  []types.String `tfsdk:"interfaces"`
+	Interface   types.String   `tfsdk:"interface"`
 }
 
 // Metadata returns the data source type name.
@@ -128,10 +128,9 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				ElementType: types.StringType,
 				Description: "The content of the alias",
 			},
-			"interfaces": schema.ListAttribute{
+			"interface": schema.StringAttribute{
 				Computed:    true,
-				Description: "[Only for `dynipv6` type] The alias interfaces",
-				ElementType: types.StringType,
+				Description: "[Only for `dynipv6` type] The interface for the v6 dynamic IP.",
 			},
 		},
 	}
@@ -211,7 +210,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		"proto":       alias.Proto,
 		"categories":  alias.Categories,
 		"content":     alias.Content,
-		"interface":   alias.Interfaces,
+		"interface":   alias.Interface,
 	})
 
 	data.Name = types.StringValue(alias.Name)
@@ -247,7 +246,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	data.Categories = utils.StringListGoToTerraform(alias.Categories)
 	data.Content = utils.StringListGoToTerraform(alias.Content)
-	data.Interfaces = utils.StringListGoToTerraform(alias.Interfaces)
+	data.Interface = types.StringValue(alias.Interface)
 
 	if resp.Diagnostics.HasError() {
 		return
