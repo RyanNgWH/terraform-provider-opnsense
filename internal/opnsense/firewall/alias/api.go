@@ -172,6 +172,7 @@ func aliasToHttpBody(alias alias) aliasHttpBody {
 			Content:     strings.Join(alias.Content, "\n"),
 			Counters:    utils.BoolToInt(alias.Counters),
 			Description: alias.Description,
+			Interface:   alias.Interface,
 		},
 	}
 }
@@ -247,13 +248,6 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		}
 	}
 
-	interfaces := make([]string, 0)
-	for name, value := range aliasResponse.Alias.AliasInterface {
-		if value.Selected == 1 && strings.ToLower(value.Value) != "none" {
-			interfaces = append(interfaces, name)
-		}
-	}
-
 	contents := make([]string, 0)
 	for name, value := range aliasResponse.Alias.Content {
 		if value.Selected == 1 && value.Value != "" {
@@ -273,10 +267,17 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		}
 	}
 
+	var aliasInterface string
+	for name, value := range aliasResponse.Alias.AliasInterface {
+		if value.Selected == 1 {
+			aliasInterface = name
+			break
+		}
+	}
+
 	// Sort lists for predictable output
 	sort.Strings(categories)
 	sort.Strings(contents)
-	sort.Strings(interfaces)
 
 	return &alias{
 		Enabled:     aliasResponse.Alias.Enabled == 1,
@@ -286,7 +287,7 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		Description: aliasResponse.Alias.Description,
 		Type:        aliasType,
 		Proto:       protos,
-		Interfaces:  interfaces,
+		Interface:   aliasInterface,
 		Content:     contents,
 		Categories:  categories,
 	}, nil
