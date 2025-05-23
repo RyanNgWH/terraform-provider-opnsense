@@ -17,7 +17,7 @@ func TestAccAliasResource_host(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccAliasHostResourceConfig,
+				Config: testAccAliasResourceConfig_host,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_resource")),
@@ -33,7 +33,7 @@ func TestAccAliasResource_host(t *testing.T) {
 						"ipv6": knownvalue.Bool(false),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{knownvalue.StringExact("1.1.1.1")})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interface"), knownvalue.StringExact("")),
 				},
 			},
 			// ImportState testing
@@ -46,7 +46,7 @@ func TestAccAliasResource_host(t *testing.T) {
 			},
 			// Update and Read testing
 			{
-				Config: testAccAliasHostResourceModifiedConfig,
+				Config: testAccAliasResourceConfig_host_modified,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("enabled"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_resource")),
@@ -65,7 +65,43 @@ func TestAccAliasResource_host(t *testing.T) {
 						knownvalue.StringExact("1.1.1.1"),
 						knownvalue.StringExact("2.2.2.2"),
 					})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interface"), knownvalue.StringExact("")),
+				},
+			},
+			// Delete testing automatically occurs in TestCase
+		},
+	})
+}
+
+func TestAccAliasResource_dynipv6(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
+		ProtoV6ProviderFactories: acctest.TestAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Create and Read testing
+			{
+				Config: testAccAliasResourceConfig_dynipv6,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_dynipv6_resource")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("type"), knownvalue.StringExact("dynipv6host")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interface"), knownvalue.StringExact("opt1")),
+				},
+			},
+			// ImportState testing
+			{
+				ResourceName:            "opnsense_firewall_alias.test_acc_resource_host",
+				ImportState:             true,
+				ImportStateId:           "test_acc_alias_dynipv6_resource",
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"last_updated"},
+			},
+			// Update testing
+			{
+				Config: testAccAliasResourceConfig_dynipv6_modified,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_dynipv6_resource")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("type"), knownvalue.StringExact("dynipv6host")),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interface"), knownvalue.StringExact("lan")),
 				},
 			},
 			// Delete testing automatically occurs in TestCase
@@ -80,7 +116,7 @@ func TestAccAliasResource_defaults(t *testing.T) {
 		Steps: []resource.TestStep{
 			// Create and Read testing
 			{
-				Config: testAccAliasHostResourceDefaultConfig,
+				Config: testAccAliasResourceConfig_default,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("name"), knownvalue.StringExact("test_acc_alias_host_resource")),
@@ -96,7 +132,7 @@ func TestAccAliasResource_defaults(t *testing.T) {
 						"ipv6": knownvalue.Bool(false),
 					})),
 					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{})),
-					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("opnsense_firewall_alias.test_acc_resource_host", tfjsonpath.New("interface"), knownvalue.StringExact("")),
 				},
 			},
 			// ImportState testing
@@ -112,8 +148,8 @@ func TestAccAliasResource_defaults(t *testing.T) {
 	})
 }
 
-// testAccAliasHostResourceConfig defines an alias resource of type `host`.
-const testAccAliasHostResourceConfig = `
+// testAccAliasResourceConfig_host defines an alias resource of type `host`.
+const testAccAliasResourceConfig_host = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		enabled = true
 		name = "test_acc_alias_host_resource"
@@ -126,8 +162,8 @@ const testAccAliasHostResourceConfig = `
 	}
 `
 
-// testAccAliasHostResourceModifiedConfig defines a modified alias resource of type `host`.
-const testAccAliasHostResourceModifiedConfig = `
+// testAccAliasResourceConfig_host_modified defines a modified alias resource of type `host`.
+const testAccAliasResourceConfig_host_modified = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		enabled = false
 		name = "test_acc_alias_host_resource"
@@ -141,8 +177,26 @@ const testAccAliasHostResourceModifiedConfig = `
 	}
 `
 
-// testAccAliasHostResourceDefaultConfig defines an alias resource of type `host` with default values.
-const testAccAliasHostResourceDefaultConfig = `
+// testAccAliasResourceConfig_dynipv6 defines an alias resource of type `dynipv6host`.
+const testAccAliasResourceConfig_dynipv6 = `
+	resource "opnsense_firewall_alias" "test_acc_resource_host" {
+		name = "test_acc_alias_dynipv6_resource"
+		type = "dynipv6host"
+		interface = "opt1"
+	}
+`
+
+// testAccAliasResourceConfig_dynipv6_modified defines a modified alias resource of type `dynipv6host`.
+const testAccAliasResourceConfig_dynipv6_modified = `
+	resource "opnsense_firewall_alias" "test_acc_resource_host" {
+		name = "test_acc_alias_dynipv6_resource"
+		type = "dynipv6host"
+		interface = "lan"
+	}
+`
+
+// testAccAliasResourceConfig_default defines an alias resource of type `host` with default values.
+const testAccAliasResourceConfig_default = `
 	resource "opnsense_firewall_alias" "test_acc_resource_host" {
 		name = "test_acc_alias_host_resource"
 		type = "host"
