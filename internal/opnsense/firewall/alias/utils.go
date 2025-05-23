@@ -14,6 +14,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -33,7 +34,7 @@ type alias struct {
 	Proto       []string
 	Categories  []string
 	Content     []string
-	Interfaces  []string
+	Interface   string
 }
 
 type geoip struct {
@@ -112,21 +113,23 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 	// Verify interfaces (if type is dynipv6)
 	if plan.Type.Equal(types.StringValue("dynipv6")) {
-		tflog.Debug(ctx, "Verifying interfaces", map[string]interface{}{
-			"interfaces": plan.Interfaces,
+		if plan.Interface.ValueString() == "" {
+			diagnostics.AddAttributeError(path.Root("interface"), "Missing Required Attribute", "The `interface` attribute must be set when `type` is set to `dynipv6`")
+		}
+
+		tflog.Debug(ctx, "Verifying interface", map[string]interface{}{
+			"interface": plan.Interface,
 		})
 
-		interfaces := utils.StringListTerraformToGo(plan.Interfaces)
-
-		interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
+		interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
 		if err != nil {
-			diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify interfaces: %s", err))
+			diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify interface: %s", err))
 		}
 		if !interfacesExist {
-			diagnostics.AddError("Add alias error", "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
+			diagnostics.AddError("Add alias error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
 		}
 
-		tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
+		tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
 	}
 
 	// Create alias from plan
@@ -179,12 +182,10 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	}
 
 	content := utils.StringListTerraformToGo(plan.Content)
-	interfaces := utils.StringListTerraformToGo(plan.Interfaces)
 
 	// Sort lists for predictable output
 	sort.Strings(categoryUuids)
 	sort.Strings(content)
-	sort.Strings(interfaces)
 
 	alias := alias{
 		Enabled:     plan.Enabled.ValueBool(),
@@ -196,7 +197,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 		Proto:       protos,
 		Categories:  categoryUuids,
 		Content:     content,
-		Interfaces:  interfaces,
+		Interface:   plan.Interface.ValueString(),
 	}
 
 	tflog.Debug(ctx, "Successfully created alias object from plan", map[string]any{"success": true})

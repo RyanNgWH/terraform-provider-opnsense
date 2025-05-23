@@ -58,7 +58,7 @@ type aliasResourceModel struct {
 	Proto       types.Object   `tfsdk:"proto"`
 	Categories  []types.String `tfsdk:"categories"`
 	Content     []types.String `tfsdk:"content"`
-	Interfaces  []types.String `tfsdk:"interfaces"`
+	Interface   types.String   `tfsdk:"interface"`
 }
 
 type updateFreqModel struct {
@@ -201,12 +201,11 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Description: "The content of the alias. Ensure that the content are in lexicographical order, else the provider will detect a change on every execution.",
 				Default:     listdefault.StaticValue(emptyList),
 			},
-			"interfaces": schema.ListAttribute{
+			"interfaces": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "[Only for `dynipv6` type] The alias interfaces. Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.",
-				ElementType: types.StringType,
-				Default:     listdefault.StaticValue(emptyList),
+				Description: "[Only for `dynipv6` type] The interface for the v6 dynamic IP.",
+				Default:     stringdefault.StaticString(""),
 			},
 		},
 	}
@@ -342,7 +341,7 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	state.Categories = utils.StringListGoToTerraform(alias.Categories)
 	state.Content = utils.StringListGoToTerraform(alias.Content)
-	state.Interfaces = utils.StringListGoToTerraform(alias.Interfaces)
+	state.Interface = types.StringValue(alias.Interface)
 
 	if resp.Diagnostics.HasError() {
 		return
