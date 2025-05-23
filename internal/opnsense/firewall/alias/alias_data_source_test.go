@@ -34,7 +34,7 @@ func TestAccAliasDataSource_host(t *testing.T) {
 						"ipv6": knownvalue.Bool(false),
 					})),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{knownvalue.StringExact("1.1.1.1")})),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("interface"), knownvalue.StringExact("")),
 				},
 			},
 			// Read testing (via name)
@@ -55,7 +55,7 @@ func TestAccAliasDataSource_host(t *testing.T) {
 						"ipv6": knownvalue.Bool(false),
 					})),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("content"), knownvalue.ListExact([]knownvalue.Check{knownvalue.StringExact("1.1.1.1")})),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("interfaces"), knownvalue.ListExact([]knownvalue.Check{})),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_alias.test_acc_data_source_host", tfjsonpath.New("interface"), knownvalue.StringExact("")),
 				},
 			},
 		},
