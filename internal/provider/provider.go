@@ -17,6 +17,7 @@ import (
 	"terraform-provider-opnsense/internal/opnsense/firewall/alias"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/opnsense/firewall/group"
+	"terraform-provider-opnsense/internal/opnsense/firewall/nat/nptv6"
 	"terraform-provider-opnsense/internal/opnsense/firewall/nat/onetoone"
 )
 
@@ -250,6 +251,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		category.NewCategoryResource,
 		group.NewGroupResource,
 		onetoone.NewNatOneToOneResource,
+		nptv6.NewNatNptv6Resource,
 	}
 }
 
