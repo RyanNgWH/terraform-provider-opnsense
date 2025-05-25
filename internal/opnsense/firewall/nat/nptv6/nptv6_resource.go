@@ -53,9 +53,9 @@ type natNptv6ResourceModel struct {
 	Log            types.Bool     `tfsdk:"log"`
 	Sequence       types.Int32    `tfsdk:"sequence"`
 	Interface      types.String   `tfsdk:"interface"`
-	InternalPrefix types.String   `tfsdk:"source_net"`
-	ExternalPrefix types.String   `tfsdk:"destination_net"`
-	TrackInterface types.String   `tfsdk:"trackif"`
+	InternalPrefix types.String   `tfsdk:"internal_prefix"`
+	ExternalPrefix types.String   `tfsdk:"external_prefix"`
+	TrackInterface types.String   `tfsdk:"track_interface"`
 	Categories     []types.String `tfsdk:"categories"`
 	Description    types.String   `tfsdk:"description"`
 }
@@ -115,6 +115,11 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 				Computed:    true,
 				Description: "The external IPv6 prefix. This will replace the prefix of the source address in outbound packets. Leave empty to auto-detect the prefix address using the specified tracking interface instead. The prefix size specified for the internal prefix will also be applied to the external prefix.",
 				Default:     stringdefault.StaticString(""),
+				Validators: []validator.String{
+					stringvalidator.ExactlyOneOf(path.Expressions{
+						path.MatchRoot("track_interface"),
+					}...),
+				},
 			},
 			"track_interface": schema.StringAttribute{
 				Optional:    true,
