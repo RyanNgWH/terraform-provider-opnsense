@@ -53,24 +53,24 @@ func (p *opnsenseProvider) Schema(ctx context.Context, req provider.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The endpoint for the OPNsense API. This is typically `https://<your-opnsense-instance>`. Do not include the `/api` suffix. May also be provided via the `OPNSENSE_ENDPOINT` environment variable",
+				MarkdownDescription: "The endpoint for the OPNsense API. This is typically `https://<your-opnsense-instance>`. Do not include the `/api` suffix. May also be provided via the `OPNSENSE_ENDPOINT` environment variable.",
 			},
 			"api_key": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The API key for the OPNsense API. May also be provided via the `OPNSENSE_API_KEY` environment variable",
+				MarkdownDescription: "The API key for the OPNsense API. May also be provided via the `OPNSENSE_API_KEY` environment variable.",
 			},
 			"api_secret": schema.StringAttribute{
 				Optional:            true,
-				MarkdownDescription: "The API secret for the OPNsense API. May also be provided via the `OPNSENSE_API_SECRET` environment variable",
+				MarkdownDescription: "The API secret for the OPNsense API. May also be provided via the `OPNSENSE_API_SECRET` environment variable.",
 				Sensitive:           true,
 			},
 			"timeout": schema.Int32Attribute{
 				Optional:            true,
-				MarkdownDescription: "The duration before the request to the OPNsense API times out (in seconds). Defaults to `120`",
+				MarkdownDescription: "The duration before the request to the OPNsense API times out (in seconds). Defaults to `120`.",
 			},
 			"insecure": schema.BoolAttribute{
 				Optional:            true,
-				MarkdownDescription: "Whether TLS verification of the OPNsense API should be skipped. Defaults to `false`. May also be provided via the `OPNSENSE_API_INSECURE` environment variable",
+				MarkdownDescription: "Whether TLS verification of the OPNsense API should be skipped. Defaults to `false`. May also be provided via the `OPNSENSE_API_INSECURE` environment variable.",
 			},
 		},
 	}

@@ -52,11 +52,11 @@ func (r *geoIpResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"url": schema.StringAttribute{
 				Required:    true,
-				Description: " Location to fetch geoip address ranges from",
+				Description: " Location to fetch geoip address ranges from.",
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when this resource was last updated",
+				Description: "DateTime when this resource was last updated.",
 			},
 		},
 	}

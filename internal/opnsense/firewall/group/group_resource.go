@@ -63,18 +63,18 @@ func (r *groupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the group",
+				Description: "Identifier of the group.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when group was last updated",
+				Description: "DateTime when group was last updated.",
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
-				Description: "The name of the group",
+				Description: "The name of the group.",
 			},
 			"members": schema.ListAttribute{
 				Required:            true,
@@ -96,7 +96,7 @@ func (r *groupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"description": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The description of the group",
+				Description: "The description of the group.",
 				Default:     stringdefault.StaticString(""),
 			},
 		},

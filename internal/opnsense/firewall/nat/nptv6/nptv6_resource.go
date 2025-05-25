@@ -75,31 +75,31 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the nptv6 nat entry",
+				Description: "Identifier of the nptv6 nat entry.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when nptv6 entry was last updated",
+				Description: "DateTime when nptv6 entry was last updated.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the nptv6 nat entry is enabled. Defaults to `true`",
+				MarkdownDescription: "Whether the nptv6 nat entry is enabled. Defaults to `true`.",
 				Default:             booldefault.StaticBool(true),
 			},
 			"log": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`",
+				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
 			"sequence": schema.Int32Attribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Order in which multiple matching rules are evaluated and applied. Defaults to `1`",
+				MarkdownDescription: "Order in which multiple matching rules are evaluated and applied. Defaults to `1`.",
 				Default:             int32default.StaticInt32(1),
 			},
 			"interface": schema.StringAttribute{
@@ -142,7 +142,7 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 			"description": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The description of the rule",
+				Description: "The description of the rule.",
 				Default:     stringdefault.StaticString(""),
 			},
 		},

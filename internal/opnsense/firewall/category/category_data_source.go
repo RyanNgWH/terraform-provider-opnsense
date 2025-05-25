@@ -47,17 +47,17 @@ func (d *categoryDataSource) Metadata(ctx context.Context, req datasource.Metada
 // Schema defines the schema for the datasource.
 func (d *categoryDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall category",
+		Description: "Retrieves information about a firewall category.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the category",
+				Description: "Identifier of the category.",
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The name of the category",
+				Description: "The name of the category.",
 				Validators: []validator.String{
 					stringvalidator.ExactlyOneOf(path.Expressions{
 						path.MatchRoot("id"),
@@ -66,11 +66,11 @@ func (d *categoryDataSource) Schema(ctx context.Context, req datasource.SchemaRe
 			},
 			"auto": schema.BoolAttribute{
 				Computed:    true,
-				Description: "Whether the category is automatically added (i.e will be removed when unused)",
+				Description: "Whether the category is automatically added (i.e will be removed when unused).",
 			},
 			"color": schema.StringAttribute{
 				Computed:    true,
-				Description: "The hex color code to be used for the category tag",
+				Description: "The hex color code to be used for the category tag.",
 			},
 		},
 	}

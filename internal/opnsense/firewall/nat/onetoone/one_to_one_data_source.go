@@ -61,11 +61,11 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the one-to-one nat entry",
+				Description: "Identifier of the one-to-one nat entry.",
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:            true,
-				MarkdownDescription: "Whether the one-to-one nat entry is enabled",
+				MarkdownDescription: "Whether the one-to-one nat entry is enabled.",
 			},
 			"log": schema.BoolAttribute{
 				Computed:            true,
@@ -114,7 +114,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 			"description": schema.StringAttribute{
 				Computed:    true,
-				Description: "The description of the rule",
+				Description: "The description of the rule.",
 			},
 		},
 	}

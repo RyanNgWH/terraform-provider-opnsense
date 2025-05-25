@@ -57,21 +57,21 @@ func (d *aliasDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a firewall alias",
+		MarkdownDescription: "Retrieves information about a firewall alias.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the alias",
+				Description: "Identifier of the alias.",
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:    true,
-				Description: "Whether the alias is enabled",
+				Description: "Whether the alias is enabled.",
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The name of the alias",
+				Description: "The name of the alias.",
 				Validators: []validator.String{
 					stringvalidator.ExactlyOneOf(path.Expressions{
 						path.MatchRoot("id"),
@@ -80,53 +80,53 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"type": schema.StringAttribute{
 				Computed:    true,
-				Description: "The type of the alias",
+				Description: "The type of the alias.",
 			},
 			"counters": schema.BoolAttribute{
 				Computed:    true,
-				Description: "Whether the statistics of the alias is enabled",
+				Description: "Whether the statistics of the alias is enabled.",
 			},
 			"updatefreq": schema.SingleNestedAttribute{
 				Computed:    true,
-				Description: "[Only for `urltable` type] The update frequency of the alias. Days and hours are added together the determine the final update frequency",
+				Description: "[Only for `urltable` type] The update frequency of the alias. Days and hours are added together the determine the final update frequency.",
 				Attributes: map[string]schema.Attribute{
 					"days": schema.Int32Attribute{
 						Computed:    true,
-						Description: "The number of days between updates",
+						Description: "The number of days between updates.",
 					},
 					"hours": schema.Float64Attribute{
 						Computed:    true,
-						Description: "The number of hours between updates",
+						Description: "The number of hours between updates.",
 					},
 				},
 			},
 			"description": schema.StringAttribute{
 				Computed:    true,
-				Description: "The description of the alias",
+				Description: "The description of the alias.",
 			},
 			"proto": schema.SingleNestedAttribute{
 				Computed:    true,
-				Description: "[Only for `asn` & `geoip` types] The alias protocols",
+				Description: "[Only for `asn` & `geoip` types] The alias protocols.",
 				Attributes: map[string]schema.Attribute{
 					"ipv4": schema.BoolAttribute{
 						Computed:    true,
-						Description: "Whether the alias applies to the IPv4 protocol",
+						Description: "Whether the alias applies to the IPv4 protocol.",
 					},
 					"ipv6": schema.BoolAttribute{
 						Computed:    true,
-						Description: "Whether the alias applies to the IPv6 protocol",
+						Description: "Whether the alias applies to the IPv6 protocol.",
 					},
 				},
 			},
 			"categories": schema.ListAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the alias",
+				Description: "The categories of the alias.",
 			},
 			"content": schema.ListAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The content of the alias",
+				Description: "The content of the alias.",
 			},
 			"interface": schema.StringAttribute{
 				Computed:    true,

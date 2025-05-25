@@ -80,31 +80,31 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the one-to-one nat entry",
+				Description: "Identifier of the one-to-one nat entry.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when one-to-one nat entry was last updated",
+				Description: "DateTime when one-to-one nat entry was last updated.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the one-to-one nat entry is enabled. Defaults to `true`",
+				MarkdownDescription: "Whether the one-to-one nat entry is enabled. Defaults to `true`.",
 				Default:             booldefault.StaticBool(true),
 			},
 			"log": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`",
+				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
 			"sequence": schema.Int32Attribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Order in which multiple matching rules are evaluated and applied. Defaults to `1`",
+				MarkdownDescription: "Order in which multiple matching rules are evaluated and applied. Defaults to `1`.",
 				Default:             int32default.StaticInt32(1),
 			},
 			"interface": schema.StringAttribute{
@@ -134,7 +134,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 			"source_not": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the source matching should be inverted. Defaults to `false`",
+				MarkdownDescription: "Whether the source matching should be inverted. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
 			"destination_net": schema.StringAttribute{
@@ -144,7 +144,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 			"destination_not": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the destination matching should be inverted. Defaults to `false`",
+				MarkdownDescription: "Whether the destination matching should be inverted. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
 			"external": schema.StringAttribute{
@@ -179,7 +179,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 			"description": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The description of the rule",
+				Description: "The description of the rule.",
 				Default:     stringdefault.StaticString(""),
 			},
 		},
