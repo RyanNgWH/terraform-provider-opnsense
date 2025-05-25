@@ -75,31 +75,6 @@ type groupResponse struct {
 	Description string `json:"descr"`
 }
 
-type addGroupResponse struct {
-	Result      string          `json:"result"`
-	Uuid        string          `json:"uuid"`
-	Validations itemValidations `json:"validations"`
-}
-
-type setGroupResponse struct {
-	Result      string          `json:"result"`
-	Validations itemValidations `json:"validations"`
-}
-
-type deleteGroupResponse struct {
-	Result string `json:"result"`
-}
-
-type applyConfigResponse struct {
-	Status string `json:"status"`
-}
-
-type itemValidations struct {
-	Name    string      `json:"group.ifname"`
-	Members string      `json:"group.members"`
-	Others  interface{} `json:"-"`
-}
-
 // Helper functions
 
 // groupToHttpBody converts a group object to a groupHttpBody object for sending to the OPNsense API.
@@ -126,7 +101,7 @@ func searchGroup(client *opnsense.Client, name string) (string, error) {
 
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("search group error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Search group error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -135,13 +110,13 @@ func searchGroup(client *opnsense.Client, name string) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("search group http error: abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Search group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var resp searchGroupResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return "", fmt.Errorf("search group http error: %s", err)
+		return "", fmt.Errorf("Search group error (http): %s", err)
 	}
 
 	for _, group := range resp.Rows {
@@ -150,7 +125,7 @@ func searchGroup(client *opnsense.Client, name string) (string, error) {
 		}
 	}
 
-	return "", errors.New("group error: group does not exist")
+	return "", errors.New("Search group error: group does not exist")
 }
 
 // getGroup searches the OPNsense firewall for the group with a matching UUID.
@@ -164,7 +139,7 @@ func getGroup(client *opnsense.Client, uuid string) (*group, error) {
 	switch httpResp.StatusCode {
 	case 200:
 	default:
-		return nil, fmt.Errorf("get group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 
 	}
 
@@ -173,9 +148,9 @@ func getGroup(client *opnsense.Client, uuid string) (*group, error) {
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("get group error: group with uuid `%s` does not exist. This is potentially because the group is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing group from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get group error: group with uuid `%s` does not exist. This is potentially because the group is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing group from the terraform state to rectify the error.", uuid)
 		}
-		return nil, fmt.Errorf("get group error (http): %s", err)
+		return nil, fmt.Errorf("Get group error (http): %s", err)
 	}
 
 	// Extract values from response
@@ -206,7 +181,7 @@ func addGroup(client *opnsense.Client, group group) (string, error) {
 	body := groupToHttpBody(group)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("add group error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add group error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -215,20 +190,20 @@ func addGroup(client *opnsense.Client, group group) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("add group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var addGroupResponse addGroupResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&addGroupResponse)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("add group error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add group error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(addGroupResponse.Result) == "failed" {
-		return "", fmt.Errorf("add group error: failed to add alias to OPNsense - failed validations: %+v", addGroupResponse.Validations)
+	if strings.ToLower(response.Result) == "failed" {
+		return "", fmt.Errorf("Add group error: failed to add alias to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
-	return addGroupResponse.Uuid, nil
+	return response.Uuid, nil
 }
 
 // setGroup updates an existing group on the OPNsense firewall with a matching UUID.
@@ -239,7 +214,7 @@ func setGroup(client *opnsense.Client, group group, uuid string) error {
 	body := groupToHttpBody(group)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("set group error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set group error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -248,17 +223,17 @@ func setGroup(client *opnsense.Client, group group, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("set group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp setGroupResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("set group error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set group error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(resp.Result) == "failed" {
-		return fmt.Errorf("set group error: failed to update group on OPNsense - failed validations: %+v", resp.Validations)
+	if strings.ToLower(response.Result) == "failed" {
+		return fmt.Errorf("Set group error: failed to update group on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -271,7 +246,7 @@ func deleteGroup(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("delete group error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete group error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -280,17 +255,17 @@ func deleteGroup(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("delete group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete group error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp deleteGroupResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("delete group error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete group error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("delete group error: failed to delete group on OPNsense. Please contact the provider maintainers for assistance")
+	if strings.ToLower(response.Result) != "deleted" && strings.ToLower(response.Result) != "not found" {
+		return fmt.Errorf("Delete group error: failed to delete group on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }
@@ -311,17 +286,17 @@ func applyConfig(client *opnsense.Client) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp applyConfigResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	var response opnsense.OpnsenseApplyConfigResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("apply configuration error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Apply configuration error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(resp.Status) != "ok" {
-		return fmt.Errorf("apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
+	if strings.ToLower(response.Status) != "ok" {
+		return fmt.Errorf("Apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }

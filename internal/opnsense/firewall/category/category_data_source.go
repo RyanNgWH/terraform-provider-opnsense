@@ -112,7 +112,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		uuid, err := SearchCategory(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("Failed to get category UUID - %s", err))
+			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -129,7 +129,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	category, err := GetCategory(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get category error", fmt.Sprintf("Failed to get category - %s", err))
+		resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -161,5 +161,4 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	tflog.Debug(ctx, "Saved category information to state", map[string]interface{}{"success": true})
 	tflog.Info(ctx, "Successfully read firewall category", map[string]interface{}{"success": true})
-
 }

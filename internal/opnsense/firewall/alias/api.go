@@ -32,7 +32,7 @@ const (
 type getAliasStatusCodeError struct{}
 
 func (e getAliasStatusCodeError) Error() string {
-	return "get alias error (http): status code 500 in HTTP response. This is usually because the alias is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing alias from the terraform state to rectify the error. If you believe that this is not the case, please contact the provider for assistance"
+	return "Get alias error (http): status code 500 in HTTP response. This is usually because the alias is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing alias from the terraform state to rectify the error. If you believe that this is not the case, please contact the provider for assistance"
 }
 
 // HTTP request bodies
@@ -76,44 +76,10 @@ type getAliasResponse struct {
 	Alias aliasResponse `json:"alias"`
 }
 
-type addItemResponse struct {
-	Result      string          `json:"result"`
-	Uuid        string          `json:"uuid"`
-	Validations itemValidations `json:"validations"`
-}
-
-type setItemResponse struct {
-	Result      string          `json:"result"`
-	Validations itemValidations `json:"validations"`
-}
-
-type delItemResponse struct {
-	Result string `json:"result"`
-}
-
 type getGeoIpResponse struct {
 	Alias struct {
 		GeoIp geoIpResponse `json:"geoip"`
 	} `json:"alias"`
-}
-
-type setGeoIpResponse struct {
-	Result      string           `json:"result"`
-	Validations geoIpValidations `json:"validations"`
-}
-
-type applyConfigResponse struct {
-	Status string `json:"status"`
-}
-
-type itemValidations struct {
-	Name   string      `json:"alias.name"`
-	Others interface{} `json:"-"`
-}
-
-type geoIpValidations struct {
-	Url    string      `json:"alias.geoip.url"`
-	Others interface{} `json:"-"`
 }
 
 type aliasResponse struct {
@@ -187,7 +153,7 @@ func getAliasUuid(client *opnsense.Client, name string) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("get alias uuid error (http): Abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Get alias uuid error (http): Abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var uuidResponse getAliasUuidResponse
@@ -197,7 +163,7 @@ func getAliasUuid(client *opnsense.Client, name string) (string, error) {
 
 		// Alias does not exist
 		if errors.As(err, &unmarshalTypeError) {
-			return "", errors.New("get alias uuid error: Alias does not exist")
+			return "", errors.New("Get alias uuid error: Alias does not exist")
 		}
 
 		return "", err
@@ -219,17 +185,17 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 	case 500:
 		return nil, getAliasStatusCodeError{}
 	default:
-		return nil, fmt.Errorf("get alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 
 	}
 
 	var aliasResponse getAliasResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&aliasResponse)
 	if err != nil {
-		return nil, fmt.Errorf("get alias error (http): %s", err)
+		return nil, fmt.Errorf("Get alias error (http): %s", err)
 	}
 	if reflect.DeepEqual(aliasResponse, getAliasResponse{}) {
-		return nil, fmt.Errorf("get alias error: alias with uuid `%s` does not exist", uuid)
+		return nil, fmt.Errorf("Get alias error: alias with uuid `%s` does not exist", uuid)
 	}
 
 	// Extract values from response
@@ -260,7 +226,7 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
 			if err != nil {
-				return nil, fmt.Errorf("get alias error: failed to get category - %s", err)
+				return nil, fmt.Errorf("Get alias error: failed to get category - %s", err)
 			}
 
 			categories = append(categories, categoryName)
@@ -301,7 +267,7 @@ func addAlias(client *opnsense.Client, alias alias) (string, error) {
 	body := aliasToHttpBody(alias)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("add alias error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add alias error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -310,20 +276,20 @@ func addAlias(client *opnsense.Client, alias alias) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("add alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var addItemResponse addItemResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&addItemResponse)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("add alias error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add alias error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(addItemResponse.Result) == "failed" {
-		return "", fmt.Errorf("add alias error: failed to add alias to OPNsense - failed validations: %+v", addItemResponse.Validations)
+	if strings.ToLower(response.Result) == "failed" {
+		return "", fmt.Errorf("Add alias error: failed to add alias to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
-	return addItemResponse.Uuid, nil
+	return response.Uuid, nil
 }
 
 // setAlias updates an existing alias on the OPNsense firewall with a matching UUID.
@@ -334,7 +300,7 @@ func setAlias(client *opnsense.Client, alias alias, uuid string) error {
 	body := aliasToHttpBody(alias)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("set alias error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set alias error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -343,17 +309,17 @@ func setAlias(client *opnsense.Client, alias alias, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("set alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var setItemResponse setItemResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&setItemResponse)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("set alias error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set alias error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(setItemResponse.Result) == "failed" {
-		return fmt.Errorf("set alias error: failed to update alias on OPNsense - failed validations: %+v", setItemResponse.Validations)
+	if strings.ToLower(response.Result) == "failed" {
+		return fmt.Errorf("Set alias error: failed to update alias on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -366,7 +332,7 @@ func deleteAlias(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("delete alias error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete alias error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -375,17 +341,17 @@ func deleteAlias(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("delete alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete alias error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp delItemResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("delete alias error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete alias error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("delete alias error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
+	if strings.ToLower(response.Result) != "deleted" && strings.ToLower(response.Result) != "not found" {
+		return fmt.Errorf("Delete alias error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }
@@ -401,14 +367,14 @@ func getGeoIp(client *opnsense.Client) (*geoip, error) {
 	switch httpResp.StatusCode {
 	case 200:
 	default:
-		return nil, fmt.Errorf("get geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 
 	}
 
 	var getGeoIpResponse getGeoIpResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&getGeoIpResponse)
 	if err != nil {
-		return nil, fmt.Errorf("get geoip error (http): %s", err)
+		return nil, fmt.Errorf("Get geoip error (http): %s", err)
 	}
 
 	// Convert timestamp to RFC3339 format
@@ -416,7 +382,7 @@ func getGeoIp(client *opnsense.Client) (*geoip, error) {
 	if getGeoIpResponse.Alias.GeoIp.Timestamp != "" {
 		tstamp, err := time.Parse("2006-01-02T15:04:05", getGeoIpResponse.Alias.GeoIp.Timestamp)
 		if err != nil {
-			return nil, fmt.Errorf("format timestamp error: %s", err)
+			return nil, fmt.Errorf("Format timestamp error: %s", err)
 		}
 		timestamp = tstamp.Format(time.RFC3339)
 	}
@@ -453,7 +419,7 @@ func setGeoIp(client *opnsense.Client, url string) error {
 
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("set geoip error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set geoip error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -462,17 +428,17 @@ func setGeoIp(client *opnsense.Client, url string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("set geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set geoip error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var setGeoIpResponse setGeoIpResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&setGeoIpResponse)
+	var response opnsense.OpnsenseAddItemResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("set geoip error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set geoip error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(setGeoIpResponse.Result) == "failed" {
-		return fmt.Errorf("set geoip error: failed to set geoip on OPNsense - failed validations: %+v", setGeoIpResponse.Validations)
+	if strings.ToLower(response.Result) == "failed" {
+		return fmt.Errorf("Set geoip error: failed to set geoip on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -485,7 +451,7 @@ func applyConfig(client *opnsense.Client) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("apply configuration error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Apply configuration error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -494,17 +460,17 @@ func applyConfig(client *opnsense.Client) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp applyConfigResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
+	var response opnsense.OpnsenseApplyConfigResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("apply configuration error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Apply configuration error (http): failed to decode http response - %s", err)
 	}
 
-	if strings.ToLower(resp.Status) != "ok" {
-		return fmt.Errorf("apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
+	if strings.ToLower(response.Status) != "ok" {
+		return fmt.Errorf("Apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }

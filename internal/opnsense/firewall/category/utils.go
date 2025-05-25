@@ -42,7 +42,7 @@ func GetCategoryUuids(client *opnsense.Client, categoriesList []string) ([]strin
 	for _, cat := range categoriesList {
 		uuid, err := SearchCategory(client, cat)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get category from OPNsense - %s", err)
+			return nil, fmt.Errorf("%s", err)
 		}
 
 		categoryUuids = append(categoryUuids, uuid)

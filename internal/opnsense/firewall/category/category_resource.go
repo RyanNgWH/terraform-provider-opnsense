@@ -127,7 +127,7 @@ func (r *categoryResource) Create(ctx context.Context, req resource.CreateReques
 
 	uuid, err := addCategory(r.client, category)
 	if err != nil {
-		resp.Diagnostics.AddError("Create category error", fmt.Sprintf("Failed to create category - %s", err))
+		resp.Diagnostics.AddError("Create category error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -161,7 +161,7 @@ func (r *categoryResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	category, err := GetCategory(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read category error", fmt.Sprintf("Failed to read category - %s", err))
+		resp.Diagnostics.AddError("Read category error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -207,7 +207,7 @@ func (r *categoryResource) Update(ctx context.Context, req resource.UpdateReques
 
 	err := setCategory(r.client, category, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("Failed to update alias - %s", err))
+		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -239,11 +239,11 @@ func (r *categoryResource) Delete(ctx context.Context, req resource.DeleteReques
 	}
 
 	// Delete alias on OPNsense
-	tflog.Debug(ctx, "Deleting category on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting category on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteCategory(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("Failed to delete alias - %s", err))
+		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("%s", err))
 	}
 	tflog.Info(ctx, "Successfully deleted firewall alias")
 }
@@ -253,11 +253,11 @@ func (r *categoryResource) ImportState(ctx context.Context, req resource.ImportS
 	tflog.Info(ctx, "Importing firewall category")
 
 	// Get category UUID from name
-	tflog.Debug(ctx, "Getting category UUID", map[string]interface{}{"name": req.ID})
+	tflog.Debug(ctx, "Getting category UUID", map[string]any{"name": req.ID})
 
 	uuid, err := SearchCategory(r.client, req.ID)
 	if err != nil {
-		resp.Diagnostics.AddError("Import category error", fmt.Sprintf("Failed to get category UUID - %s", err))
+		resp.Diagnostics.AddError("Import category error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return

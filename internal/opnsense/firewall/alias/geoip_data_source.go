@@ -129,7 +129,7 @@ func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	// Get geoip configuration
 	geoip, err := getGeoIp(d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("Failed to read geoip configuration - %s", err))
+		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return

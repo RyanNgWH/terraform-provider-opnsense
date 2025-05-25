@@ -14,7 +14,7 @@ func VerifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, e
 	for _, iface := range interfacesList {
 		ifaceExists, err := checkInterfaceExists(client, iface)
 		if err != nil {
-			return false, fmt.Errorf("failed to verify if interfaces exists on OPNsense - %s", err)
+			return false, fmt.Errorf("Failed to verify if interfaces exists on OPNsense - %s", err)
 		}
 
 		if !ifaceExists {

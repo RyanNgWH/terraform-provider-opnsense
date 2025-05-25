@@ -143,11 +143,11 @@ func (r *groupResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Create group on OPNsense
-	tflog.Debug(ctx, "Creating group on OPNsense", map[string]interface{}{"group": group})
+	tflog.Debug(ctx, "Creating group on OPNsense", map[string]any{"group": group})
 
 	uuid, err := addGroup(r.client, group)
 	if err != nil {
-		resp.Diagnostics.AddError("Create group error", fmt.Sprintf("Failed to create group - %s", err))
+		resp.Diagnostics.AddError("Create group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -158,7 +158,7 @@ func (r *groupResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create group error", fmt.Sprintf("Failed to apply group configuration - %s", err))
+		resp.Diagnostics.AddWarning("Create group error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -191,7 +191,7 @@ func (r *groupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	group, err := getGroup(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read group error", fmt.Sprintf("Failed to read group - %s", err))
+		resp.Diagnostics.AddError("Read group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -247,7 +247,7 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err := setGroup(r.client, group, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update group error", fmt.Sprintf("Failed to update group - %s", err))
+		resp.Diagnostics.AddError("Update group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -258,7 +258,7 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update group error", fmt.Sprintf("Failed to apply group configuration - %s", err))
+		resp.Diagnostics.AddWarning("Update group error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -293,7 +293,7 @@ func (r *groupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err := deleteGroup(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete group error", fmt.Sprintf("Failed to delete group - %s", err))
+		resp.Diagnostics.AddError("Delete group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -304,7 +304,7 @@ func (r *groupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete group error", fmt.Sprintf("Failed to apply group configuration - %s", err))
+		resp.Diagnostics.AddWarning("Delete group error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -323,7 +323,7 @@ func (r *groupResource) ImportState(ctx context.Context, req resource.ImportStat
 
 	uuid, err := searchGroup(r.client, req.ID)
 	if err != nil {
-		resp.Diagnostics.AddError("Import group error", fmt.Sprintf("Failed to get group UUID - %s", err))
+		resp.Diagnostics.AddError("Import group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
