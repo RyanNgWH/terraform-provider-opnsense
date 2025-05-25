@@ -87,7 +87,7 @@ func (r *categoryResource) Schema(ctx context.Context, req resource.SchemaReques
 	}
 }
 
-// Configure adds the provider configured client to the data source.
+// Configure adds the provider configured client to the resource.
 func (r *categoryResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Add a nil check when handling ProviderData because Terraform
 	// sets that data after it calls the ConfigureProvider RPC.
@@ -98,7 +98,7 @@ func (r *categoryResource) Configure(ctx context.Context, req resource.Configure
 	client, ok := req.ProviderData.(*opnsense.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *opnsense.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
