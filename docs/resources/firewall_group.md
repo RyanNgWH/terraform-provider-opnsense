@@ -33,18 +33,18 @@ resource "opnsense_firewall_group" "resource_example" {
 ### Required
 
 - `members` (List of String) Member interfaces of the group. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.
-- `name` (String) The name of the group
+- `name` (String) The name of the group.
 
 ### Optional
 
-- `description` (String) The description of the group
+- `description` (String) The description of the group.
 - `no_group` (Boolean) If grouping these members in the interfaces menu section should be prevented. Defaults to `false`.
 - `sequence` (Number) Priority sequence used in sorting the groups. Defaults to `0`.
 
 ### Read-Only
 
-- `id` (String) Identifier of the group
-- `last_updated` (String) DateTime when group was last updated
+- `id` (String) Identifier of the group.
+- `last_updated` (String) DateTime when group was last updated.
 
 ## Import
 

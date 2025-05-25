@@ -1,4 +1,4 @@
-package nat_test
+package onetoone_test
 
 import (
 	"testing"

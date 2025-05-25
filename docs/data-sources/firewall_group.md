@@ -3,12 +3,12 @@
 page_title: "opnsense_firewall_group Data Source - opnsense"
 subcategory: ""
 description: |-
-  Retrieves information about a firewall group
+  Retrieves information about a firewall group.
 ---
 
 # opnsense_firewall_group (Data Source)
 
-Retrieves information about a firewall group
+Retrieves information about a firewall group.
 
 ## Example Usage
 
@@ -29,12 +29,12 @@ data "opnsense_firewall_group" "data_source_via_name" {
 
 ### Optional
 
-- `id` (String) Identifier of the group
-- `name` (String) The name of the group
+- `id` (String) Identifier of the group.
+- `name` (String) The name of the group.
 
 ### Read-Only
 
-- `description` (String) The description of the group
+- `description` (String) The description of the group.
 - `members` (List of String) Member interfaces of the group.
 - `no_group` (Boolean) If grouping these members in the interfaces menu section should be prevented.
 - `sequence` (Number) Priority sequence used in sorting the groups.

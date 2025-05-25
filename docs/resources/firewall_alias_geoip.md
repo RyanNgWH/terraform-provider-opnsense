@@ -24,11 +24,11 @@ resource "opnsense_firewall_alias_geoip" "resource_example" {
 
 ### Required
 
-- `url` (String) Location to fetch geoip address ranges from
+- `url` (String) Location to fetch geoip address ranges from.
 
 ### Read-Only
 
-- `last_updated` (String) DateTime when this resource was last updated
+- `last_updated` (String) DateTime when this resource was last updated.
 
 ## Import
 

@@ -1,10 +1,11 @@
-package nat
+package onetoone
 
 import (
 	"context"
 	"fmt"
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
+	"terraform-provider-opnsense/internal/opnsense/firewall/nat"
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -49,7 +50,7 @@ type oneToOneNatDataSourceModel struct {
 
 // Metadata returns the data source type name.
 func (d *oneToOneNatDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, natController, oneToOneController)
+	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, nat.NatController, oneToOneController)
 }
 
 // Schema defines the schema for the datasource.
@@ -60,11 +61,11 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the one-to-one nat entry",
+				Description: "Identifier of the one-to-one nat entry.",
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:            true,
-				MarkdownDescription: "Whether the one-to-one nat entry is enabled",
+				MarkdownDescription: "Whether the one-to-one nat entry is enabled.",
 			},
 			"log": schema.BoolAttribute{
 				Computed:            true,
@@ -113,7 +114,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 			},
 			"description": schema.StringAttribute{
 				Computed:    true,
-				Description: "The description of the rule",
+				Description: "The description of the rule.",
 			},
 		},
 	}

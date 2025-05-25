@@ -25,17 +25,17 @@ resource "opnsense_firewall_category" "resource_example" {
 
 ### Required
 
-- `name` (String) The name of the category
+- `name` (String) The name of the category.
 
 ### Optional
 
-- `auto` (Boolean) Whether the category is automatically added (i.e will be removed when unused)
-- `color` (String) The hex color code to be used for the category tag
+- `auto` (Boolean) Whether the category is automatically added (i.e will be removed when unused).
+- `color` (String) The hex color code to be used for the category tag.
 
 ### Read-Only
 
-- `id` (String) Identifier of the category
-- `last_updated` (String) DateTime when alias was last updated
+- `id` (String) Identifier of the category.
+- `last_updated` (String) DateTime when alias was last updated.
 
 ## Import
 

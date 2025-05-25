@@ -58,36 +58,36 @@ func (r *categoryResource) Schema(ctx context.Context, req resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the category",
+				Description: "Identifier of the category.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when alias was last updated",
+				Description: "DateTime when alias was last updated.",
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
-				Description: "The name of the category",
+				Description: "The name of the category.",
 			},
 			"auto": schema.BoolAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Whether the category is automatically added (i.e will be removed when unused)",
+				Description: "Whether the category is automatically added (i.e will be removed when unused).",
 				Default:     booldefault.StaticBool(false),
 			},
 			"color": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The hex color code to be used for the category tag",
+				Description: "The hex color code to be used for the category tag.",
 				Default:     stringdefault.StaticString(""),
 			},
 		},
 	}
 }
 
-// Configure adds the provider configured client to the data source.
+// Configure adds the provider configured client to the resource.
 func (r *categoryResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Add a nil check when handling ProviderData because Terraform
 	// sets that data after it calls the ConfigureProvider RPC.
@@ -98,7 +98,7 @@ func (r *categoryResource) Configure(ctx context.Context, req resource.Configure
 	client, ok := req.ProviderData.(*opnsense.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *opnsense.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 

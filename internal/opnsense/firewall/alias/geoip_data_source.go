@@ -49,46 +49,46 @@ func (d *geoIpDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *geoIpDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about the firewall geoip configuration",
+		MarkdownDescription: "Retrieves information about the firewall geoip configuration.",
 		Attributes: map[string]schema.Attribute{
 			"address_count": schema.Int64Attribute{
 				Computed:    true,
-				Description: "The number of entries in the downloaded set",
+				Description: "The number of entries in the downloaded set.",
 			},
 			"address_sources": schema.SingleNestedAttribute{
 				Computed:    true,
-				Description: "The sources of the GeoIP addresses",
+				Description: "The sources of the GeoIP addresses.",
 				Attributes: map[string]schema.Attribute{
 					"ipv4": schema.StringAttribute{
 						Computed:    true,
-						Description: "The source of the IPv4 GeoIP addresses",
+						Description: "The source of the IPv4 GeoIP addresses.",
 					},
 					"ipv6": schema.StringAttribute{
 						Computed:    true,
-						Description: "The source of the IPv6 GeoIP addresses",
+						Description: "The source of the IPv6 GeoIP addresses.",
 					},
 				},
 			},
 			"file_count": schema.Int64Attribute{
 				Computed:    true,
-				Description: "The number of files used to store all GeoIP addresses",
+				Description: "The number of files used to store all GeoIP addresses.",
 			},
 			"locations_filename": schema.StringAttribute{
 				Computed:    true,
-				Description: "The source of the location GeoIP addresses",
+				Description: "The source of the location GeoIP addresses.",
 			},
 			"timestamp": schema.StringAttribute{
 				Computed:    true,
-				Description: "The date & time the GeoIP addresses were last updated (time the vendor created the list)",
+				Description: "The date & time the GeoIP addresses were last updated (time the vendor created the list).",
 			},
 			"url": schema.StringAttribute{
 				Computed:    true,
 				Sensitive:   true,
-				Description: "The location to fetch GeoIP address ranges from (marked as sensitive as it typically stores the MaxMind license key)",
+				Description: "The location to fetch GeoIP address ranges from (marked as sensitive as it typically stores the MaxMind license key).",
 			},
 			"usages": schema.Int64Attribute{
 				Computed:    true,
-				Description: "The number of aliases using the GeoIP dataset",
+				Description: "The number of aliases using the GeoIP dataset.",
 			},
 		},
 	}

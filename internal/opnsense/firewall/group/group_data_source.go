@@ -51,17 +51,17 @@ func (d *groupDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall group",
+		Description: "Retrieves information about a firewall group.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the group",
+				Description: "Identifier of the group.",
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The name of the group",
+				Description: "The name of the group.",
 				Validators: []validator.String{
 					stringvalidator.ExactlyOneOf(path.Expressions{
 						path.MatchRoot("id"),
@@ -83,7 +83,7 @@ func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			},
 			"description": schema.StringAttribute{
 				Computed:    true,
-				Description: "The description of the group",
+				Description: "The description of the group.",
 			},
 		},
 	}

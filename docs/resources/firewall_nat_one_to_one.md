@@ -44,18 +44,18 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
 ### Optional
 
 - `categories` (List of String) The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
-- `description` (String) The description of the rule
-- `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`
-- `enabled` (Boolean) Whether the one-to-one nat entry is enabled. Defaults to `true`
-- `log` (Boolean) Whether packets that are handled by this rule should be logged. Defaults to `false`
+- `description` (String) The description of the rule.
+- `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`.
+- `enabled` (Boolean) Whether the one-to-one nat entry is enabled. Defaults to `true`.
+- `log` (Boolean) Whether packets that are handled by this rule should be logged. Defaults to `false`.
 - `nat_reflection` (String) Whether nat reflection should be enabled. Must be one of: `default`, `enable`, `disable`. Defaults to `default`.
-- `sequence` (Number) Order in which multiple matching rules are evaluated and applied. Defaults to `1`
-- `source_not` (Boolean) Whether the source matching should be inverted. Defaults to `false`
+- `sequence` (Number) Order in which multiple matching rules are evaluated and applied. Defaults to `1`.
+- `source_not` (Boolean) Whether the source matching should be inverted. Defaults to `false`.
 
 ### Read-Only
 
-- `id` (String) Identifier of the one-to-one nat entry
-- `last_updated` (String) DateTime when one-to-one nat entry was last updated
+- `id` (String) Identifier of the one-to-one nat entry.
+- `last_updated` (String) DateTime when one-to-one nat entry was last updated.
 
 ## Import
 

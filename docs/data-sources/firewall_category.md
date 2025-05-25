@@ -3,12 +3,12 @@
 page_title: "opnsense_firewall_category Data Source - opnsense"
 subcategory: ""
 description: |-
-  Retrieves information about a firewall category
+  Retrieves information about a firewall category.
 ---
 
 # opnsense_firewall_category (Data Source)
 
-Retrieves information about a firewall category
+Retrieves information about a firewall category.
 
 ## Example Usage
 
@@ -29,10 +29,10 @@ data "opnsense_firewall_category" "data_source_via_name" {
 
 ### Optional
 
-- `id` (String) Identifier of the category
-- `name` (String) The name of the category
+- `id` (String) Identifier of the category.
+- `name` (String) The name of the category.
 
 ### Read-Only
 
-- `auto` (Boolean) Whether the category is automatically added (i.e will be removed when unused)
-- `color` (String) The hex color code to be used for the category tag
+- `auto` (Boolean) Whether the category is automatically added (i.e will be removed when unused).
+- `color` (String) The hex color code to be used for the category tag.

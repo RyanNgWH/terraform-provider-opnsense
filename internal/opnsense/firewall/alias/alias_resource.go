@@ -86,24 +86,24 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the alias",
+				Description: "Identifier of the alias.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when alias was last updated",
+				Description: "DateTime when alias was last updated.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the alias is enabled. Defaults to `true`",
+				MarkdownDescription: "Whether the alias is enabled. Defaults to `true`.",
 				Default:             booldefault.StaticBool(true),
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
-				Description: "The name of the alias",
+				Description: "The name of the alias.",
 			},
 			"type": schema.StringAttribute{
 				Required: true,
@@ -124,21 +124,21 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"counters": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the statistics of the alias is enabled. Defaults to `false`",
+				MarkdownDescription: "Whether the statistics of the alias is enabled. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
 			"updatefreq": schema.SingleNestedAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "[Only for `urltable` type] The update frequency of the alias. Days and hours will be added together the determine the final update frequency",
+				Description: "[Only for `urltable` type] The update frequency of the alias. Days and hours will be added together the determine the final update frequency.",
 				Attributes: map[string]schema.Attribute{
 					"days": schema.Int32Attribute{
 						Required:    true,
-						Description: "The number of days between updates",
+						Description: "The number of days between updates.",
 					},
 					"hours": schema.Float64Attribute{
 						Required:    true,
-						Description: "The number of hours between updates",
+						Description: "The number of hours between updates.",
 					},
 				},
 				Default: objectdefault.StaticValue(types.ObjectValueMust(
@@ -155,24 +155,24 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			"description": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "The description of the alias",
+				Description: "The description of the alias.",
 				Default:     stringdefault.StaticString(""),
 			},
 			"proto": schema.SingleNestedAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "[Only for `asn` & `geoip` types] The alias protocols",
+				MarkdownDescription: "[Only for `asn` & `geoip` types] The alias protocols.",
 				Attributes: map[string]schema.Attribute{
 					"ipv4": schema.BoolAttribute{
 						Optional:    true,
 						Computed:    true,
-						Description: "Whether the alias applies to the IPv4 protocol",
+						Description: "Whether the alias applies to the IPv4 protocol.",
 						Default:     booldefault.StaticBool(false),
 					},
 					"ipv6": schema.BoolAttribute{
 						Optional:    true,
 						Computed:    true,
-						Description: "Whether the alias applies to the IPv6 protocol",
+						Description: "Whether the alias applies to the IPv6 protocol.",
 						Default:     booldefault.StaticBool(false),
 					},
 				},
@@ -211,7 +211,7 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 	}
 }
 
-// Configure adds the provider configured client to the data source.
+// Configure adds the provider configured client to the resource.
 func (r *aliasResource) Configure(ctx context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
 	// Add a nil check when handling ProviderData because Terraform
 	// sets that data after it calls the ConfigureProvider RPC.
@@ -222,7 +222,7 @@ func (r *aliasResource) Configure(ctx context.Context, req resource.ConfigureReq
 	client, ok := req.ProviderData.(*opnsense.Client)
 	if !ok {
 		resp.Diagnostics.AddError(
-			"Unexpected Data Source Configure Type",
+			"Unexpected Resource Configure Type",
 			fmt.Sprintf("Expected *opnsense.Client, got: %T. Please report this issue to the provider developers.", req.ProviderData),
 		)
 
