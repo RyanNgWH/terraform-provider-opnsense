@@ -121,7 +121,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	// Get group UUID
 	if data.Id.IsNull() {
-		tflog.Debug(ctx, "Getting group UUID", map[string]interface{}{"name": data.Name.ValueString()})
+		tflog.Debug(ctx, "Getting group UUID", map[string]any{"name": data.Name.ValueString()})
 
 		uuid, err := searchGroup(d.client, data.Name.ValueString())
 		if err != nil {

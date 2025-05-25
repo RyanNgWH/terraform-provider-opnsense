@@ -98,7 +98,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	var diagnostics diag.Diagnostics
 
 	// Verify all categories exist
-	tflog.Debug(ctx, "Verifying categories", map[string]interface{}{
+	tflog.Debug(ctx, "Verifying categories", map[string]any{
 		"categories": plan.Categories,
 	})
 

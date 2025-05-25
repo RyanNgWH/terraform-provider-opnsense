@@ -381,7 +381,7 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete one-to-one NAT rule on OPNsense
-	tflog.Debug(ctx, "Deleting one-to-one NAT rule on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting one-to-one NAT rule on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteOneToOneNat(r.client, state.Id.ValueString())
 	if err != nil {

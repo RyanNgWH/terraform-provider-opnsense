@@ -23,7 +23,7 @@ type category struct {
 // createCategory creates a category based on the specified plan.
 func createCategory(ctx context.Context, plan categoryResourceModel) category {
 	// Create category from plan
-	tflog.Debug(ctx, "Creating category object from plan", map[string]interface{}{"plan": plan})
+	tflog.Debug(ctx, "Creating category object from plan", map[string]any{"plan": plan})
 
 	category := category{
 		Name:  plan.Name.ValueString(),

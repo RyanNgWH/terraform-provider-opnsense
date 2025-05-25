@@ -243,7 +243,7 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update group on OPNsense
-	tflog.Debug(ctx, "Updating group on OPNsense", map[string]interface{}{"group": group})
+	tflog.Debug(ctx, "Updating group on OPNsense", map[string]any{"group": group})
 
 	err := setGroup(r.client, group, state.Id.ValueString())
 	if err != nil {
@@ -289,7 +289,7 @@ func (r *groupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete group on OPNsense
-	tflog.Debug(ctx, "Deleting group on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting group on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteGroup(r.client, state.Id.ValueString())
 	if err != nil {
@@ -319,7 +319,7 @@ func (r *groupResource) ImportState(ctx context.Context, req resource.ImportStat
 	tflog.Info(ctx, "Importing firewall group")
 
 	// Get group UUID from name
-	tflog.Debug(ctx, "Getting group UUID", map[string]interface{}{"name": req.ID})
+	tflog.Debug(ctx, "Getting group UUID", map[string]any{"name": req.ID})
 
 	uuid, err := searchGroup(r.client, req.ID)
 	if err != nil {

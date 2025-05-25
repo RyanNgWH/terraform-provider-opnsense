@@ -31,7 +31,7 @@ func createGroup(ctx context.Context, client *opnsense.Client, plan groupResourc
 	var diagnostics diag.Diagnostics
 
 	// Verify interfaces
-	tflog.Debug(ctx, "Verifying interfaces", map[string]interface{}{
+	tflog.Debug(ctx, "Verifying interfaces", map[string]any{
 		"interfaces": plan.Members,
 	})
 

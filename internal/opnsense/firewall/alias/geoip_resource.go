@@ -95,7 +95,7 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Set geoip config on OPNsense
-	tflog.Debug(ctx, "Setting geoip configuration on OPNsense", map[string]interface{}{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, "Setting geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {
@@ -181,7 +181,7 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update geoip on OPNsense
-	tflog.Debug(ctx, "Updating geoip configuration on OPNsense", map[string]interface{}{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, "Updating geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {

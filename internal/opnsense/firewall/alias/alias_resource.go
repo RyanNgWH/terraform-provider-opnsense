@@ -380,7 +380,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, "Updating alias on OPNsense", map[string]interface{}{"alias": alias})
+	tflog.Debug(ctx, "Updating alias on OPNsense", map[string]any{"alias": alias})
 
 	err := setAlias(r.client, alias, state.Id.ValueString())
 	if err != nil {
@@ -426,7 +426,7 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete alias on OPNsense
-	tflog.Debug(ctx, "Deleting alias on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting alias on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteAlias(r.client, state.Id.ValueString())
 	if err != nil {

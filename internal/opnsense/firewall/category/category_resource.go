@@ -123,7 +123,7 @@ func (r *categoryResource) Create(ctx context.Context, req resource.CreateReques
 	category := createCategory(ctx, plan)
 
 	// Create alias on OPNsense
-	tflog.Debug(ctx, "Creating category on OPNsense", map[string]interface{}{"category": category})
+	tflog.Debug(ctx, "Creating category on OPNsense", map[string]any{"category": category})
 
 	uuid, err := addCategory(r.client, category)
 	if err != nil {
@@ -203,7 +203,7 @@ func (r *categoryResource) Update(ctx context.Context, req resource.UpdateReques
 	category := createCategory(ctx, plan)
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, "Updating category on OPNsense", map[string]interface{}{"category": category})
+	tflog.Debug(ctx, "Updating category on OPNsense", map[string]any{"category": category})
 
 	err := setCategory(r.client, category, state.Id.ValueString())
 	if err != nil {

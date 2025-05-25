@@ -55,7 +55,7 @@ type OpnsenseAddItemResponse struct {
 }
 
 func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
-	var responseMap map[string]interface{}
+	var responseMap map[string]any
 
 	if res == nil {
 		return errors.New("RawString: UnmarshalJSON on nil pointer")
