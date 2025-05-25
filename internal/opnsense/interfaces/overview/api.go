@@ -47,7 +47,7 @@ func checkInterfaceExists(client *opnsense.Client, identifier string) (bool, err
 
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return false, fmt.Errorf("check interface error: failed to marshal json body - %s", err)
+		return false, fmt.Errorf("Check interface error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -56,13 +56,13 @@ func checkInterfaceExists(client *opnsense.Client, identifier string) (bool, err
 	}
 
 	if httpResp.StatusCode != 200 {
-		return false, fmt.Errorf("check interface http error: abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return false, fmt.Errorf("Check interface error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var interfacesInfoResponse interfacesInfoResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&interfacesInfoResponse)
 	if err != nil {
-		return false, fmt.Errorf("check interface http error: %s", err)
+		return false, fmt.Errorf("Check interface error (http): %s", err)
 	}
 
 	for _, iface := range interfacesInfoResponse.Rows {

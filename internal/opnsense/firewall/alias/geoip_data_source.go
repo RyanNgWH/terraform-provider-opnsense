@@ -129,14 +129,14 @@ func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	// Get geoip configuration
 	geoip, err := getGeoIp(d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("Failed to read geoip configuration - %s", err))
+		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving geoip information to state", map[string]interface{}{"geoip": geoip})
+	tflog.Debug(ctx, "Saving geoip information to state", map[string]any{"geoip": geoip})
 
 	data.AddressCount = types.Int64Value(geoip.AddressCount)
 
@@ -169,6 +169,6 @@ func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved geoip information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Successfully read firewall geoip configuration", map[string]interface{}{"success": true})
+	tflog.Debug(ctx, "Saved geoip information to state", map[string]any{"success": true})
+	tflog.Info(ctx, "Successfully read firewall geoip configuration", map[string]any{"success": true})
 }

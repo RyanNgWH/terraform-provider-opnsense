@@ -108,11 +108,11 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	// Get category UUID
 	if data.Id.IsNull() {
-		tflog.Debug(ctx, "Getting category UUID", map[string]interface{}{"name": data.Name.ValueString()})
+		tflog.Debug(ctx, "Getting category UUID", map[string]any{"name": data.Name.ValueString()})
 
 		uuid, err := SearchCategory(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("Failed to get category UUID - %s", err))
+			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -129,7 +129,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 	category, err := GetCategory(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get category error", fmt.Sprintf("Failed to get category - %s", err))
+		resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -138,7 +138,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 	tflog.Debug(ctx, "Successfully got category information", map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving category information to state", map[string]interface{}{
+	tflog.Debug(ctx, "Saving category information to state", map[string]any{
 		"id":        data.Id.ValueString(),
 		"name":      category.Name,
 		"auto":      category.Auto,
@@ -159,7 +159,6 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	tflog.Debug(ctx, "Saved category information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Successfully read firewall category", map[string]interface{}{"success": true})
-
+	tflog.Debug(ctx, "Saved category information to state", map[string]any{"success": true})
+	tflog.Info(ctx, "Successfully read firewall category", map[string]any{"success": true})
 }

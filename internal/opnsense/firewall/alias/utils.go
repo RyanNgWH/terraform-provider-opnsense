@@ -98,7 +98,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	var diagnostics diag.Diagnostics
 
 	// Verify all categories exist
-	tflog.Debug(ctx, "Verifying categories", map[string]interface{}{
+	tflog.Debug(ctx, "Verifying categories", map[string]any{
 		"categories": plan.Categories,
 	})
 
@@ -106,7 +106,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify categories - %s", err))
+		diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -123,10 +123,10 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 		interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
 		if err != nil {
-			diagnostics.AddError("Add alias error", fmt.Sprintf("Failed to verify interface: %s", err))
+			diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
 		}
 		if !interfacesExist {
-			diagnostics.AddError("Add alias error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
+			diagnostics.AddError("Create alias error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
 		}
 
 		tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})

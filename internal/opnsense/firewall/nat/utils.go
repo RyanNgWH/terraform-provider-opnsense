@@ -68,7 +68,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("Failed to verify categories - %s", err))
+		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -80,7 +80,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 
 	interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
 	if err != nil {
-		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("Failed to verify interface: %s", err))
+		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
 		diagnostics.AddError("Create one-to-one NAT error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")

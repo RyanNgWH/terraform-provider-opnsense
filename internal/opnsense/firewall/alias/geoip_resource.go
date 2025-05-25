@@ -95,11 +95,11 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Set geoip config on OPNsense
-	tflog.Debug(ctx, "Setting geoip configuration on OPNsense", map[string]interface{}{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, "Setting geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Set geoip error", fmt.Sprintf("Failed to set geoip - %s", err))
+		resp.Diagnostics.AddError("Set geoip error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -110,7 +110,7 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("Failed to apply geoip configuration - %s", err))
+		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -141,7 +141,7 @@ func (r *geoIpResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	geoip, err := getGeoIp(r.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("Failed to read geoip - %s", err))
+		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -181,11 +181,11 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update geoip on OPNsense
-	tflog.Debug(ctx, "Updating geoip configuration on OPNsense", map[string]interface{}{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, "Updating geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update geoip error", fmt.Sprintf("Failed to update geoip - %s", err))
+		resp.Diagnostics.AddError("Update geoip error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -196,7 +196,7 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("Failed to apply geoip configuration - %s", err))
+		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -231,7 +231,7 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err := setGeoIp(r.client, "")
 	if err != nil {
-		resp.Diagnostics.AddError("Delete geoip error", fmt.Sprintf("Failed to delete geoip - %s", err))
+		resp.Diagnostics.AddError("Delete geoip error", fmt.Sprintf("%s", err))
 	}
 
 	if resp.Diagnostics.HasError() {
@@ -243,7 +243,7 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("Failed to apply geoip configuration - %s", err))
+		resp.Diagnostics.AddWarning("Delete geoip error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}

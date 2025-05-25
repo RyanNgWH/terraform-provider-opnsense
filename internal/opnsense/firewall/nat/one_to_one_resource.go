@@ -229,7 +229,7 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 
 	uuid, err := addOneToOneNat(r.client, oneToOneNat)
 	if err != nil {
-		resp.Diagnostics.AddError("Create one-to-one NAT entry error", fmt.Sprintf("Failed to create one-to-one NAT entry - %s", err))
+		resp.Diagnostics.AddError("Create one-to-one NAT entry error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -240,7 +240,7 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create one-to-one NAT entry error", fmt.Sprintf("Failed to apply one-to-one NAT configuration - %s", err))
+		resp.Diagnostics.AddWarning("Create one-to-one NAT entry error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -274,7 +274,7 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 
 	rule, err := getOneToOneNat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("Failed to read one-to-one NAT rule - %s", err))
+		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -339,7 +339,7 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 
 	err := setOneToOneNat(r.client, rule, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update one-to-one NAT rule error", fmt.Sprintf("Failed to update one-to-one NAT rule - %s", err))
+		resp.Diagnostics.AddError("Update one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -350,7 +350,7 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update one-to-one NAT rule error", fmt.Sprintf("Failed to apply one-to-one NAT configuration - %s", err))
+		resp.Diagnostics.AddWarning("Update one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -381,11 +381,11 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete one-to-one NAT rule on OPNsense
-	tflog.Debug(ctx, "Deleting one-to-one NAT rule on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting one-to-one NAT rule on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteOneToOneNat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete one-to-one NAT rule error", fmt.Sprintf("Failed to delete one-to-one NAT rule - %s", err))
+		resp.Diagnostics.AddError("Delete one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -396,7 +396,7 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete one-to-one NAT rule error", fmt.Sprintf("Failed to apply one-to-one NAT configuration - %s", err))
+		resp.Diagnostics.AddWarning("Delete one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}

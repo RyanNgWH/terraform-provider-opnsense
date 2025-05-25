@@ -251,11 +251,11 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Create alias on OPNsense
-	tflog.Debug(ctx, "Creating alias on OPNsense", map[string]interface{}{"alias": alias})
+	tflog.Debug(ctx, "Creating alias on OPNsense", map[string]any{"alias": alias})
 
 	uuid, err := addAlias(r.client, alias)
 	if err != nil {
-		resp.Diagnostics.AddError("Create alias error", fmt.Sprintf("Failed to create alias - %s", err))
+		resp.Diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -266,7 +266,7 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
+		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -300,7 +300,7 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	alias, err := getAlias(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("Failed to read alias - %s", err))
+		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -380,11 +380,11 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, "Updating alias on OPNsense", map[string]interface{}{"alias": alias})
+	tflog.Debug(ctx, "Updating alias on OPNsense", map[string]any{"alias": alias})
 
 	err := setAlias(r.client, alias, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("Failed to update alias - %s", err))
+		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -395,7 +395,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
+		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -426,11 +426,11 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete alias on OPNsense
-	tflog.Debug(ctx, "Deleting alias on OPNsense", map[string]interface{}{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, "Deleting alias on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteAlias(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("Failed to delete alias - %s", err))
+		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -441,7 +441,7 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("Failed to apply alias configuration - %s", err))
+		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -456,11 +456,11 @@ func (r *aliasResource) ImportState(ctx context.Context, req resource.ImportStat
 	tflog.Info(ctx, "Importing firewall alias")
 
 	// Get alias UUID from name
-	tflog.Debug(ctx, "Getting alias UUID", map[string]interface{}{"name": req.ID})
+	tflog.Debug(ctx, "Getting alias UUID", map[string]any{"name": req.ID})
 
 	uuid, err := getAliasUuid(r.client, req.ID)
 	if err != nil {
-		resp.Diagnostics.AddError("Import alias error", fmt.Sprintf("Failed to get alias UUID - %s", err))
+		resp.Diagnostics.AddError("Import alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return

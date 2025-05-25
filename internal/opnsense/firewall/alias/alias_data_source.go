@@ -170,11 +170,11 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	// Get alias UUID
 	if data.Id.IsNull() {
-		tflog.Debug(ctx, "Getting alias UUID", map[string]interface{}{"name": data.Name.ValueString()})
+		tflog.Debug(ctx, "Getting alias UUID", map[string]any{"name": data.Name.ValueString()})
 
 		uuid, err := getAliasUuid(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("Failed to read alias - %s", err))
+			resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -191,7 +191,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	alias, err := getAlias(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("Failed to read alias - %s", err))
+		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return

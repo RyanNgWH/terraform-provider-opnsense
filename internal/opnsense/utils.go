@@ -3,6 +3,7 @@ package opnsense
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"maps"
 	"strconv"
 	"strings"
@@ -54,7 +55,7 @@ type OpnsenseAddItemResponse struct {
 }
 
 func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
-	var responseMap map[string]interface{}
+	var responseMap map[string]any
 
 	if res == nil {
 		return errors.New("RawString: UnmarshalJSON on nil pointer")
@@ -77,6 +78,15 @@ func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
+}
+
+// Function to format the validations map as a string
+func ValidationsToString(m map[string]any) string {
+	var result string
+	for key, value := range m {
+		result += fmt.Sprintf("%s: %s\n", key, value)
+	}
+	return result
 }
 
 // Custom type for unmarshalling OPNsense apply config json responses

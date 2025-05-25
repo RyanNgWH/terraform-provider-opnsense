@@ -156,7 +156,7 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 
 	rule, err := getOneToOneNat(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("Failed to read one-to-one NAT rule - %s", err))
+		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return

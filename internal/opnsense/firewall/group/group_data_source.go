@@ -121,11 +121,11 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	// Get group UUID
 	if data.Id.IsNull() {
-		tflog.Debug(ctx, "Getting group UUID", map[string]interface{}{"name": data.Name.ValueString()})
+		tflog.Debug(ctx, "Getting group UUID", map[string]any{"name": data.Name.ValueString()})
 
 		uuid, err := searchGroup(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get group error", fmt.Sprintf("Failed to get group UUID - %s", err))
+			resp.Diagnostics.AddError("Get group error", fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -142,7 +142,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 	group, err := getGroup(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get group error", fmt.Sprintf("Failed to get group - %s", err))
+		resp.Diagnostics.AddError("Get group error", fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -151,7 +151,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	tflog.Debug(ctx, "Successfully got group information", map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving group information to state", map[string]interface{}{"group": data})
+	tflog.Debug(ctx, "Saving group information to state", map[string]any{"group": data})
 
 	data.Name = types.StringValue(group.Name)
 	data.Members = utils.StringListGoToTerraform(group.Members)
@@ -169,6 +169,6 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved group information to state", map[string]interface{}{"success": true})
-	tflog.Info(ctx, "Successfully read firewall group", map[string]interface{}{"success": true})
+	tflog.Debug(ctx, "Saved group information to state", map[string]any{"success": true})
+	tflog.Info(ctx, "Successfully read firewall group", map[string]any{"success": true})
 }

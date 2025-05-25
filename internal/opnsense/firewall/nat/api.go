@@ -108,7 +108,7 @@ func addOneToOneNat(client *opnsense.Client, oneToOneNat oneToOneNat) (string, e
 	body := oneToOneNatToHttpBody(oneToOneNat)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("add one-to-one NAT rule error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add one-to-one NAT rule error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -117,17 +117,17 @@ func addOneToOneNat(client *opnsense.Client, oneToOneNat oneToOneNat) (string, e
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("add one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("add one-to-one NAT rule error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add one-to-one NAT rule error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("add one-to-one NAT rule error: failed to add one-to-one NAT rule to OPNsense - failed validations: %+v", response.Validations)
+		return "", fmt.Errorf("Add one-to-one NAT rule error: failed to add one-to-one NAT rule to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -142,7 +142,7 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("get one-to-one NAT error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get one-to-one NAT error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var response getOneToOneNatResponse
@@ -150,9 +150,9 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("get one-to-one NAT rule error: one-to-one NAT rule with uuid `%s` does not exist. If this occurs in a resource block, it is usually because the one-to-one NAT rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing one-to-one NAT rule from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get one-to-one NAT rule error: one-to-one NAT rule with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the one-to-one NAT rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing one-to-one NAT rule from the terraform state to rectify the error.", uuid)
 		}
-		return nil, fmt.Errorf("get one-to-one NAT rule error (http): %s", err)
+		return nil, fmt.Errorf("Get one-to-one NAT rule error (http): %s", err)
 	}
 
 	// Extract values from response
@@ -189,7 +189,7 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
 			if err != nil {
-				return nil, fmt.Errorf("get one-to-one NAT rule error: failed to get category - %s", err)
+				return nil, fmt.Errorf("Get one-to-one NAT rule error: failed to get category - %s", err)
 			}
 
 			categories = append(categories, categoryName)
@@ -224,7 +224,7 @@ func setOneToOneNat(client *opnsense.Client, oneToOneNat oneToOneNat, uuid strin
 	body := oneToOneNatToHttpBody(oneToOneNat)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("set one-to-one NAT rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set one-to-one NAT rule error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -233,17 +233,17 @@ func setOneToOneNat(client *opnsense.Client, oneToOneNat oneToOneNat, uuid strin
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("set one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("set one-to-one NAT rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set one-to-one NAT rule error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("set one-to-one NAT rule error: failed to update one-to-one NAT rule on OPNsense - failed validations: %+v", response.Validations)
+		return fmt.Errorf("Set one-to-one NAT rule error: failed to update one-to-one NAT rule on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -256,7 +256,7 @@ func deleteOneToOneNat(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("delete one-to-one NAT rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete one-to-one NAT rule error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -265,17 +265,17 @@ func deleteOneToOneNat(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("delete one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete one-to-one NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var resp opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("delete one-to-one NAT rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete one-to-one NAT rule error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("delete one-to-one NAT rule error: failed to delete one-to-one NAT rule on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Delete one-to-one NAT rule error: failed to delete one-to-one NAT rule on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }
@@ -287,7 +287,7 @@ func applyOneToOneNatConfig(client *opnsense.Client) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("apply configuration error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Apply configuration error: failed to marshal json body - %s", err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -296,17 +296,17 @@ func applyOneToOneNatConfig(client *opnsense.Client) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Apply configuration error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var resp opnsense.OpnsenseApplyConfigResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("apply configuration error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Apply configuration error (http): failed to decode http response - %s", err)
 	}
 
 	if strings.Trim(strings.ToLower(resp.Status), "\n") != "ok" {
-		return fmt.Errorf("apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Apply configuration error: failed to apply configuration on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
 }

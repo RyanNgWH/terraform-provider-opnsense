@@ -23,7 +23,7 @@ type category struct {
 // createCategory creates a category based on the specified plan.
 func createCategory(ctx context.Context, plan categoryResourceModel) category {
 	// Create category from plan
-	tflog.Debug(ctx, "Creating category object from plan", map[string]interface{}{"plan": plan})
+	tflog.Debug(ctx, "Creating category object from plan", map[string]any{"plan": plan})
 
 	category := category{
 		Name:  plan.Name.ValueString(),
@@ -42,7 +42,7 @@ func GetCategoryUuids(client *opnsense.Client, categoriesList []string) ([]strin
 	for _, cat := range categoriesList {
 		uuid, err := SearchCategory(client, cat)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get category from OPNsense - %s", err)
+			return nil, fmt.Errorf("%s", err)
 		}
 
 		categoryUuids = append(categoryUuids, uuid)
