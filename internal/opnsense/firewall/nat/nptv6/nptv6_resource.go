@@ -116,7 +116,7 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 				Description: "The external IPv6 prefix. This will replace the prefix of the source address in outbound packets. Leave empty to auto-detect the prefix address using the specified tracking interface instead. The prefix size specified for the internal prefix will also be applied to the external prefix.",
 				Default:     stringdefault.StaticString(""),
 				Validators: []validator.String{
-					stringvalidator.ExactlyOneOf(path.Expressions{
+					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("track_interface"),
 					}...),
 				},
@@ -127,7 +127,7 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 				Description: "Use prefix defined on the selected interface instead of the interface this rule applies to when target prefix is not provided.",
 				Default:     stringdefault.StaticString(""),
 				Validators: []validator.String{
-					stringvalidator.ExactlyOneOf(path.Expressions{
+					stringvalidator.ConflictsWith(path.Expressions{
 						path.MatchRoot("external_prefix"),
 					}...),
 				},
