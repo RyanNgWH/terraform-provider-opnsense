@@ -3,12 +3,12 @@
 page_title: "opnsense_firewall_alias_geoip Data Source - opnsense"
 subcategory: ""
 description: |-
-  Retrieves information about the firewall geoip configuration
+  Retrieves information about the firewall geoip configuration.
 ---
 
 # opnsense_firewall_alias_geoip (Data Source)
 
-Retrieves information about the firewall geoip configuration
+Retrieves information about the firewall geoip configuration.
 
 ## Example Usage
 
@@ -22,18 +22,18 @@ data "opnsense_firewall_alias" "data_source_via_id" {}
 
 ### Read-Only
 
-- `address_count` (Number) The number of entries in the downloaded set
-- `address_sources` (Attributes) The sources of the GeoIP addresses (see [below for nested schema](#nestedatt--address_sources))
-- `file_count` (Number) The number of files used to store all GeoIP addresses
-- `locations_filename` (String) The source of the location GeoIP addresses
-- `timestamp` (String) The date & time the GeoIP addresses were last updated (time the vendor created the list)
-- `url` (String, Sensitive) The location to fetch GeoIP address ranges from (marked as sensitive as it typically stores the MaxMind license key)
-- `usages` (Number) The number of aliases using the GeoIP dataset
+- `address_count` (Number) The number of entries in the downloaded set.
+- `address_sources` (Attributes) The sources of the GeoIP addresses. (see [below for nested schema](#nestedatt--address_sources))
+- `file_count` (Number) The number of files used to store all GeoIP addresses.
+- `locations_filename` (String) The source of the location GeoIP addresses.
+- `timestamp` (String) The date & time the GeoIP addresses were last updated (time the vendor created the list).
+- `url` (String, Sensitive) The location to fetch GeoIP address ranges from (marked as sensitive as it typically stores the MaxMind license key).
+- `usages` (Number) The number of aliases using the GeoIP dataset.
 
 <a id="nestedatt--address_sources"></a>
 ### Nested Schema for `address_sources`
 
 Read-Only:
 
-- `ipv4` (String) The source of the IPv4 GeoIP addresses
-- `ipv6` (String) The source of the IPv6 GeoIP addresses
+- `ipv4` (String) The source of the IPv4 GeoIP addresses.
+- `ipv6` (String) The source of the IPv6 GeoIP addresses.

@@ -49,8 +49,8 @@ provider "opnsense" {
 
 ### Optional
 
-- `api_key` (String) The API key for the OPNsense API. May also be provided via the `OPNSENSE_API_KEY` environment variable
-- `api_secret` (String, Sensitive) The API secret for the OPNsense API. May also be provided via the `OPNSENSE_API_SECRET` environment variable
-- `endpoint` (String) The endpoint for the OPNsense API. This is typically `https://<your-opnsense-instance>`. Do not include the `/api` suffix. May also be provided via the `OPNSENSE_ENDPOINT` environment variable
-- `insecure` (Boolean) Whether TLS verification of the OPNsense API should be skipped. Defaults to `false`. May also be provided via the `OPNSENSE_API_INSECURE` environment variable
-- `timeout` (Number) The duration before the request to the OPNsense API times out (in seconds). Defaults to `120`
+- `api_key` (String) The API key for the OPNsense API. May also be provided via the `OPNSENSE_API_KEY` environment variable.
+- `api_secret` (String, Sensitive) The API secret for the OPNsense API. May also be provided via the `OPNSENSE_API_SECRET` environment variable.
+- `endpoint` (String) The endpoint for the OPNsense API. This is typically `https://<your-opnsense-instance>`. Do not include the `/api` suffix. May also be provided via the `OPNSENSE_ENDPOINT` environment variable.
+- `insecure` (Boolean) Whether TLS verification of the OPNsense API should be skipped. Defaults to `false`. May also be provided via the `OPNSENSE_API_INSECURE` environment variable.
+- `timeout` (Number) The duration before the request to the OPNsense API times out (in seconds). Defaults to `120`.

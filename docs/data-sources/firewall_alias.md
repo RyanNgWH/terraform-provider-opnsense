@@ -3,12 +3,12 @@
 page_title: "opnsense_firewall_alias Data Source - opnsense"
 subcategory: ""
 description: |-
-  Retrieves information about a firewall alias
+  Retrieves information about a firewall alias.
 ---
 
 # opnsense_firewall_alias (Data Source)
 
-Retrieves information about a firewall alias
+Retrieves information about a firewall alias.
 
 ## Example Usage
 
@@ -29,28 +29,28 @@ data "opnsense_firewall_alias" "data_source_via_name" {
 
 ### Optional
 
-- `id` (String) Identifier of the alias
-- `name` (String) The name of the alias
+- `id` (String) Identifier of the alias.
+- `name` (String) The name of the alias.
 
 ### Read-Only
 
-- `categories` (List of String) The categories of the alias
-- `content` (List of String) The content of the alias
-- `counters` (Boolean) Whether the statistics of the alias is enabled
-- `description` (String) The description of the alias
-- `enabled` (Boolean) Whether the alias is enabled
-- `interfaces` (List of String) [Only for `dynipv6` type] The alias interfaces
-- `proto` (Attributes) [Only for `asn` & `geoip` types] The alias protocols (see [below for nested schema](#nestedatt--proto))
-- `type` (String) The type of the alias
-- `updatefreq` (Attributes) [Only for `urltable` type] The update frequency of the alias. Days and hours are added together the determine the final update frequency (see [below for nested schema](#nestedatt--updatefreq))
+- `categories` (List of String) The categories of the alias.
+- `content` (List of String) The content of the alias.
+- `counters` (Boolean) Whether the statistics of the alias is enabled.
+- `description` (String) The description of the alias.
+- `enabled` (Boolean) Whether the alias is enabled.
+- `interface` (String) [Only for `dynipv6` type] The interface for the v6 dynamic IP.
+- `proto` (Attributes) [Only for `asn` & `geoip` types] The alias protocols. (see [below for nested schema](#nestedatt--proto))
+- `type` (String) The type of the alias.
+- `updatefreq` (Attributes) [Only for `urltable` type] The update frequency of the alias. Days and hours are added together the determine the final update frequency. (see [below for nested schema](#nestedatt--updatefreq))
 
 <a id="nestedatt--proto"></a>
 ### Nested Schema for `proto`
 
 Read-Only:
 
-- `ipv4` (Boolean) Whether the alias applies to the IPv4 protocol
-- `ipv6` (Boolean) Whether the alias applies to the IPv6 protocol
+- `ipv4` (Boolean) Whether the alias applies to the IPv4 protocol.
+- `ipv6` (Boolean) Whether the alias applies to the IPv6 protocol.
 
 
 <a id="nestedatt--updatefreq"></a>
@@ -58,5 +58,5 @@ Read-Only:
 
 Read-Only:
 
-- `days` (Number) The number of days between updates
-- `hours` (Number) The number of hours between updates
+- `days` (Number) The number of days between updates.
+- `hours` (Number) The number of hours between updates.
