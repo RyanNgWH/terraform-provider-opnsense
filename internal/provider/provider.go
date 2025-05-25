@@ -17,7 +17,7 @@ import (
 	"terraform-provider-opnsense/internal/opnsense/firewall/alias"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/opnsense/firewall/group"
-	"terraform-provider-opnsense/internal/opnsense/firewall/nat"
+	"terraform-provider-opnsense/internal/opnsense/firewall/nat/onetoone"
 )
 
 // Ensure OpnsenseProvider satisfies various provider interfaces.
@@ -249,7 +249,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		alias.NewGeoIpResource,
 		category.NewCategoryResource,
 		group.NewGroupResource,
-		nat.NewNatOneToOneResource,
+		onetoone.NewNatOneToOneResource,
 	}
 }
 
@@ -260,7 +260,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		alias.NewGeoIpDataSource,
 		category.NewCategoryDataSource,
 		group.NewGroupDataSource,
-		nat.NewOneToOneNatDataSource,
+		onetoone.NewOneToOneNatDataSource,
 	}
 }
 

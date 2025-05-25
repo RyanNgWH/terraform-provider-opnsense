@@ -1,4 +1,4 @@
-package nat
+package onetoone
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
+	"terraform-provider-opnsense/internal/opnsense/firewall/nat"
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -66,7 +67,7 @@ type natOneToOneResourceModel struct {
 
 // Metadata returns the resource type name.
 func (r *natOneToOneResource) Metadata(ctx context.Context, req resource.MetadataRequest, resp *resource.MetadataResponse) {
-	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, natController, oneToOneController)
+	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, nat.NatController, oneToOneController)
 }
 
 // Schema defines the schema for the resource.
