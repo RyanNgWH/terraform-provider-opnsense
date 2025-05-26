@@ -37,9 +37,9 @@ type shaperPipeRequest struct {
 	CodelTarget     int32  `json:"codel_target"`
 	CodelInterval   int32  `json:"codel_interval"`
 	CodelEcn        uint8  `json:"codel_ecn_enable"`
-	CodelQuantum    int32  `json:"codel_quantum"`
-	CodelLimit      int32  `json:"codel_limit"`
-	CodelFlows      int32  `json:"codel_flows"`
+	CodelQuantum    int32  `json:"fqcodel_quantum"`
+	CodelLimit      int32  `json:"fqcodel_limit"`
+	CodelFlows      int32  `json:"fqcodel_flows"`
 	Pie             uint8  `json:"pie_enable"`
 	Delay           int32  `json:"delay"`
 	Description     string `json:"description"`
