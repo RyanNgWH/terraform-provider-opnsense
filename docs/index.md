@@ -22,8 +22,12 @@ The provider uses the OPNsense API to perform operations on the OPNsense instanc
 
 The provider requires the following permissions on your OPNsense server.
 
+- `Interfaces: Groups: Edit`
 - `Firewall: Alias: Edit`
 - `Firewall: Categories`
+- `Firewall: NAT: 1:1`
+- `Firewall: NAT: NPTv6`
+- `Firewall: Shaper`
 - `Status: Interfaces`
 
 > The provider could potentially work with stricter privileges. However, it is not guaranteed to do so and has only been tested with the above mentioned list.
