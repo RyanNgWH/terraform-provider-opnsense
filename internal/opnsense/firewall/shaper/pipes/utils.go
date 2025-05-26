@@ -41,7 +41,7 @@ type shaperPipe struct {
 
 // Scheduler mappings
 const (
-	weightedFairQueueing string = "weighted fair queuing"
+	weightedFairQueueing string = "weighted fair queueing"
 	fifo                 string = "fifo"
 	deficitRoundRobin    string = "deficit round robin"
 	qfq                  string = "qfq"
