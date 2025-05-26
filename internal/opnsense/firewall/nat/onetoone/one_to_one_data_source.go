@@ -151,7 +151,7 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	// Get alias
+	// Get one-to-one NAT rule
 	tflog.Debug(ctx, "Getting one-to-one NAT rule information")
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 

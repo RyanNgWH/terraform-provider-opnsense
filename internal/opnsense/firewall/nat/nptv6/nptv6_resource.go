@@ -70,24 +70,24 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 	defaultCategories, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Network Prefix Translation, shortened to NPTv6, is used to translate IPv6 addresses.",
+		Description: "Network Prefix Translation, shortened to NPTv6, is used to translate IPv6 addresses.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the nptv6 nat entry.",
+				Description: "Identifier of the NPTv6 rule entry.",
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when nptv6 entry was last updated.",
+				Description: "DateTime when NPTv6 rule entry was last updated.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
 				Computed:            true,
-				MarkdownDescription: "Whether the nptv6 nat entry is enabled. Defaults to `true`.",
+				MarkdownDescription: "Whether the NPTv6 rule entry is enabled. Defaults to `true`.",
 				Default:             booldefault.StaticBool(true),
 			},
 			"log": schema.BoolAttribute{
@@ -107,8 +107,8 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 				Description: "The interface this rule applies to.",
 			},
 			"internal_prefix": schema.StringAttribute{
-				Required:            true,
-				MarkdownDescription: "The internal IPv6 prefix used in the LAN(s). This will replace the prefix of the destination address in inbound packets. The prefix size specified here will also be applied to the external prefix.",
+				Required:    true,
+				Description: "The internal IPv6 prefix used in the LAN(s). This will replace the prefix of the destination address in inbound packets. The prefix size specified here will also be applied to the external prefix.",
 			},
 			"external_prefix": schema.StringAttribute{
 				Optional:    true,
