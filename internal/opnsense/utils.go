@@ -84,7 +84,7 @@ func (res *OpnsenseAddItemResponse) UnmarshalJSON(data []byte) error {
 func ValidationsToString(m map[string]any) string {
 	var result string
 	for key, value := range m {
-		result += fmt.Sprintf("%s: %s\n", key, value)
+		result += fmt.Sprintf("  %s: %s\n", key, value)
 	}
 	return result
 }
