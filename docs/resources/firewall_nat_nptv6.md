@@ -40,7 +40,7 @@ resource "opnsense_firewall_nat_nptv6" "resource_example" {
 
 - `categories` (List of String) The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
 - `description` (String) The description of the rule.
-- `enabled` (Boolean) Whether the nptv6 nat entry is enabled. Defaults to `true`.
+- `enabled` (Boolean) Whether the NPTv6 rule entry is enabled. Defaults to `true`.
 - `external_prefix` (String) The external IPv6 prefix. This will replace the prefix of the source address in outbound packets. Leave empty to auto-detect the prefix address using the specified tracking interface instead. The prefix size specified for the internal prefix will also be applied to the external prefix.
 - `log` (Boolean) Whether packets that are handled by this rule should be logged. Defaults to `false`.
 - `sequence` (Number) Order in which multiple matching rules are evaluated and applied. Defaults to `1`.
@@ -48,8 +48,8 @@ resource "opnsense_firewall_nat_nptv6" "resource_example" {
 
 ### Read-Only
 
-- `id` (String) Identifier of the nptv6 nat entry.
-- `last_updated` (String) DateTime when nptv6 entry was last updated.
+- `id` (String) Identifier of the NPTv6 rule entry.
+- `last_updated` (String) DateTime when NPTv6 rule entry was last updated.
 
 ## Import
 
