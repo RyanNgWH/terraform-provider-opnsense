@@ -127,12 +127,12 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 					},
 				},
 			},
-			"Queue": schema.Int32Attribute{
+			"queue": schema.Int32Attribute{
 				Optional:    true,
 				Description: "Number of dynamic queues, leave empty for default.",
 				Validators:  []validator.Int32{int32validator.Between(2, 100)},
 			},
-			"Mask": schema.StringAttribute{
+			"mask": schema.StringAttribute{
 				Optional: true,
 				Computed: true,
 				MarkdownDescription: fmt.Sprintf(
@@ -172,6 +172,7 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Attributes: map[string]schema.Attribute{
 					"enabled": schema.BoolAttribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "Whether CoDel active queue management is enabled.",
 						Default:     booldefault.StaticBool(false),
 					},
