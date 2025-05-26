@@ -180,9 +180,13 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 	}
 
 	var scheduler string
+	var exists bool
 	for name, value := range response.Pipe.Scheduler {
 		if value.Selected == 1 {
-			scheduler = name
+			scheduler, exists = schedulers.GetByValue(name)
+			if !exists {
+				return nil, fmt.Errorf("Get traffic shaper pipe error: scheduler %s is not supported. Please contact the provider maintainers for assistance", name)
+			}
 			break
 		}
 	}

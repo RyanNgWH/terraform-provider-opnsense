@@ -2,6 +2,9 @@ package pipes
 
 import (
 	"context"
+	"fmt"
+
+	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
@@ -46,13 +49,23 @@ const (
 	pie                  string = "flowqueue-pie"
 )
 
-var schedulers = map[string]string{
+var schedulerMappings = map[string]string{
 	weightedFairQueueing: "",
 	fifo:                 "fifo",
 	deficitRoundRobin:    "rr",
 	qfq:                  "qfq",
 	codel:                "fq_codel",
 	pie:                  "fq_pie",
+}
+
+var schedulers = getBidirectionalSchedular()
+
+func getBidirectionalSchedular() *utils.BidirectionalMap {
+	schedulers := utils.NewBidirectionalMap()
+	for key, value := range schedulerMappings {
+		schedulers.Put(key, value)
+	}
+	return schedulers
 }
 
 // Pipes values
@@ -75,14 +88,7 @@ func getMaskTypes() []string {
 }
 
 func getSchedulers() []string {
-	return []string{
-		weightedFairQueueing,
-		fifo,
-		deficitRoundRobin,
-		qfq,
-		codel,
-		pie,
-	}
+	return schedulers.GetAllKeys()
 }
 
 // Helper functions
@@ -130,13 +136,19 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 		Flows:    planCodel.Flows.ValueInt32(),
 	}
 
+	// Scheduler
+	scheduler, exists := schedulers.GetByKey(plan.Scheduler.ValueString())
+	if !exists {
+		diagnostics.AddError("Create traffic shaper pipe error", fmt.Sprintf("Scheduler `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Scheduler.ValueString()))
+	}
+
 	shaperPipe := shaperPipe{
 		Enabled:     plan.Enabled.ValueBool(),
 		Bandwidth:   bandwidth,
 		Queue:       plan.Queue.ValueInt32(),
 		Mask:        plan.Mask.ValueString(),
 		Buckets:     plan.Buckets.ValueInt32(),
-		Scheduler:   schedulers[plan.Scheduler.ValueString()],
+		Scheduler:   scheduler,
 		Codel:       codel,
 		Pie:         plan.Pie.ValueBool(),
 		Delay:       plan.Delay.ValueInt32(),
