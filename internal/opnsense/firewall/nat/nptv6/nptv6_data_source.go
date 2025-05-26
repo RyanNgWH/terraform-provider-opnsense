@@ -33,7 +33,6 @@ type natNptv6DataSource struct {
 // natNptv6DataSourceModel describes the resource data model.
 type natNptv6DataSourceModel struct {
 	Id             types.String   `tfsdk:"id"`
-	LastUpdated    types.String   `tfsdk:"last_updated"`
 	Enabled        types.Bool     `tfsdk:"enabled"`
 	Log            types.Bool     `tfsdk:"log"`
 	Sequence       types.Int32    `tfsdk:"sequence"`
