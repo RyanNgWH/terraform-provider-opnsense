@@ -24,6 +24,7 @@ const (
 )
 
 // HTTP request bodies
+
 type nptv6HttpBody struct {
 	Rule nptv6Request `json:"rule"`
 }
@@ -41,6 +42,7 @@ type nptv6Request struct {
 }
 
 // HTTP Response types
+
 type getNptv6Response struct {
 	Rule nptv6RuleResponse `json:"rule"`
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
 
-func TestAccOneToOneNatResource_nat(t *testing.T) {
+func TestAccNptv6Resource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
 		ProtoV6ProviderFactories: acctest.TestAccProtoV6ProviderFactories,
@@ -65,7 +65,7 @@ func TestAccOneToOneNatResource_nat(t *testing.T) {
 	})
 }
 
-func TestAccOneToOneNatResource_default(t *testing.T) {
+func TestAccNptv6Resource_default(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { acctest.TestAccPreCheck(t) },
 		ProtoV6ProviderFactories: acctest.TestAccProtoV6ProviderFactories,

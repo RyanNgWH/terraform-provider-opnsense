@@ -43,6 +43,7 @@ The provider requires the following permissions on your OPNsense server.
 - `Firewall: Categories`
 - `Firewall: NAT: 1:1`
 - `Firewall: NAT: NPTv6`
+- `Firewall: Shaper`
 - `Status: Interfaces`
 
 > The provider could potentially work with stricter privileges. However, it is not guaranteed to do so and has only been tested with the above mentioned list.

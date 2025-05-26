@@ -19,6 +19,7 @@ import (
 	"terraform-provider-opnsense/internal/opnsense/firewall/group"
 	"terraform-provider-opnsense/internal/opnsense/firewall/nat/nptv6"
 	"terraform-provider-opnsense/internal/opnsense/firewall/nat/onetoone"
+	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/pipes"
 )
 
 // Ensure OpnsenseProvider satisfies various provider interfaces.
@@ -252,6 +253,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		group.NewGroupResource,
 		nptv6.NewNatNptv6Resource,
 		onetoone.NewNatOneToOneResource,
+		pipes.NewShaperPipesResource,
 	}
 }
 
