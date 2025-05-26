@@ -18,6 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -129,8 +131,10 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"queue": schema.Int32Attribute{
 				Optional:    true,
+				Computed:    true,
 				Description: "Number of dynamic queues, leave empty for default.",
 				Validators:  []validator.Int32{int32validator.Between(2, 100)},
+				Default:     int32default.StaticInt32(-1),
 			},
 			"mask": schema.StringAttribute{
 				Optional: true,
@@ -148,8 +152,10 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"buckets": schema.Int32Attribute{
 				Optional:    true,
+				Computed:    true,
 				Description: "Specifies the size of the hash table used for storing the various dynamic pipes configured with the mask setting.",
 				Validators:  []validator.Int32{int32validator.Between(1, 65535)},
+				Default:     int32default.StaticInt32(-1),
 			},
 			"scheduler": schema.StringAttribute{
 				Optional: true,
@@ -168,6 +174,7 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"codel": schema.SingleNestedAttribute{
 				Optional:    true,
+				Computed:    true,
 				Description: "CoDel active queue management.",
 				Attributes: map[string]schema.Attribute{
 					"enabled": schema.BoolAttribute{
@@ -178,13 +185,17 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 					},
 					"target": schema.Int32Attribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "Minimum acceptable persistent queue delay (in ms), leave empty for default.",
 						Validators:  []validator.Int32{int32validator.AtLeast(1)},
+						Default:     int32default.StaticInt32(-1),
 					},
 					"interval": schema.Int32Attribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "Interval before dropping packets (in ms), leave empty for default.",
 						Validators:  []validator.Int32{int32validator.AtLeast(1)},
+						Default:     int32default.StaticInt32(-1),
 					},
 					"ecn": schema.BoolAttribute{
 						Optional:            true,
@@ -194,20 +205,46 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 					},
 					"quantum": schema.Int32Attribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "The number of bytes a queue can serve before being moved to the tail of old queues list (bytes), leave empty for defaults.",
 						Validators:  []validator.Int32{int32validator.AtLeast(1)},
+						Default:     int32default.StaticInt32(-1),
 					},
 					"limit": schema.Int32Attribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "The hard size limit of all queues managed by this instance, leave empty for defaults.",
 						Validators:  []validator.Int32{int32validator.AtLeast(1)},
+						Default:     int32default.StaticInt32(-1),
 					},
 					"flows": schema.Int32Attribute{
 						Optional:    true,
+						Computed:    true,
 						Description: "The number of flow queues that are created and managed, leave empty for defaults.",
 						Validators:  []validator.Int32{int32validator.AtLeast(1)},
+						Default:     int32default.StaticInt32(-1),
 					},
 				},
+				Default: objectdefault.StaticValue(types.ObjectValueMust(
+					map[string]attr.Type{
+						"enabled":  types.BoolType,
+						"target":   types.Int32Type,
+						"interval": types.Int32Type,
+						"ecn":      types.BoolType,
+						"quantum":  types.Int32Type,
+						"limit":    types.Int32Type,
+						"flows":    types.Int32Type,
+					},
+					map[string]attr.Value{
+						"enabled":  types.BoolValue(false),
+						"target":   types.Int32Value(-1),
+						"interval": types.Int32Value(-1),
+						"ecn":      types.BoolValue(false),
+						"quantum":  types.Int32Value(-1),
+						"limit":    types.Int32Value(-1),
+						"flows":    types.Int32Value(-1),
+					},
+				)),
 			},
 			"pie": schema.BoolAttribute{
 				Optional:            true,
@@ -217,8 +254,10 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"delay": schema.Int32Attribute{
 				Optional:    true,
+				Computed:    true,
 				Description: "Add delay in ms to this pipe.",
 				Validators:  []validator.Int32{int32validator.Between(1, 3000)},
+				Default:     int32default.StaticInt32(-1),
 			},
 			"description": schema.StringAttribute{
 				Required:    true,

@@ -26,23 +26,23 @@ type shaperPipeHttpBody struct {
 }
 
 type shaperPipeRequest struct {
-	Enabled         uint8  `json:"enabled"`
-	Bandwidth       int64  `json:"bandwidth"`
-	BandwidthMetric string `json:"bandwidthMetric"`
-	Queue           int32  `json:"queue"`
-	Mask            string `json:"mask"`
-	Buckets         int32  `json:"buckets"`
-	Scheduler       string `json:"scheduler"`
-	CodelEnable     uint8  `json:"codel_enable"`
-	CodelTarget     int32  `json:"codel_target"`
-	CodelInterval   int32  `json:"codel_interval"`
-	CodelEcn        uint8  `json:"codel_ecn_enable"`
-	CodelQuantum    int32  `json:"fqcodel_quantum"`
-	CodelLimit      int32  `json:"fqcodel_limit"`
-	CodelFlows      int32  `json:"fqcodel_flows"`
-	Pie             uint8  `json:"pie_enable"`
-	Delay           int32  `json:"delay"`
-	Description     string `json:"description"`
+	Enabled         uint8                   `json:"enabled"`
+	Bandwidth       int64                   `json:"bandwidth"`
+	BandwidthMetric string                  `json:"bandwidthMetric"`
+	Queue           opnsense.Pint32AsString `json:"queue"`
+	Mask            string                  `json:"mask"`
+	Buckets         opnsense.Pint32AsString `json:"buckets"`
+	Scheduler       string                  `json:"scheduler"`
+	CodelEnable     uint8                   `json:"codel_enable"`
+	CodelTarget     opnsense.Pint32AsString `json:"codel_target"`
+	CodelInterval   opnsense.Pint32AsString `json:"codel_interval"`
+	CodelEcn        uint8                   `json:"codel_ecn_enable"`
+	CodelQuantum    opnsense.Pint32AsString `json:"fqcodel_quantum"`
+	CodelLimit      opnsense.Pint32AsString `json:"fqcodel_limit"`
+	CodelFlows      opnsense.Pint32AsString `json:"fqcodel_flows"`
+	Pie             uint8                   `json:"pie_enable"`
+	Delay           opnsense.Pint32AsString `json:"delay"`
+	Description     string                  `json:"description"`
 }
 
 // HTTP Response types
@@ -58,26 +58,26 @@ type shaperPipeResponse struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"bandwidthMetric"`
-	Queue int32 `json:"queue,string"`
+	Queue opnsense.Pint32AsString `json:"queue"`
 	Mask  map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"mask"`
-	Buckets   int32 `json:"buckets,string"`
+	Buckets   opnsense.Pint32AsString `json:"buckets"`
 	Scheduler map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"scheduler"`
-	CodelEnable   uint8  `json:"codel_enable,string"`
-	CodelTarget   int32  `json:"codel_target,string"`
-	CodelInterval int32  `json:"codel_interval,string"`
-	CodelEcn      uint8  `json:"codel_ecn_enable,string"`
-	CodelQuantum  int32  `json:"fqcodel_quantum,string"`
-	CodelLimit    int32  `json:"fqcodel_limit,string"`
-	CodelFlows    int32  `json:"fqcodel_flows,string"`
-	Pie           uint8  `json:"pie_enable,string"`
-	Delay         int32  `json:"delay,string"`
-	Description   string `json:"description"`
+	CodelEnable   uint8                   `json:"codel_enable,string"`
+	CodelTarget   opnsense.Pint32AsString `json:"codel_target"`
+	CodelInterval opnsense.Pint32AsString `json:"codel_interval"`
+	CodelEcn      uint8                   `json:"codel_ecn_enable,string"`
+	CodelQuantum  opnsense.Pint32AsString `json:"fqcodel_quantum"`
+	CodelLimit    opnsense.Pint32AsString `json:"fqcodel_limit"`
+	CodelFlows    opnsense.Pint32AsString `json:"fqcodel_flows"`
+	Pie           uint8                   `json:"pie_enable,string"`
+	Delay         opnsense.Pint32AsString `json:"delay"`
+	Description   string                  `json:"description"`
 }
 
 // Helper functions
@@ -89,19 +89,19 @@ func shaperPipeToHttpBody(shaperPipe shaperPipe) shaperPipeHttpBody {
 			Enabled:         utils.BoolToInt(shaperPipe.Enabled),
 			Bandwidth:       shaperPipe.Bandwidth.Value,
 			BandwidthMetric: shaperPipe.Bandwidth.Metric,
-			Queue:           shaperPipe.Queue,
+			Queue:           opnsense.Pint32AsString(shaperPipe.Queue),
 			Mask:            shaperPipe.Mask,
-			Buckets:         shaperPipe.Buckets,
+			Buckets:         opnsense.Pint32AsString(shaperPipe.Buckets),
 			Scheduler:       shaperPipe.Scheduler,
 			CodelEnable:     utils.BoolToInt(shaperPipe.Codel.Enabled),
-			CodelTarget:     shaperPipe.Codel.Target,
-			CodelInterval:   shaperPipe.Codel.Interval,
+			CodelTarget:     opnsense.Pint32AsString(shaperPipe.Codel.Target),
+			CodelInterval:   opnsense.Pint32AsString(shaperPipe.Codel.Interval),
 			CodelEcn:        utils.BoolToInt(shaperPipe.Codel.Ecn),
-			CodelQuantum:    shaperPipe.Codel.Quantum,
-			CodelLimit:      shaperPipe.Codel.Limit,
-			CodelFlows:      shaperPipe.Codel.Flows,
+			CodelQuantum:    opnsense.Pint32AsString(shaperPipe.Codel.Quantum),
+			CodelLimit:      opnsense.Pint32AsString(shaperPipe.Codel.Limit),
+			CodelFlows:      opnsense.Pint32AsString(shaperPipe.Codel.Flows),
 			Pie:             utils.BoolToInt(shaperPipe.Pie),
-			Delay:           shaperPipe.Delay,
+			Delay:           opnsense.Pint32AsString(shaperPipe.Delay),
 			Description:     shaperPipe.Description,
 		},
 	}
@@ -209,24 +209,24 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 		Flows    int32
 	}{
 		Enabled:  response.Pipe.CodelEnable == 1,
-		Target:   response.Pipe.CodelTarget,
-		Interval: response.Pipe.CodelInterval,
+		Target:   int32(response.Pipe.CodelTarget),
+		Interval: int32(response.Pipe.CodelInterval),
 		Ecn:      response.Pipe.CodelEcn == 1,
-		Quantum:  response.Pipe.CodelQuantum,
-		Limit:    response.Pipe.CodelLimit,
-		Flows:    response.Pipe.CodelFlows,
+		Quantum:  int32(response.Pipe.CodelQuantum),
+		Limit:    int32(response.Pipe.CodelLimit),
+		Flows:    int32(response.Pipe.CodelFlows),
 	}
 
 	return &shaperPipe{
 		Enabled:     response.Pipe.Enabled == 1,
 		Bandwidth:   bandwidth,
-		Queue:       response.Pipe.Queue,
+		Queue:       int32(response.Pipe.Queue),
 		Mask:        mask,
-		Buckets:     response.Pipe.Buckets,
+		Buckets:     int32(response.Pipe.Buckets),
 		Scheduler:   scheduler,
 		Codel:       codel,
 		Pie:         response.Pipe.Pie == 1,
-		Delay:       response.Pipe.Delay,
+		Delay:       int32(response.Pipe.Delay),
 		Description: response.Pipe.Description,
 	}, nil
 }

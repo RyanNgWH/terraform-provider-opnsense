@@ -47,6 +47,32 @@ func (f *Uint8AsString) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// Custom type for mapping json string to positive int32 values.
+type Pint32AsString int32
+
+func (f Pint32AsString) MarshalJSON() ([]byte, error) {
+	// Treat negative values as empty string
+	if f < 0 {
+		return []byte(`""`), nil
+	}
+	return json.Marshal(int32(f))
+}
+
+func (f *Pint32AsString) UnmarshalJSON(data []byte) error {
+	if string(data) == `""` {
+		*f = -1
+		return nil
+	}
+
+	numString := strings.Trim(string(data), `"`)
+	num, err := strconv.ParseInt(numString, 10, 32)
+	if err != nil {
+		return err
+	}
+	*f = Pint32AsString(num)
+	return nil
+}
+
 // Custom type for unmarshalling OPNsense add item json responses
 type OpnsenseAddItemResponse struct {
 	Result      string         `json:"result"`
