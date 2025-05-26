@@ -250,8 +250,8 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		alias.NewGeoIpResource,
 		category.NewCategoryResource,
 		group.NewGroupResource,
-		onetoone.NewNatOneToOneResource,
 		nptv6.NewNatNptv6Resource,
+		onetoone.NewNatOneToOneResource,
 	}
 }
 
@@ -262,6 +262,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		alias.NewGeoIpDataSource,
 		category.NewCategoryDataSource,
 		group.NewGroupDataSource,
+		nptv6.NewOneToOneNatDataSource,
 		onetoone.NewOneToOneNatDataSource,
 	}
 }
