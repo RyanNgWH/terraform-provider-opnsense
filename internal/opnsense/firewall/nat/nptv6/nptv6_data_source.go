@@ -131,7 +131,7 @@ func (d *natNptv6DataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	// Get alias
+	// Get NPTv6 NAT rule
 	tflog.Debug(ctx, "Getting NPTv6 NAT rule information")
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 

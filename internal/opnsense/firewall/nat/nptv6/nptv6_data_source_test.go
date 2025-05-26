@@ -20,34 +20,34 @@ func TestAccNptv6NatDataSource(t *testing.T) {
 			{
 				Config: testAccNptv6NatDataSourceConfig_id_externalPrefix,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("log"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("sequence"), knownvalue.Int32Exact(1)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("interface"), knownvalue.StringExact("lan")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("internal_prefix"), knownvalue.StringExact("1::")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("external_prefix"), knownvalue.StringExact("1::")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("track_interface"), knownvalue.StringExact("")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("log"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("sequence"), knownvalue.Int32Exact(1)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("interface"), knownvalue.StringExact("lan")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("internal_prefix"), knownvalue.StringExact("1::")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("external_prefix"), knownvalue.StringExact("1::")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("track_interface"), knownvalue.StringExact("")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
 						knownvalue.StringExact("perm_test_acc_category"),
 					})),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("description"), knownvalue.StringExact("NPTv6 nat rule for terraform resource testing")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("description"), knownvalue.StringExact("NPTv6 nat rule for terraform resource testing")),
 				},
 			},
 			// Read testing (via id) - track interface
 			{
 				Config: testAccNptv6NatDataSourceConfig_id_trackif,
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("log"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("sequence"), knownvalue.Int32Exact(1)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("interface"), knownvalue.StringExact("wan")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("internal_prefix"), knownvalue.StringExact("1::")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("external_prefix"), knownvalue.StringExact("")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("track_interface"), knownvalue.StringExact("lan")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("enabled"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("log"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("sequence"), knownvalue.Int32Exact(1)),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("interface"), knownvalue.StringExact("wan")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("internal_prefix"), knownvalue.StringExact("1::")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("external_prefix"), knownvalue.StringExact("")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("track_interface"), knownvalue.StringExact("lan")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("categories"), knownvalue.ListExact([]knownvalue.Check{
 						knownvalue.StringExact("perm_test_acc_category"),
 					})),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("description"), knownvalue.StringExact("NPTv6 nat rule for terraform resource testing")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_nptv6.test_acc_data_source", tfjsonpath.New("description"), knownvalue.StringExact("NPTv6 nat rule for terraform resource testing")),
 				},
 			},
 		},

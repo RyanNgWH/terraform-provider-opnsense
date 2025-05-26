@@ -266,6 +266,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		group.NewGroupDataSource,
 		nptv6.NewOneToOneNatDataSource,
 		onetoone.NewOneToOneNatDataSource,
+		pipes.NewShaperPipesDataSource,
 	}
 }
 
