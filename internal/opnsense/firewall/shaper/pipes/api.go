@@ -76,7 +76,7 @@ type shaperPipeResponse struct {
 	CodelLimit    int32  `json:"fqcodel_limit,string"`
 	CodelFlows    int32  `json:"fqcodel_flows,string"`
 	Pie           uint8  `json:"pie_enable,string"`
-	Delay         int32  `json:"delay"`
+	Delay         int32  `json:"delay,string"`
 	Description   string `json:"description"`
 }
 
@@ -174,7 +174,7 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 	var mask string
 	for name, value := range response.Pipe.Mask {
 		if value.Selected == 1 {
-			bandwidthMetric = name
+			mask = name
 			break
 		}
 	}
@@ -182,7 +182,7 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 	var scheduler string
 	for name, value := range response.Pipe.Scheduler {
 		if value.Selected == 1 {
-			bandwidthMetric = name
+			scheduler = name
 			break
 		}
 	}
