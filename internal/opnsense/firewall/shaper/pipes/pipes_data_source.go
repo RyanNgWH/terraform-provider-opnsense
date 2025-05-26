@@ -6,6 +6,7 @@ import (
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
+	"terraform-provider-opnsense/internal/opnsense/firewall/shaper"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -47,7 +48,7 @@ type shaperPipesDataSourceModel struct {
 
 // Metadata returns the data source type name.
 func (d *shaperPipesDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = fmt.Sprintf("%s_%s_%s", req.ProviderTypeName, firewall.TypeName, pipesController)
+	resp.TypeName = fmt.Sprintf("%s_%s_%s_%s", req.ProviderTypeName, firewall.TypeName, shaper.ShaperController, pipesController)
 }
 
 // Schema defines the schema for the datasource.
