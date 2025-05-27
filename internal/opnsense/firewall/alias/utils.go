@@ -126,7 +126,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 			diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
 		}
 		if !interfacesExist {
-			diagnostics.AddError("Create alias error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
+			diagnostics.AddError("Create alias error", "Interface does not exist. Please verify that the specified interface exists on your OPNsense firewall")
 		}
 
 		tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})

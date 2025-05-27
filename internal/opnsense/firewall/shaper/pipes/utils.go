@@ -93,7 +93,7 @@ func getSchedulers() []string {
 
 // Helper functions
 
-// createShaperPipe creates a traffic shaper pip based on the specified plan.
+// createShaperPipe creates a traffic shaper pipe based on the specified plan.
 func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shaperPipe, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 
