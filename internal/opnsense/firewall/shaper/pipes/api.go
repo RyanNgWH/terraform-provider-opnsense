@@ -134,7 +134,7 @@ func addShaperPipe(client *opnsense.Client, shaperPipe shaperPipe) (string, erro
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add traffic shaper pipe error: failed to add one-to-one NAT rule to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add traffic shaper pipe error: failed to add traffic shaper pipe to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -293,4 +293,28 @@ func deleteShaperPipe(client *opnsense.Client, uuid string) error {
 		return fmt.Errorf("Delete traffic shaper pipe error: failed to delete traffic shaper pipe on OPNsense. Please contact the provider maintainers for assistance")
 	}
 	return nil
+}
+
+// CheckShaperPipeExists searches the OPNsense firewall for the traffic shaper pipe with a matching identifier.
+func CheckShaperPipeExists(client *opnsense.Client, identifier string) (bool, error) {
+	path := fmt.Sprintf("%s/%s/%s/%s", shaper.Module, shaper.ShaperSettingsController, getShaperPipeCommand, identifier)
+
+	httpResp, err := client.DoRequest(http.MethodGet, path, nil)
+	if err != nil {
+		return false, fmt.Errorf("OPNsense client error: %s", err)
+	}
+	if httpResp.StatusCode != 200 {
+		return false, fmt.Errorf("Get traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+	}
+
+	var response getShaperPipeResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
+	if err != nil {
+		var jsonTypeError *json.UnmarshalTypeError
+		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
+			return false, nil
+		}
+		return false, fmt.Errorf("Get traffic shaper pipe error (http): %s", err)
+	}
+	return true, nil
 }
