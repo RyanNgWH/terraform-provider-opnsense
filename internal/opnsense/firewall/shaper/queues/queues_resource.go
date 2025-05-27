@@ -121,7 +121,7 @@ func (r *shaperQueuesResource) Schema(ctx context.Context, req resource.SchemaRe
 			"buckets": schema.Int32Attribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Specifies the size of the hash table used for storing the various dynamic pipes configured with the mask setting.",
+				Description: "Specifies the size of the hash table used for storing the various dynamic queues configured with the mask setting.",
 				Validators:  []validator.Int32{int32validator.Between(1, 65535)},
 				Default:     int32default.StaticInt32(-1),
 			},
