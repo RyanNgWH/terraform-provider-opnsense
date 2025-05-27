@@ -248,7 +248,7 @@ func setShaperPipe(client *opnsense.Client, shaperPipe shaperPipe, uuid string) 
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set traffic shaper pipeerror (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
