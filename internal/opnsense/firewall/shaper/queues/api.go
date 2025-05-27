@@ -27,7 +27,7 @@ type shaperQueueHttpBody struct {
 type shaperQueueRequest struct {
 	Enabled       uint8                   `json:"enabled"`
 	Pipe          string                  `json:"pipe"`
-	Weight        int32                   `json:"queue"`
+	Weight        int32                   `json:"weight"`
 	Mask          string                  `json:"mask"`
 	Buckets       opnsense.Pint32AsString `json:"buckets"`
 	CodelEnable   uint8                   `json:"codel_enable"`
@@ -50,7 +50,7 @@ type shaperQueueResponse struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"pipe"`
-	Weight int32 `json:"weight"`
+	Weight int32 `json:"weight,string"`
 	Mask   map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
