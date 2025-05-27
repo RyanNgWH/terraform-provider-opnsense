@@ -56,7 +56,7 @@ resource "opnsense_firewall_shaper_pipes" "example_shaper_pipe" {
 - `mask` (String) Dynamic pipe creation by source or destination address. Leave this value empty if you want to create a pipe with a fixed bandwidth. Must be one of: `none`, `src-ip`, `dst-ip`. Defaults to `none`
 - `pie` (Boolean) Whether PIE active queue management should be enabled. Defaults to `false`
 - `queue` (Number) Number of dynamic queues, leave empty for default.
-- `scheduler` (String) Specifies the scheduling algorithm to use. Must be one of: `qfq`, `flowqueue-codel`, `flowqueue-pie`, `weighted fair queueing`, `fifo`, `deficit round robin`. Defaults to `weighted fair queueing`
+- `scheduler` (String) Specifies the scheduling algorithm to use. Must be one of: `fifo`, `deficit round robin`, `qfq`, `flowqueue-codel`, `flowqueue-pie`, `weighted fair queueing`. Defaults to `weighted fair queueing`
 
 ### Read-Only
 
