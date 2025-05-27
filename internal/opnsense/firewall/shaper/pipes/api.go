@@ -279,18 +279,31 @@ func deleteShaperPipe(client *opnsense.Client, uuid string) error {
 		return fmt.Errorf("OPNsense client error: %s", err)
 	}
 
-	if httpResp.StatusCode != 200 {
+	if httpResp.StatusCode != 200 && httpResp.StatusCode != 500 {
 		return fmt.Errorf("Delete traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
-	var resp opnsense.OpnsenseAddItemResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
-	if err != nil {
-		return fmt.Errorf("Delete traffic shaper pipe error (http): failed to decode http response - %s", err)
-	}
+	if httpResp.StatusCode == 500 {
+		var resp opnsense.OpnsenseDelItemErrorResponse
+		err = json.NewDecoder(httpResp.Body).Decode(&resp)
+		if err != nil {
+			return fmt.Errorf("Delete traffic shaper pipe error (http): failed to decode http response - %s", err)
+		}
 
-	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("Delete traffic shaper pipe error: failed to delete traffic shaper pipe on OPNsense. Please contact the provider maintainers for assistance")
+		if strings.ToLower(resp.ErrorTitle) == "item in use by" {
+			return fmt.Errorf("Delete traffic shaper pipe error: pipe is currently in use by another object (usually a traffic shaper queue).")
+		}
+		return fmt.Errorf("Delete traffic shaper pipe error:\n  Error title: %s\n  Error message: %s", resp.ErrorTitle, resp.ErrorMessage)
+	} else if httpResp.StatusCode == 200 {
+		var resp opnsense.OpnsenseAddItemResponse
+		err = json.NewDecoder(httpResp.Body).Decode(&resp)
+		if err != nil {
+			return fmt.Errorf("Delete traffic shaper pipe error (http): failed to decode http response - %s", err)
+		}
+
+		if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
+			return fmt.Errorf("Delete traffic shaper pipe error: failed to delete traffic shaper pipe on OPNsense. Please contact the provider maintainers for assistance")
+		}
 	}
 	return nil
 }
