@@ -50,12 +50,12 @@ func createShaperQueue(ctx context.Context, client *opnsense.Client, plan shaper
 	// Verify pipe exists
 	tflog.Debug(ctx, "Verifying pipe", map[string]any{"pipe": plan.Pipe})
 
-	pipeExists, err := pipes.CheckShaperPipeExists(client, plan.Id.ValueString())
+	pipeExists, err := pipes.CheckShaperPipeExists(client, plan.Pipe.ValueString())
 	if err != nil {
 		diagnostics.AddError("Create traffic shaper queue error", fmt.Sprintf("%s", err))
 	}
 	if !pipeExists {
-		diagnostics.AddError("Create traffic shaper queue error", "Pipe does not exist. Please verify that the specified pipe exists on your OPNsense firewall")
+		diagnostics.AddError("Create traffic shaper queue error", fmt.Sprintf("Pipe with uuid %s does not exist. Please verify that the specified pipe exists on your OPNsense firewall", plan.Pipe.ValueString()))
 	}
 
 	tflog.Debug(ctx, "Successfully verified pipe", map[string]any{"success": true})
