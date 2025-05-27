@@ -119,3 +119,9 @@ func ValidationsToString(m map[string]any) string {
 type OpnsenseApplyConfigResponse struct {
 	Status string `json:"status"`
 }
+
+// Custom type for unmarshalling OPNsense delete item 500 json responses
+type OpnsenseDelItemErrorResponse struct {
+	ErrorMessage string `json:"errorMessage"`
+	ErrorTitle   string `json:"errorTitle"`
+}
