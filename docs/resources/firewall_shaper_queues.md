@@ -41,7 +41,7 @@ resource "opnsense_firewall_shaper_queues" "example_shaper_queue" {
 
 ### Optional
 
-- `buckets` (Number) Specifies the size of the hash table used for storing the various dynamic pipes configured with the mask setting.
+- `buckets` (Number) Specifies the size of the hash table used for storing the various dynamic queues configured with the mask setting.
 - `codel` (Attributes) CoDel active queue management. (see [below for nested schema](#nestedatt--codel))
 - `enabled` (Boolean) Whether the traffic shaper queue is enabled. Defaults to `true`.
 - `mask` (String) Dynamic queue creation by source or destination address. Leave this value empty if you want to specify multiple queues with different weights. Must be one of: `none`, `src-ip`, `dst-ip`. Defaults to `none`
