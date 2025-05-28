@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"sort"
 	"sync"
 
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -90,6 +91,8 @@ func (bm *BidirectionalMap) GetAllKeys() []string {
 	for key := range bm.keyToValue {
 		keys = append(keys, key)
 	}
+
+	sort.Strings(keys)
 	return keys
 }
 
@@ -102,6 +105,8 @@ func (bm *BidirectionalMap) GetAllValues() []string {
 	for value := range bm.keyToValue {
 		values = append(values, value)
 	}
+
+	sort.Strings(values)
 	return values
 }
 
