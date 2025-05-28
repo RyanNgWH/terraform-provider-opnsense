@@ -109,7 +109,7 @@ var directions = getBidirectionalDirection()
 
 func getBidirectionalDirection() *utils.BidirectionalMap {
 	directions := utils.NewBidirectionalMap()
-	for key, value := range dscpMappings {
+	for key, value := range directionMappings {
 		directions.Put(key, value)
 	}
 	return directions
