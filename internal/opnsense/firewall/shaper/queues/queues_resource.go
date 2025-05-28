@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -116,6 +117,10 @@ func (r *shaperQueuesResource) Schema(ctx context.Context, req resource.SchemaRe
 						", ",
 					),
 				),
+				Validators: []validator.String{
+					// Type must be one of the listed values
+					stringvalidator.OneOf(getMaskTypes()...),
+				},
 				Default: stringdefault.StaticString("none"),
 			},
 			"buckets": schema.Int32Attribute{
