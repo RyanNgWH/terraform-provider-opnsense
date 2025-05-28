@@ -381,7 +381,7 @@ func (r *shaperQueuesResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated ftraffic shaper queue")
+	tflog.Info(ctx, "Successfully updated traffic shaper queue")
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
