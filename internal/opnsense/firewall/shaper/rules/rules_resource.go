@@ -148,6 +148,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the sources are in lexicographical order, else the provider will detect a change on every execution.",
+				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
 				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"source_not": schema.BoolAttribute{
@@ -167,6 +168,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the destinations are in lexicographical order, else the provider will detect a change on every execution.",
+				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
 				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"destination_not": schema.BoolAttribute{
