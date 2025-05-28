@@ -229,10 +229,19 @@ func deleteShaperQueue(client *opnsense.Client, uuid string) error {
 		return fmt.Errorf("OPNsense client error: %s", err)
 	}
 
-	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Delete traffic shaper queue error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
-	}
+	if httpResp.StatusCode == 500 {
+		var resp opnsense.OpnsenseDelItemErrorResponse
+		err = json.NewDecoder(httpResp.Body).Decode(&resp)
+		if err != nil {
+			return fmt.Errorf("Delete traffic shaper queue error (http): failed to decode http response - %s", err)
+		}
 
+		if strings.ToLower(resp.ErrorTitle) == "item in use by" {
+			return fmt.Errorf("Delete traffic shaper queue error: queue is currently in use by another object (usually a traffic shaper rule).")
+		}
+
+		return fmt.Errorf("Delete traffic shaper queue error:\n  Error title: %s\n  Error message: %s", resp.ErrorTitle, resp.ErrorMessage)
+	} else if httpResp.StatusCode == 200 {
 	var resp opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
@@ -241,6 +250,9 @@ func deleteShaperQueue(client *opnsense.Client, uuid string) error {
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
 		return fmt.Errorf("Delete traffic shaper queue error: failed to delete traffic shaper queue on OPNsense. Please contact the provider maintainers for assistance")
+		}
+	} else {
+		return fmt.Errorf("Delete traffic shaper queue error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 	return nil
 }
