@@ -14,7 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64default"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
@@ -46,7 +46,7 @@ type groupResourceModel struct {
 	Name        types.String   `tfsdk:"name"`
 	Members     []types.String `tfsdk:"members"`
 	NoGroup     types.Bool     `tfsdk:"no_group"`
-	Sequence    types.Int64    `tfsdk:"sequence"`
+	Sequence    types.Int32    `tfsdk:"sequence"`
 	Description types.String   `tfsdk:"description"`
 }
 
@@ -87,11 +87,11 @@ func (r *groupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Description: "If grouping these members in the interfaces menu section should be prevented. Defaults to `false`.",
 				Default:     booldefault.StaticBool(false),
 			},
-			"sequence": schema.Int64Attribute{
+			"sequence": schema.Int32Attribute{
 				Optional:    true,
 				Computed:    true,
 				Description: "Priority sequence used in sorting the groups. Defaults to `0`.",
-				Default:     int64default.StaticInt64(0),
+				Default:     int32default.StaticInt32(0),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
@@ -203,7 +203,7 @@ func (r *groupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	state.Name = types.StringValue(group.Name)
 	state.Members = utils.StringListGoToTerraform(group.Members)
 	state.NoGroup = types.BoolValue(group.NoGroup)
-	state.Sequence = types.Int64Value(group.Sequence)
+	state.Sequence = types.Int32Value(group.Sequence)
 	state.Description = types.StringValue(group.Description)
 
 	if resp.Diagnostics.HasError() {

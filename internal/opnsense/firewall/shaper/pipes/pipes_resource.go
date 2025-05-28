@@ -13,6 +13,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
@@ -125,6 +126,10 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 								", ",
 							),
 						),
+						Validators: []validator.String{
+							// Type must be one of the listed values
+							stringvalidator.OneOf(getMetricValues()...),
+						},
 						Default: stringdefault.StaticString("bit"),
 					},
 				},
@@ -148,6 +153,10 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 						", ",
 					),
 				),
+				Validators: []validator.String{
+					// Type must be one of the listed values
+					stringvalidator.OneOf(getMaskTypes()...),
+				},
 				Default: stringdefault.StaticString("none"),
 			},
 			"buckets": schema.Int32Attribute{
@@ -477,7 +486,7 @@ func (r *shaperPipesResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated ftraffic shaper pipe")
+	tflog.Info(ctx, "Successfully updated traffic shaper pipe")
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.

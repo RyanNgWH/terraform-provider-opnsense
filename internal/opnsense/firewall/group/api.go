@@ -32,7 +32,7 @@ type groupRequest struct {
 	IfName      string `json:"ifname"`
 	Members     string `json:"members"`
 	NoGroup     uint8  `json:"nogroup"`
-	Sequence    int64  `json:"sequence"`
+	Sequence    int32  `json:"sequence"`
 	Description string `json:"descr"`
 }
 
@@ -57,7 +57,7 @@ type searchGroupType struct {
 	IfName      string `json:"ifname"`
 	Description string `json:"descr"`
 	Members     string `json:"members"`
-	Sequence    uint8  `json:"sequence,string"`
+	Sequence    uint16 `json:"sequence,string"`
 }
 
 type getGroupResponse struct {
@@ -71,7 +71,7 @@ type groupResponse struct {
 		Selected uint8  `json:"selected"`
 	} `json:"members"`
 	NoGroup     uint8  `json:"nogroup,string"`
-	Sequence    int64  `json:"sequence,string"`
+	Sequence    int32  `json:"sequence,string"`
 	Description string `json:"descr"`
 }
 

@@ -58,9 +58,9 @@ var schedulerMappings = map[string]string{
 	pie:                  "fq_pie",
 }
 
-var schedulers = getBidirectionalSchedular()
+var schedulers = getBidirectionalScheduler()
 
-func getBidirectionalSchedular() *utils.BidirectionalMap {
+func getBidirectionalScheduler() *utils.BidirectionalMap {
 	schedulers := utils.NewBidirectionalMap()
 	for key, value := range schedulerMappings {
 		schedulers.Put(key, value)

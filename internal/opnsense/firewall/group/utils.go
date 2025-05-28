@@ -20,7 +20,7 @@ type group struct {
 	Name        string
 	Members     []string
 	NoGroup     bool
-	Sequence    int64
+	Sequence    int32
 	Description string
 }
 
@@ -54,7 +54,7 @@ func createGroup(ctx context.Context, client *opnsense.Client, plan groupResourc
 		Name:        plan.Name.ValueString(),
 		Members:     interfaces,
 		NoGroup:     plan.NoGroup.ValueBool(),
-		Sequence:    plan.Sequence.ValueInt64(),
+		Sequence:    plan.Sequence.ValueInt32(),
 		Description: plan.Description.ValueString(),
 	}
 
