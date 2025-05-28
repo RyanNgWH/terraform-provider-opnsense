@@ -227,7 +227,11 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 	var direction string
 	for name, value := range response.Rule.Direction {
 		if value.Selected == 1 {
-			direction = name
+			var exists bool
+			direction, exists = directions.GetByValue(name)
+			if !exists {
+				return nil, fmt.Errorf("Get traffic shaper rule error: Direction `%s` not supported. Please contact the provider maintainers.", name)
+			}
 			break
 		}
 
