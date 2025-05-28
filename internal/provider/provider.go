@@ -272,6 +272,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		onetoone.NewOneToOneNatDataSource,
 		pipes.NewShaperPipesDataSource,
 		queues.NewShaperQueuesDataSource,
+		rules.NewShaperRulesDataSource,
 	}
 }
 
