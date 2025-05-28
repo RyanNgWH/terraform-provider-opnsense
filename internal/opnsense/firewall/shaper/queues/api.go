@@ -242,17 +242,41 @@ func deleteShaperQueue(client *opnsense.Client, uuid string) error {
 
 		return fmt.Errorf("Delete traffic shaper queue error:\n  Error title: %s\n  Error message: %s", resp.ErrorTitle, resp.ErrorMessage)
 	} else if httpResp.StatusCode == 200 {
-	var resp opnsense.OpnsenseAddItemResponse
-	err = json.NewDecoder(httpResp.Body).Decode(&resp)
-	if err != nil {
-		return fmt.Errorf("Delete traffic shaper queue error (http): failed to decode http response - %s", err)
-	}
+		var resp opnsense.OpnsenseAddItemResponse
+		err = json.NewDecoder(httpResp.Body).Decode(&resp)
+		if err != nil {
+			return fmt.Errorf("Delete traffic shaper queue error (http): failed to decode http response - %s", err)
+		}
 
-	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("Delete traffic shaper queue error: failed to delete traffic shaper queue on OPNsense. Please contact the provider maintainers for assistance")
+		if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
+			return fmt.Errorf("Delete traffic shaper queue error: failed to delete traffic shaper queue on OPNsense. Please contact the provider maintainers for assistance")
 		}
 	} else {
 		return fmt.Errorf("Delete traffic shaper queue error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 	return nil
+}
+
+// CheckShaperQueueExists searches the OPNsense firewall for the traffic shaper queue with a matching identifier.
+func CheckShaperQueueExists(client *opnsense.Client, identifier string) (bool, error) {
+	path := fmt.Sprintf("%s/%s/%s/%s", shaper.Module, shaper.ShaperSettingsController, getShaperQueueCommand, identifier)
+
+	httpResp, err := client.DoRequest(http.MethodGet, path, nil)
+	if err != nil {
+		return false, fmt.Errorf("OPNsense client error: %s", err)
+	}
+	if httpResp.StatusCode != 200 {
+		return false, fmt.Errorf("Get traffic shaper queue error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+	}
+
+	var response getShaperQueueResponse
+	err = json.NewDecoder(httpResp.Body).Decode(&response)
+	if err != nil {
+		var jsonTypeError *json.UnmarshalTypeError
+		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
+			return false, nil
+		}
+		return false, fmt.Errorf("Get traffic shaper queue error (http): %s", err)
+	}
+	return true, nil
 }
