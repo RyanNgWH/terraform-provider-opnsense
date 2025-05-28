@@ -39,7 +39,7 @@ type groupDataSourceModel struct {
 	Name        types.String   `tfsdk:"name"`
 	Members     []types.String `tfsdk:"members"`
 	NoGroup     types.Bool     `tfsdk:"no_group"`
-	Sequence    types.Int64    `tfsdk:"sequence"`
+	Sequence    types.Int32    `tfsdk:"sequence"`
 	Description types.String   `tfsdk:"description"`
 }
 
@@ -77,7 +77,7 @@ func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 				Computed:    true,
 				Description: "If grouping these members in the interfaces menu section should be prevented.",
 			},
-			"sequence": schema.Int64Attribute{
+			"sequence": schema.Int32Attribute{
 				Computed:    true,
 				Description: "Priority sequence used in sorting the groups.",
 			},
@@ -156,7 +156,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	data.Name = types.StringValue(group.Name)
 	data.Members = utils.StringListGoToTerraform(group.Members)
 	data.NoGroup = types.BoolValue(group.NoGroup)
-	data.Sequence = types.Int64Value(group.Sequence)
+	data.Sequence = types.Int32Value(group.Sequence)
 	data.Description = types.StringValue(group.Description)
 
 	if resp.Diagnostics.HasError() {
