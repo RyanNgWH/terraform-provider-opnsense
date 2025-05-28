@@ -192,6 +192,16 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("Direction `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Direction.ValueString()))
 	}
 
+	// Dscp
+	var dscpValues []string
+	for _, value := range plan.Dscp {
+		dscp, exists := dscp.GetByKey(value.ValueString())
+		if !exists {
+			diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("Dscp value `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", value.ValueString()))
+		}
+		dscpValues = append(dscpValues, dscp)
+	}
+
 	// Create traffic shaper rule from plan
 	tflog.Debug(ctx, "Creating traffic shaper queue rule from plan", map[string]any{"plan": plan})
 
@@ -208,7 +218,7 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 		Destinations:    utils.StringListTerraformToGo(plan.Destinations),
 		DestinationNot:  plan.DestinationNot.ValueBool(),
 		DestinationPort: plan.DestinationPort.ValueString(),
-		Dscp:            utils.StringListTerraformToGo(plan.Dscp),
+		Dscp:            dscpValues,
 		Target:          plan.Target.ValueString(),
 		Direction:       direction,
 		Description:     plan.Description.ValueString(),

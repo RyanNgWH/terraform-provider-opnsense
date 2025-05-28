@@ -213,10 +213,14 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 		}
 
 	}
-	var dscp []string
+	var dscpValues []string
 	for name, value := range response.Rule.Dscp {
 		if value.Selected == 1 {
-			dscp = append(dscp, name)
+			dscpValue, exists := dscp.GetByValue(name)
+			if !exists {
+				return nil, fmt.Errorf("Get traffic shaper rule error: Dscp value `%s` not supported. Please contact the provider maintainers.", name)
+			}
+			dscpValues = append(dscpValues, dscpValue)
 		}
 	}
 
@@ -249,7 +253,7 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 		Destinations:    destinations,
 		DestinationNot:  response.Rule.DestinationNot == 1,
 		DestinationPort: response.Rule.DestinationPort,
-		Dscp:            dscp,
+		Dscp:            dscpValues,
 		Direction:       direction,
 		Target:          target,
 		Description:     response.Rule.Description,
