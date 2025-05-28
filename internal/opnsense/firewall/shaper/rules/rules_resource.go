@@ -101,6 +101,13 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Whether the traffic shaper rule is enabled. Defaults to `true`.",
 				Default:             booldefault.StaticBool(true),
 			},
+			"sequence": schema.Int32Attribute{
+				Optional:            true,
+				Computed:            true,
+				MarkdownDescription: "Order in which the rule will be evaluated (lowest first). Defaults to `1`.",
+				Validators:          []validator.Int32{int32validator.AtLeast(1)},
+				Default:             int32default.StaticInt32(1),
+			},
 			"interface": schema.StringAttribute{
 				Required:    true,
 				Description: "The interface this rule applies to.",
@@ -155,7 +162,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Source port number or well known name (`imap`, `imaps`, `http`, `https`, ...), for ranges use a dash. Defaults to `any`",
 				Default:             stringdefault.StaticString("any"),
 			},
-			"destination": schema.ListAttribute{
+			"destinations": schema.ListAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
