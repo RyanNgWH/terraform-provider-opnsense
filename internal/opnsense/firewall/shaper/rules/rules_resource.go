@@ -147,7 +147,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.",
+				MarkdownDescription: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the sources are in lexicographical order, else the provider will detect a change on every execution.",
 				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"source_not": schema.BoolAttribute{
@@ -166,7 +166,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.",
+				MarkdownDescription: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the destinations are in lexicographical order, else the provider will detect a change on every execution.",
 				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"destination_not": schema.BoolAttribute{
@@ -186,7 +186,7 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Computed:    true,
 				ElementType: types.StringType,
 				MarkdownDescription: fmt.Sprintf(
-					"Match against one or multiple DSCP values. Allowed values: %s.", strings.Join(
+					"Match against one or multiple DSCP values. Allowed values: %s. Ensure that the dscp values are in lexicographical order, else the provider will detect a change on every execution.", strings.Join(
 						// Surround each type with backticks (`)
 						utils.SliceMap(getDscp(), func(dscp string) string {
 							return fmt.Sprintf("`%s`", dscp)

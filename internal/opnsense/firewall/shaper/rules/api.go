@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -97,13 +98,13 @@ type shaperRuleResponse struct {
 		Selected uint8  `json:"selected"`
 	} `json:"source"`
 	SourceNot    uint8  `json:"source_not,string"`
-	SourcePort   string `json:"source_port"`
+	SourcePort   string `json:"src_port"`
 	Destinations map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"destination"`
 	DestinationNot  uint8  `json:"destination_not,string"`
-	DestinationPort string `json:"destination_port"`
+	DestinationPort string `json:"dst_port"`
 	Dscp            map[string]struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
@@ -243,6 +244,11 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 			break
 		}
 	}
+
+	// Sort lists for predictable output
+	sort.Strings(sources)
+	sort.Strings(destinations)
+	sort.Strings(dscpValues)
 
 	return &shaperRule{
 		Enabled:         response.Rule.Enabled == 1,

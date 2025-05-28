@@ -3,6 +3,7 @@ package rules
 import (
 	"context"
 	"fmt"
+	"sort"
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/pipes"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/queues"
@@ -205,6 +206,14 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	// Create traffic shaper rule from plan
 	tflog.Debug(ctx, "Creating traffic shaper queue rule from plan", map[string]any{"plan": plan})
 
+	sources := utils.StringListTerraformToGo(plan.Sources)
+	destinations := utils.StringListTerraformToGo(plan.Destinations)
+
+	// Sort lists for predictable output
+	sort.Strings(sources)
+	sort.Strings(destinations)
+	sort.Strings(dscpValues)
+
 	shaperRule := shaperRule{
 		Enabled:         plan.Enabled.ValueBool(),
 		Sequence:        plan.Sequence.ValueInt32(),
@@ -212,10 +221,10 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 		Interface2:      plan.Interface2.ValueString(),
 		Protocol:        plan.Protocol.ValueString(),
 		MaxPacketLength: plan.MaxPacketLength.ValueInt32(),
-		Sources:         utils.StringListTerraformToGo(plan.Sources),
+		Sources:         sources,
 		SourceNot:       plan.SourceNot.ValueBool(),
 		SourcePort:      plan.SourcePort.ValueString(),
-		Destinations:    utils.StringListTerraformToGo(plan.Destinations),
+		Destinations:    destinations,
 		DestinationNot:  plan.DestinationNot.ValueBool(),
 		DestinationPort: plan.DestinationPort.ValueString(),
 		Dscp:            dscpValues,
