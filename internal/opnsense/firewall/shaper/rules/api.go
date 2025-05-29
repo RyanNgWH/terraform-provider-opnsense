@@ -45,32 +45,6 @@ type shaperRuleRequest struct {
 	Description     string                  `json:"description"`
 }
 
-// Helper functions
-
-// shaperRuleToHttpBody converts a traffic shaper rule object to a shaperRuleToHttpBody object for sending to the OPNsense API.
-func shaperRuleToHttpBody(shaperRule shaperRule) shaperRuleHttpBody {
-	return shaperRuleHttpBody{
-		Rule: shaperRuleRequest{
-			Enabled:         utils.BoolToInt(shaperRule.Enabled),
-			Sequence:        shaperRule.Sequence,
-			Interface:       shaperRule.Interface,
-			Interface2:      shaperRule.Interface2,
-			Protocol:        shaperRule.Protocol,
-			MaxPacketLength: opnsense.Pint32AsString(shaperRule.MaxPacketLength),
-			Sources:         strings.Join(shaperRule.Sources, ","),
-			SourceNot:       utils.BoolToInt(shaperRule.SourceNot),
-			SourcePort:      shaperRule.SourcePort,
-			Destinations:    strings.Join(shaperRule.Destinations, ","),
-			DestinationNot:  utils.BoolToInt(shaperRule.DestinationNot),
-			DestinationPort: shaperRule.DestinationPort,
-			Dscp:            strings.Join(shaperRule.Dscp, ","),
-			Direction:       shaperRule.Direction,
-			Target:          shaperRule.Target,
-			Description:     shaperRule.Description,
-		},
-	}
-}
-
 // HTTP Response types
 
 type getShaperRuleResponse struct {
@@ -118,6 +92,32 @@ type shaperRuleResponse struct {
 		Selected uint8  `json:"selected"`
 	} `json:"target"`
 	Description string `json:"description"`
+}
+
+// Helper functions
+
+// shaperRuleToHttpBody converts a traffic shaper rule object to a shaperRuleToHttpBody object for sending to the OPNsense API.
+func shaperRuleToHttpBody(shaperRule shaperRule) shaperRuleHttpBody {
+	return shaperRuleHttpBody{
+		Rule: shaperRuleRequest{
+			Enabled:         utils.BoolToInt(shaperRule.Enabled),
+			Sequence:        shaperRule.Sequence,
+			Interface:       shaperRule.Interface,
+			Interface2:      shaperRule.Interface2,
+			Protocol:        shaperRule.Protocol,
+			MaxPacketLength: opnsense.Pint32AsString(shaperRule.MaxPacketLength),
+			Sources:         strings.Join(shaperRule.Sources, ","),
+			SourceNot:       utils.BoolToInt(shaperRule.SourceNot),
+			SourcePort:      shaperRule.SourcePort,
+			Destinations:    strings.Join(shaperRule.Destinations, ","),
+			DestinationNot:  utils.BoolToInt(shaperRule.DestinationNot),
+			DestinationPort: shaperRule.DestinationPort,
+			Dscp:            strings.Join(shaperRule.Dscp, ","),
+			Direction:       shaperRule.Direction,
+			Target:          shaperRule.Target,
+			Description:     shaperRule.Description,
+		},
+	}
 }
 
 // addShaperRule creates a traffic shaper rule on the OPNsense firewall. Returns the UUID on successful creation.
