@@ -20,9 +20,9 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
   sequence        = 2
   interface       = "opt1"
   type            = "binat"
-  source_net      = "10.2.72.1/32"
+  source          = "10.2.72.1/32"
   source_not      = false
-  destination_net = "any"
+  destination     = "any"
   destination_not = false
   external        = "10.2.0.1"
   nat_reflection  = "default"
@@ -35,10 +35,10 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
 
 ### Required
 
-- `destination_net` (String) The 1:1 mapping will only be used for connections to or from the specified destination. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).
+- `destination` (String) The 1:1 mapping will only be used for connections to or from the specified destination. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).
 - `external` (String) The external subnet's starting address for the 1:1 mapping or network. This is the address or network the traffic will translate to/from.
 - `interface` (String) The interface this rule applies to.
-- `source_net` (String) The internal subnet for this 1:1 mapping. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).
+- `source` (String) The internal subnet for this 1:1 mapping. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).
 - `type` (String) The type of the nat rule. Must be one of: `nat`, `binat`
 
 ### Optional

@@ -30,7 +30,7 @@ data "opnsense_firewall_nat_one_to_one" "data_source_via_id" {
 
 - `categories` (List of String) The categories of the rule.
 - `description` (String) The description of the rule.
-- `destination_net` (String) The 1:1 mapping will only be used for connections to or from the specified destination.
+- `destination` (String) The 1:1 mapping will only be used for connections to or from the specified destination.
 - `destination_not` (Boolean) Whether the destination matching should be inverted.
 - `enabled` (Boolean) Whether the one-to-one nat entry is enabled.
 - `external` (String) The external subnet's starting address for the 1:1 mapping or network. This is the address or network the traffic will translate to/from.
@@ -38,6 +38,6 @@ data "opnsense_firewall_nat_one_to_one" "data_source_via_id" {
 - `log` (Boolean) Whether packets that are handled by this rule should be logged.
 - `nat_reflection` (String) Whether nat reflection should be enabled.
 - `sequence` (Number) Order in which multiple matching rules are evaluated and applied.
-- `source_net` (String) The internal subnet for this 1:1 mapping.
+- `source` (String) The internal subnet for this 1:1 mapping.
 - `source_not` (Boolean) Whether the source matching should be inverted.
 - `type` (String) The type of the nat rule.
