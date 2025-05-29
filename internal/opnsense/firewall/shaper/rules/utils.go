@@ -171,7 +171,7 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	// Verify target exists
 	tflog.Debug(ctx, "Verifying target", map[string]any{"target": plan.Target})
 
-	pipeExists, err := pipes.CheckShaperPipeExists(client, plan.Target.ValueString())
+	pipeExists, err := pipes.VerifyShaperPipe(client, plan.Target.ValueString())
 	if err != nil {
 		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
 	}

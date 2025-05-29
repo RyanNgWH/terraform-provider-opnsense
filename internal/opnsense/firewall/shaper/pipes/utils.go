@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -158,4 +159,18 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 	tflog.Debug(ctx, "Successfully created traffic shaper pipe object from plan", map[string]any{"success": true})
 
 	return shaperPipe, diagnostics
+}
+
+// VerifyShaperPipe checks if the specified traffic shaper pipe exist on the OPNsense firewall.
+func VerifyShaperPipe(client *opnsense.Client, queue string) (bool, error) {
+	queueExists, err := checkShaperPipeExists(client, queue)
+	if err != nil {
+		return false, fmt.Errorf("Verify traffic shaper pipe exists error: %s", err)
+	}
+
+	if !queueExists {
+		return false, nil
+	}
+
+	return true, nil
 }
