@@ -9,17 +9,31 @@ const (
 	controller = "overview"
 )
 
-// verifyInterfaces checks if the specified interfaces exist on the OPNsense firewall.
+// VerifyInterfaces checks if the specified list of interfaces exist on the OPNsense firewall.
 func VerifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, error) {
 	for _, iface := range interfacesList {
-		ifaceExists, err := checkInterfaceExists(client, iface)
+		ifaceExists, err := VerifyInterface(client, iface)
 		if err != nil {
-			return false, fmt.Errorf("Failed to verify if interfaces exists on OPNsense - %s", err)
+			return false, fmt.Errorf("%s", err)
 		}
 
 		if !ifaceExists {
 			return false, nil
 		}
 	}
+	return true, nil
+}
+
+// VerifyInterface checks if the specified interface exist on the OPNsense firewall.
+func VerifyInterface(client *opnsense.Client, iface string) (bool, error) {
+	ifaceExists, err := checkInterfaceExists(client, iface)
+	if err != nil {
+		return false, fmt.Errorf("Verify interface exists error: %s", err)
+	}
+
+	if !ifaceExists {
+		return false, nil
+	}
+
 	return true, nil
 }

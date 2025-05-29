@@ -257,8 +257,8 @@ func deleteShaperQueue(client *opnsense.Client, uuid string) error {
 	return nil
 }
 
-// CheckShaperQueueExists searches the OPNsense firewall for the traffic shaper queue with a matching identifier.
-func CheckShaperQueueExists(client *opnsense.Client, identifier string) (bool, error) {
+// checkShaperQueueExists searches the OPNsense firewall for the traffic shaper queue with a matching identifier.
+func checkShaperQueueExists(client *opnsense.Client, identifier string) (bool, error) {
 	path := fmt.Sprintf("%s/%s/%s/%s", shaper.Module, shaper.ShaperSettingsController, getShaperQueueCommand, identifier)
 
 	httpResp, err := client.DoRequest(http.MethodGet, path, nil)

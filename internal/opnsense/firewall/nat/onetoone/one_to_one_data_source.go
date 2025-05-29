@@ -38,9 +38,9 @@ type oneToOneNatDataSourceModel struct {
 	Sequence       types.Int32    `tfsdk:"sequence"`
 	Interface      types.String   `tfsdk:"interface"`
 	Type           types.String   `tfsdk:"type"`
-	SourceNet      types.String   `tfsdk:"source_net"`
+	Source         types.String   `tfsdk:"source"`
 	SourceNot      types.Bool     `tfsdk:"source_not"`
-	DestinationNet types.String   `tfsdk:"destination_net"`
+	Destination    types.String   `tfsdk:"destination"`
 	DestinationNot types.Bool     `tfsdk:"destination_not"`
 	External       types.String   `tfsdk:"external"`
 	NatReflection  types.String   `tfsdk:"nat_reflection"`
@@ -83,7 +83,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:    true,
 				Description: "The type of the nat rule.",
 			},
-			"source_net": schema.StringAttribute{
+			"source": schema.StringAttribute{
 				Computed:            true,
 				MarkdownDescription: "The internal subnet for this 1:1 mapping.",
 			},
@@ -91,7 +91,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				MarkdownDescription: "Whether the source matching should be inverted.",
 			},
-			"destination_net": schema.StringAttribute{
+			"destination": schema.StringAttribute{
 				Computed:    true,
 				Description: "The 1:1 mapping will only be used for connections to or from the specified destination.",
 			},
@@ -173,9 +173,9 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 	data.Sequence = types.Int32Value(rule.Sequence)
 	data.Interface = types.StringValue(rule.Interface)
 	data.Type = types.StringValue(rule.Type)
-	data.SourceNet = types.StringValue(rule.SourceNet)
+	data.Source = types.StringValue(rule.Source)
 	data.SourceNot = types.BoolValue(rule.SourceNot)
-	data.DestinationNet = types.StringValue(rule.DestinationNet)
+	data.Destination = types.StringValue(rule.Destination)
 	data.DestinationNot = types.BoolValue(rule.DestinationNot)
 	data.External = types.StringValue(rule.External)
 	data.NatReflection = types.StringValue(rule.NatRefection)

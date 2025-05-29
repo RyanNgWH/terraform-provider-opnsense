@@ -40,9 +40,13 @@ func createCategory(ctx context.Context, plan categoryResourceModel) category {
 func GetCategoryUuids(client *opnsense.Client, categoriesList []string) ([]string, error) {
 	var categoryUuids []string
 	for _, cat := range categoriesList {
-		uuid, err := SearchCategory(client, cat)
+		uuid, err := searchCategory(client, cat)
 		if err != nil {
 			return nil, fmt.Errorf("%s", err)
+		}
+
+		if uuid == "" {
+			return nil, fmt.Errorf("Get category UUID error: category `%s` does not exist", cat)
 		}
 
 		categoryUuids = append(categoryUuids, uuid)

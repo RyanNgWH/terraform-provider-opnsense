@@ -33,9 +33,9 @@ type oneToOneNatRequest struct {
 	Sequence       int32  `json:"sequence"`
 	Interface      string `json:"interface"`
 	Type           string `json:"type"`
-	SourceNet      string `json:"source_net"`
+	Source         string `json:"source_net"`
 	SourceNot      uint8  `json:"source_not"`
-	DestinationNet string `json:"destination_net"`
+	Destination    string `json:"destination_net"`
 	DestinationNot uint8  `json:"destination_not"`
 	External       string `json:"external"`
 	NatRefection   string `json:"natreflection"`
@@ -61,9 +61,9 @@ type oneToOneNatRuleResponse struct {
 		Value    string `json:"value"`
 		Selected uint8  `json:"selected"`
 	} `json:"type"`
-	SourceNet      string `json:"source_net"`
+	Source         string `json:"source_net"`
 	SourceNot      uint8  `json:"source_not,string"`
-	DestinationNet string `json:"destination_net"`
+	Destination    string `json:"destination_net"`
 	DestinationNot uint8  `json:"destination_not,string"`
 	External       string `json:"external"`
 	NatReflection  map[string]struct {
@@ -88,9 +88,9 @@ func oneToOneNatToHttpBody(oneToOneNat oneToOneNat) oneToOneNatHttpBody {
 			Sequence:       oneToOneNat.Sequence,
 			Interface:      oneToOneNat.Interface,
 			Type:           oneToOneNat.Type,
-			SourceNet:      oneToOneNat.SourceNet,
+			Source:         oneToOneNat.Source,
 			SourceNot:      utils.BoolToInt(oneToOneNat.SourceNot),
-			DestinationNet: oneToOneNat.DestinationNet,
+			Destination:    oneToOneNat.Destination,
 			DestinationNot: utils.BoolToInt(oneToOneNat.DestinationNot),
 			External:       oneToOneNat.External,
 			NatRefection:   oneToOneNat.NatRefection,
@@ -205,9 +205,9 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 		Sequence:       int32(response.Rule.Sequence),
 		Interface:      natInterface,
 		Type:           natType,
-		SourceNet:      response.Rule.SourceNet,
+		Source:         response.Rule.Source,
 		SourceNot:      response.Rule.SourceNot == 1,
-		DestinationNet: response.Rule.DestinationNet,
+		Destination:    response.Rule.Destination,
 		DestinationNot: response.Rule.DestinationNot == 1,
 		External:       response.Rule.External,
 		NatRefection:   natReflection,

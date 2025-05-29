@@ -307,8 +307,8 @@ func deleteShaperPipe(client *opnsense.Client, uuid string) error {
 	return nil
 }
 
-// CheckShaperPipeExists searches the OPNsense firewall for the traffic shaper pipe with a matching identifier.
-func CheckShaperPipeExists(client *opnsense.Client, identifier string) (bool, error) {
+// checkShaperPipeExists searches the OPNsense firewall for the traffic shaper pipe with a matching identifier.
+func checkShaperPipeExists(client *opnsense.Client, identifier string) (bool, error) {
 	path := fmt.Sprintf("%s/%s/%s/%s", shaper.Module, shaper.ShaperSettingsController, getShaperPipeCommand, identifier)
 
 	httpResp, err := client.DoRequest(http.MethodGet, path, nil)

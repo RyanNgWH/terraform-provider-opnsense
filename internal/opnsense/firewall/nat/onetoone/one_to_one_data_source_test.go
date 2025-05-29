@@ -25,9 +25,9 @@ func TestAccOneToOneNatDataSource(t *testing.T) {
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("sequence"), knownvalue.Int32Exact(2)),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("interface"), knownvalue.StringExact("wan")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("type"), knownvalue.StringExact("nat")),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("source_net"), knownvalue.StringExact("1.1.1.1")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("source"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("source_not"), knownvalue.Bool(false)),
-					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("destination_net"), knownvalue.StringExact("2.2.2.2")),
+					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("destination"), knownvalue.StringExact("2.2.2.2")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("destination_not"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("external"), knownvalue.StringExact("3.3.3.3")),
 					statecheck.ExpectKnownValue("data.opnsense_firewall_nat_one_to_one.test_acc_data_source", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("default")),
@@ -49,9 +49,9 @@ const testAccOneToOneNatDataSourceConfig_id = `
 		sequence        = 2
 		interface       = "wan"
 		type            = "nat"
-		source_net      = "1.1.1.1"
+		source		      = "1.1.1.1"
 		source_not      = false
-		destination_net = "2.2.2.2"
+		destination		  = "2.2.2.2"
 		destination_not = false
 		external        = "3.3.3.3"
 		nat_reflection  = "default"

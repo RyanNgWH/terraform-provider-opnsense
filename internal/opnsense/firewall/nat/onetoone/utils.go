@@ -25,9 +25,9 @@ type oneToOneNat struct {
 	Sequence       int32
 	Interface      string
 	Type           string
-	SourceNet      string
+	Source         string
 	SourceNot      bool
-	DestinationNet string
+	Destination    string
 	DestinationNot bool
 	External       string
 	NatRefection   string
@@ -77,7 +77,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		"interface": plan.Interface,
 	})
 
-	interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
+	interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
 		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("%s", err))
 	}
@@ -105,9 +105,9 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		Sequence:       plan.Sequence.ValueInt32(),
 		Interface:      plan.Interface.ValueString(),
 		Type:           plan.Type.ValueString(),
-		SourceNet:      plan.SourceNet.ValueString(),
+		Source:         plan.Source.ValueString(),
 		SourceNot:      plan.SourceNot.ValueBool(),
-		DestinationNet: plan.DestinationNet.ValueString(),
+		Destination:    plan.Destination.ValueString(),
 		DestinationNot: plan.DestinationNot.ValueBool(),
 		External:       plan.External.ValueString(),
 		NatRefection:   natReflection,

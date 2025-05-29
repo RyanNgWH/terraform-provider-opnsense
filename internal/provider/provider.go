@@ -15,6 +15,7 @@ import (
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/alias"
+	"terraform-provider-opnsense/internal/opnsense/firewall/automation/filter"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/opnsense/firewall/group"
 	"terraform-provider-opnsense/internal/opnsense/firewall/nat/nptv6"
@@ -252,6 +253,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		alias.NewAliasResource,
 		alias.NewGeoIpResource,
 		category.NewCategoryResource,
+		filter.NewAutomationFilterResource,
 		group.NewGroupResource,
 		nptv6.NewNatNptv6Resource,
 		onetoone.NewNatOneToOneResource,

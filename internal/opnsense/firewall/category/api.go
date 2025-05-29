@@ -2,7 +2,6 @@ package category
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -42,24 +41,18 @@ type categoryRequest struct {
 // HTTP response types
 
 type searchCategoryResponse struct {
-	Rows     []searchCategoryType `json:"rows"`
-	RowCount int32                `json:"rowCount"`
-	Total    int32                `json:"total"`
-	Current  int32                `json:"current"`
+	Rows     []categoryType `json:"rows"`
+	RowCount int32          `json:"rowCount"`
+	Total    int32          `json:"total"`
+	Current  int32          `json:"current"`
 }
 
 type getCategoryResponse struct {
-	Category getCategoryType `json:"category"`
+	Category categoryType `json:"category"`
 }
 
-type searchCategoryType struct {
+type categoryType struct {
 	Uuid  string `json:"uuid"`
-	Name  string `json:"name"`
-	Auto  uint8  `json:"auto,string"`
-	Color string `json:"color"`
-}
-
-type getCategoryType struct {
 	Name  string `json:"name"`
 	Auto  uint8  `json:"auto,string"`
 	Color string `json:"color"`
@@ -78,8 +71,8 @@ func categoryToHttpBody(category category) categoryHttpBody {
 	}
 }
 
-// SearchCategory searches the OPNsense firewall for the category with a matching name, returning its uuid if it exists.
-func SearchCategory(client *opnsense.Client, name string) (string, error) {
+// searchCategory searches the OPNsense firewall for the category with a matching name, returning its uuid if it exists.
+func searchCategory(client *opnsense.Client, name string) (string, error) {
 	path := fmt.Sprintf("%s/%s/%s", firewall.Module, controller, searchCategoryCommand)
 
 	body := searchCategoryRequestBody{
@@ -98,13 +91,13 @@ func SearchCategory(client *opnsense.Client, name string) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Search category http error: abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Search category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var searchCategoryResponse searchCategoryResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&searchCategoryResponse)
 	if err != nil {
-		return "", fmt.Errorf("Search category http error: %s", err)
+		return "", fmt.Errorf("Search category error (http): %s", err)
 	}
 
 	for _, category := range searchCategoryResponse.Rows {
@@ -113,7 +106,7 @@ func SearchCategory(client *opnsense.Client, name string) (string, error) {
 		}
 	}
 
-	return "", errors.New("Search category error: category does not exist")
+	return "", nil
 }
 
 // GetCategory searches the OPNsense firewall for the category with a matching uuid.
@@ -125,13 +118,13 @@ func GetCategory(client *opnsense.Client, uuid string) (*category, error) {
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get category http error: abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
 	}
 
 	var resp getCategoryResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return nil, fmt.Errorf("Get category http error: %s", err)
+		return nil, fmt.Errorf("Get category error (http): %s", err)
 	}
 	if resp == (getCategoryResponse{}) {
 		return nil, fmt.Errorf("Get category error: category with uuid `%s` does not exist", uuid)
