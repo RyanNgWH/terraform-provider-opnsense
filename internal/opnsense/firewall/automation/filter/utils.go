@@ -243,17 +243,19 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 	tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
 
 	// Verify gateway
-	tflog.Debug(ctx, "Verifying gateway", map[string]any{"gateways": plan.Gateway})
+	if plan.Gateway.ValueString() != "" {
+		tflog.Debug(ctx, "Verifying gateway", map[string]any{"gateways": plan.Gateway.ValueString()})
 
-	gatewayExists, err := gateways.VerifyGateway(client, plan.Gateway.ValueString())
-	if err != nil {
-		diagnostics.AddError("Create automation filter error", fmt.Sprintf("%s", err))
-	}
-	if !gatewayExists {
-		diagnostics.AddError("Create automation filter error", "Gateway does not exist. Please verify that the specified gateway exist on your OPNsense firewall")
-	}
+		gatewayExists, err := gateways.VerifyGateway(client, plan.Gateway.ValueString())
+		if err != nil {
+			diagnostics.AddError("Create automation filter error", fmt.Sprintf("%s", err))
+		}
+		if !gatewayExists {
+			diagnostics.AddError("Create automation filter error", "Gateway does not exist. Please verify that the specified gateway exist on your OPNsense firewall")
+		}
 
-	tflog.Debug(ctx, "Successfully verified gateway", map[string]any{"success": true})
+		tflog.Debug(ctx, "Successfully verified gateway", map[string]any{"success": true})
+	}
 
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
