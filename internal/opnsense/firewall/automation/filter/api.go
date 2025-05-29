@@ -218,7 +218,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 	var protocol string
 	for name, value := range response.Rule.Protocol {
 		if value.Selected == 1 {
-			protocol = name
+			protocol = strings.ToLower(name)
 			break
 		}
 	}

@@ -361,6 +361,7 @@ func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRe
 	state.Interfaces = utils.StringListGoToTerraform(rule.Interfaces)
 	state.Direction = types.StringValue(rule.Direction)
 	state.IpVersion = types.StringValue(rule.IpVersion)
+	state.Protocol = types.StringValue(rule.Protocol)
 	state.Source = types.StringValue(rule.Source)
 	state.SourceNot = types.BoolValue(rule.SourceNot)
 	state.SourcePort = types.StringValue(rule.SourcePort)
