@@ -50,7 +50,7 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 	// Verify interface
 	tflog.Debug(ctx, "Verifying interface", map[string]any{"interface": plan.Interface})
 
-	interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
+	interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
 		diagnostics.AddError("Create NPTv6 NAT error", fmt.Sprintf("%s", err))
 	}
@@ -64,7 +64,7 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 	if plan.TrackInterface.ValueString() != "" {
 		tflog.Debug(ctx, "Verifying track interface", map[string]any{"interface": plan.TrackInterface})
 
-		interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.TrackInterface.ValueString()})
+		interfacesExist, err := overview.VerifyInterface(client, plan.TrackInterface.ValueString())
 		if err != nil {
 			diagnostics.AddError("Create NPTv6 NAT error", fmt.Sprintf("%s", err))
 		}

@@ -121,7 +121,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 			"interface": plan.Interface,
 		})
 
-		interfacesExist, err := overview.VerifyInterfaces(client, []string{plan.Interface.ValueString()})
+		interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 		if err != nil {
 			diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
 		}
