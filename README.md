@@ -4,7 +4,7 @@
 
 ![GitHub Release](https://img.shields.io/github/v/release/ryanngwh/terraform-plugin-opnsense)
 
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](.github/CODE_OF_CONDUCT.md)
 
 A Terraform/OpenTofu provider for OPNsense. This provider aims to support functionality supported by the OPNsense API.
 
