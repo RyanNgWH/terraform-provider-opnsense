@@ -269,6 +269,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		alias.NewAliasDataSource,
 		alias.NewGeoIpDataSource,
 		category.NewCategoryDataSource,
+		filter.NewAutomationFilterDataSource,
 		group.NewGroupDataSource,
 		nptv6.NewOneToOneNatDataSource,
 		onetoone.NewOneToOneNatDataSource,
