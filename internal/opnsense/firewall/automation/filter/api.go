@@ -40,7 +40,7 @@ type automationFilterRuleRequest struct {
 	Source          string `json:"source_net"`
 	SourceNot       uint8  `json:"source_not"`
 	SourcePort      string `json:"source_port"`
-	Destination     string `json:"destination"`
+	Destination     string `json:"destination_net"`
 	DestinationNot  uint8  `json:"destination_not"`
 	DestinationPort string `json:"destination_port"`
 	Gateway         string `json:"gateway"`
