@@ -10,6 +10,7 @@ import (
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
+	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/utils"
 )
 
@@ -206,7 +207,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 	for name, value := range response.Rule.IpVersion {
 		if value.Selected == 1 {
 			var exists bool
-			direction, exists = ipVersions.GetByValue(name)
+			ipVersion, exists = ipVersions.GetByValue(name)
 			if !exists {
 				return nil, fmt.Errorf("Get automation filter rule error: Ip version `%s` not supported. Please contact the provider maintainers.", name)
 			}
@@ -230,12 +231,16 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 		}
 	}
 
-	var categories []string
+	categories := make([]string, 0)
 	for name, value := range response.Rule.Categories {
-		if value.Selected == 1 {
-			categories = append(categories, name)
-		}
+		if value.Selected == 1 && value.Value != "" {
+			categoryName, err := category.GetCategoryName(client, name)
+			if err != nil {
+				return nil, fmt.Errorf("Get automation filter rule error: failed to get category - %s", err)
+			}
 
+			categories = append(categories, categoryName)
+		}
 	}
 
 	// Sort lists for predictable output
