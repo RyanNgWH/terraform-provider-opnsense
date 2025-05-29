@@ -24,9 +24,9 @@ func TestAccOneToOneNatResource_nat(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("sequence"), knownvalue.Int32Exact(2)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("interface"), knownvalue.StringExact("wan")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("type"), knownvalue.StringExact("nat")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_net"), knownvalue.StringExact("1.1.1.1")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_not"), knownvalue.Bool(false)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_net"), knownvalue.StringExact("2.2.2.2")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination"), knownvalue.StringExact("2.2.2.2")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_not"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("external"), knownvalue.StringExact("3.3.3.3")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("default")),
@@ -52,9 +52,9 @@ func TestAccOneToOneNatResource_nat(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("sequence"), knownvalue.Int32Exact(3)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("interface"), knownvalue.StringExact("lan")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("type"), knownvalue.StringExact("nat")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_net"), knownvalue.StringExact("perm_test_acc_alias")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source"), knownvalue.StringExact("perm_test_acc_alias")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_not"), knownvalue.Bool(true)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_net"), knownvalue.StringExact("1.1.1.1")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_not"), knownvalue.Bool(true)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("external"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("enable")),
@@ -81,9 +81,9 @@ func TestAccOneToOneNatResource_defaults(t *testing.T) {
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("sequence"), knownvalue.Int32Exact(1)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("interface"), knownvalue.StringExact("wan")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("type"), knownvalue.StringExact("nat")),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_net"), knownvalue.StringExact("1.1.1.1")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("source_not"), knownvalue.Bool(false)),
-					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_net"), knownvalue.StringExact("1.1.1.1")),
+					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("destination_not"), knownvalue.Bool(false)),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("external"), knownvalue.StringExact("1.1.1.1")),
 					statecheck.ExpectKnownValue("opnsense_firewall_nat_one_to_one.test_acc_resource_nat", tfjsonpath.New("nat_reflection"), knownvalue.StringExact("default")),
@@ -111,9 +111,9 @@ const testAccOneToOneNatResourceConfig = `
 		sequence        = 2
 		interface       = "wan"
 		type            = "nat"
-		source_net      = "1.1.1.1"
+		source      		= "1.1.1.1"
 		source_not      = false
-		destination_net = "2.2.2.2"
+		destination		  = "2.2.2.2"
 		destination_not = false
 		external        = "3.3.3.3"
 		nat_reflection  = "default"
@@ -132,9 +132,9 @@ const testAccOneToOneNatResourceConfig_modified = `
 		sequence        = 3
 		interface       = "lan"
 		type            = "nat"
-		source_net      = "perm_test_acc_alias"
+		source		      = "perm_test_acc_alias"
 		source_not      = true
-		destination_net = "1.1.1.1"
+		destination		  = "1.1.1.1"
 		destination_not = true
 		external        = "1.1.1.1"
 		nat_reflection  = "enable"
@@ -148,8 +148,8 @@ const testAccOneToOneNatResourceConfig_default = `
 	resource "opnsense_firewall_nat_one_to_one" "test_acc_resource_nat" {
 		interface       = "wan"
 		type            = "nat"
-		source_net      = "1.1.1.1"
-		destination_net = "1.1.1.1"
+		source		      = "1.1.1.1"
+		destination		  = "1.1.1.1"
 		external        = "1.1.1.1"
 	}
 `

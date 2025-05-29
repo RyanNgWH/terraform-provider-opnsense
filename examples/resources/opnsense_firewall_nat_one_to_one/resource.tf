@@ -5,9 +5,9 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
   sequence        = 2
   interface       = "opt1"
   type            = "binat"
-  source_net      = "10.2.72.1/32"
+  source          = "10.2.72.1/32"
   source_not      = false
-  destination_net = "any"
+  destination     = "any"
   destination_not = false
   external        = "10.2.0.1"
   nat_reflection  = "default"

@@ -55,9 +55,9 @@ type natOneToOneResourceModel struct {
 	Sequence       types.Int32    `tfsdk:"sequence"`
 	Interface      types.String   `tfsdk:"interface"`
 	Type           types.String   `tfsdk:"type"`
-	SourceNet      types.String   `tfsdk:"source_net"`
+	Source         types.String   `tfsdk:"source"`
 	SourceNot      types.Bool     `tfsdk:"source_not"`
-	DestinationNet types.String   `tfsdk:"destination_net"`
+	Destination    types.String   `tfsdk:"destination"`
 	DestinationNot types.Bool     `tfsdk:"destination_not"`
 	External       types.String   `tfsdk:"external"`
 	NatReflection  types.String   `tfsdk:"nat_reflection"`
@@ -127,7 +127,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 					stringvalidator.OneOf(getNatTypes()...),
 				},
 			},
-			"source_net": schema.StringAttribute{
+			"source": schema.StringAttribute{
 				Required:            true,
 				MarkdownDescription: "The internal subnet for this 1:1 mapping. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).",
 			},
@@ -137,7 +137,7 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Whether the source matching should be inverted. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
-			"destination_net": schema.StringAttribute{
+			"destination": schema.StringAttribute{
 				Required:    true,
 				Description: "The 1:1 mapping will only be used for connections to or from the specified destination. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`).",
 			},
@@ -289,9 +289,9 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 	state.Sequence = types.Int32Value(rule.Sequence)
 	state.Interface = types.StringValue(rule.Interface)
 	state.Type = types.StringValue(rule.Type)
-	state.SourceNet = types.StringValue(rule.SourceNet)
+	state.Source = types.StringValue(rule.Source)
 	state.SourceNot = types.BoolValue(rule.SourceNot)
-	state.DestinationNet = types.StringValue(rule.DestinationNet)
+	state.Destination = types.StringValue(rule.Destination)
 	state.DestinationNot = types.BoolValue(rule.DestinationNot)
 	state.External = types.StringValue(rule.External)
 	state.NatReflection = types.StringValue(rule.NatRefection)
