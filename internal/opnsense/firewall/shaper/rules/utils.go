@@ -176,7 +176,7 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
 	}
 
-	queueExists, err := queues.CheckShaperQueueExists(client, plan.Target.ValueString())
+	queueExists, err := queues.VerifyShaperQueue(client, plan.Target.ValueString())
 	if err != nil {
 		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
 	}

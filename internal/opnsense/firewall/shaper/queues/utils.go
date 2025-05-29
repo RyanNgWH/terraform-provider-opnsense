@@ -95,3 +95,17 @@ func createShaperQueue(ctx context.Context, client *opnsense.Client, plan shaper
 
 	return shaperQueue, diagnostics
 }
+
+// VerifyShaperQueue checks if the specified traffic shaper queue exist on the OPNsense firewall.
+func VerifyShaperQueue(client *opnsense.Client, queue string) (bool, error) {
+	queueExists, err := checkShaperQueueExists(client, queue)
+	if err != nil {
+		return false, fmt.Errorf("Verify traffic shaper queue exists error: %s", err)
+	}
+
+	if !queueExists {
+		return false, nil
+	}
+
+	return true, nil
+}
