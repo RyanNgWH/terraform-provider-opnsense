@@ -255,7 +255,7 @@ func (r *categoryResource) ImportState(ctx context.Context, req resource.ImportS
 	// Get category UUID from name
 	tflog.Debug(ctx, "Getting category UUID", map[string]any{"name": req.ID})
 
-	uuid, err := SearchCategory(r.client, req.ID)
+	uuid, err := searchCategory(r.client, req.ID)
 	if err != nil {
 		resp.Diagnostics.AddError("Import category error", fmt.Sprintf("%s", err))
 	}

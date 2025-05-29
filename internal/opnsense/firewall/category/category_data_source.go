@@ -110,7 +110,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 	if data.Id.IsNull() {
 		tflog.Debug(ctx, "Getting category UUID", map[string]any{"name": data.Name.ValueString()})
 
-		uuid, err := SearchCategory(d.client, data.Name.ValueString())
+		uuid, err := searchCategory(d.client, data.Name.ValueString())
 		if err != nil {
 			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
 		}
