@@ -77,7 +77,7 @@ func (r *automationFilterResource) Metadata(ctx context.Context, req resource.Me
 
 // Schema defines the schema for the resource.
 func (r *automationFilterResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	defaultCategories, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptyList, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		Description: "Controls the stateful packet filter, which can be used to restrict or allow traffic from and/or to specific networks as well as influence how traffic should be forwarded.",
@@ -132,9 +132,11 @@ func (r *automationFilterResource) Schema(ctx context.Context, req resource.Sche
 				Default:             booldefault.StaticBool(true),
 			},
 			"interfaces": schema.ListAttribute{
-				Required:            true,
+				Optional:            true,
+				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Interfaces this rule applies to. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.",
+				Default:             listdefault.StaticValue(emptyList),
 			},
 			"direction": schema.StringAttribute{
 				Optional: true,
@@ -243,7 +245,7 @@ func (r *automationFilterResource) Schema(ctx context.Context, req resource.Sche
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(defaultCategories),
+				Default:     listdefault.StaticValue(emptyList),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
