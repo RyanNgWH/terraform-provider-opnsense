@@ -278,6 +278,7 @@ func (p *opnsenseProvider) DataSources(ctx context.Context) []func() datasource.
 		pipes.NewShaperPipesDataSource,
 		queues.NewShaperQueuesDataSource,
 		rules.NewShaperRulesDataSource,
+		sourcenat.NewAutomationSourceNatDataSource,
 	}
 }
 
