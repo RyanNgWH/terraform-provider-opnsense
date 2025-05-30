@@ -41,6 +41,7 @@ The provider requires the following permissions on your OPNsense server.
 - `Interfaces: Groups: Edit`
 - `Firewall: Alias: Edit`
 - `Firewall: Automation: Filter`
+- `Firewall: Automation: Source NAT`
 - `Firewall: Categories`
 - `Firewall: NAT: 1:1`
 - `Firewall: NAT: NPTv6`

@@ -1,4 +1,4 @@
-package filter
+package sourcenat
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/opnsense/interfaces/overview"
-	"terraform-provider-opnsense/internal/opnsense/system/gateways"
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -15,16 +14,16 @@ import (
 )
 
 const (
-	filterController = "filter"
+	sourceNatController = "source_nat"
+
+	resourceName = "automation source nat rule"
 )
 
-type automationFilter struct {
+type automationSourceNat struct {
 	Enabled         bool
+	NoNat           bool
 	Sequence        int32
-	Action          string
-	Quick           bool
-	Interfaces      []string
-	Direction       string
+	Interface       string
 	IpVersion       string
 	Protocol        string
 	Source          string
@@ -33,28 +32,14 @@ type automationFilter struct {
 	Destination     string
 	DestinationNot  bool
 	DestinationPort string
-	Gateway         string
+	Target          string
+	TargetPort      string
 	Log             bool
 	Categories      []string
 	Description     string
 }
 
-// Filter values
-
-func getActions() []string {
-	return []string{
-		"pass",
-		"block",
-		"reject",
-	}
-}
-
-func getDirections() []string {
-	return []string{
-		"in",
-		"out",
-	}
-}
+// Source nat values
 
 func getIpVersions() []string {
 	return ipVersions.GetAllKeys()
@@ -220,42 +205,25 @@ func getBidirectionalIpVersion() *utils.BidirectionalMap {
 
 // Helper functions
 
-// createAutomationFilter creates an automation filter object based on the specified plan.
-func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan automationFilterResourceModel) (automationFilter, diag.Diagnostics) {
+// createAutomationSourceNat creates an automation source nat object based on the specified plan.
+func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, plan automationSourceNatResourceModel) (automationSourceNat, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 
-	// Create automation filter rule from plan
-	tflog.Debug(ctx, "Creating automation filter rule object from plan", map[string]any{"plan": plan})
+	// Create automation source nat rule from plan
+	tflog.Debug(ctx, "Creating automation source nat object from plan", map[string]any{"plan": plan})
 
 	// Verify interfaces
-	tflog.Debug(ctx, "Verifying interfaces", map[string]any{"interfaces": plan.Interfaces})
+	tflog.Debug(ctx, "Verifying interface", map[string]any{"interface": plan.Interface})
 
-	interfaces := utils.StringListTerraformToGo(plan.Interfaces)
-
-	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
+	interfaceExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create automation filter error", fmt.Sprintf("%s", err))
+		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("%s", err))
 	}
-	if !interfacesExist {
-		diagnostics.AddError("Create automation filter error", "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
+	if !interfaceExist {
+		diagnostics.AddError("Create automation source nat error", "The specified interface does not exist. Please verify that the specified interfaces exist on your OPNsense firewall")
 	}
 
-	tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
-
-	// Verify gateway
-	if plan.Gateway.ValueString() != "" {
-		tflog.Debug(ctx, "Verifying gateway", map[string]any{"gateways": plan.Gateway.ValueString()})
-
-		gatewayExists, err := gateways.VerifyGateway(client, plan.Gateway.ValueString())
-		if err != nil {
-			diagnostics.AddError("Create automation filter error", fmt.Sprintf("%s", err))
-		}
-		if !gatewayExists {
-			diagnostics.AddError("Create automation filter error", "Gateway does not exist. Please verify that the specified gateway exist on your OPNsense firewall")
-		}
-
-		tflog.Debug(ctx, "Successfully verified gateway", map[string]any{"success": true})
-	}
+	tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
 
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
@@ -264,7 +232,7 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create automation filter error", fmt.Sprintf("%s", err))
+		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -272,7 +240,7 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 	// IpVersion
 	ipVersion, exists := ipVersions.GetByKey(plan.IpVersion.ValueString())
 	if !exists {
-		diagnostics.AddError("Create automation filter error", fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
+		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
 	}
 
 	// Protocol
@@ -281,13 +249,11 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 		protocol = strings.ToUpper(protocol)
 	}
 
-	automationFilter := automationFilter{
+	automationSourceNat := automationSourceNat{
 		Enabled:         plan.Enabled.ValueBool(),
+		NoNat:           plan.NoNat.ValueBool(),
 		Sequence:        plan.Sequence.ValueInt32(),
-		Action:          plan.Action.ValueString(),
-		Quick:           plan.Quick.ValueBool(),
-		Interfaces:      interfaces,
-		Direction:       plan.Direction.ValueString(),
+		Interface:       plan.Interface.ValueString(),
 		IpVersion:       ipVersion,
 		Protocol:        protocol,
 		Source:          plan.Source.ValueString(),
@@ -296,13 +262,14 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 		Destination:     plan.Destination.ValueString(),
 		DestinationNot:  plan.DestinationNot.ValueBool(),
 		DestinationPort: plan.DestinationPort.ValueString(),
-		Gateway:         plan.Gateway.ValueString(),
+		Target:          plan.Target.ValueString(),
+		TargetPort:      plan.TargetPort.ValueString(),
 		Log:             plan.Log.ValueBool(),
 		Categories:      categoryUuids,
 		Description:     plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created automation filter object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, "Successfully created automation source nat object from plan", map[string]any{"success": true})
 
-	return automationFilter, diagnostics
+	return automationSourceNat, diagnostics
 }
