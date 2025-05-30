@@ -220,7 +220,7 @@ func getBidirectionalIpVersion() *utils.BidirectionalMap {
 
 // Helper functions
 
-// createAutomationFilter creates a traffic shaper pipe based on the specified plan.
+// createAutomationFilter creates an automation filter object based on the specified plan.
 func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan automationFilterResourceModel) (automationFilter, diag.Diagnostics) {
 	var diagnostics diag.Diagnostics
 
