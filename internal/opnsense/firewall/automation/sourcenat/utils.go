@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	sourceNatController = "filter"
+	sourceNatController = "source_nat"
 
 	resourceName = "automation source nat rule"
 )

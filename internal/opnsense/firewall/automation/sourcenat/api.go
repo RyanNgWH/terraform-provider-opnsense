@@ -14,6 +14,8 @@ import (
 )
 
 const (
+	sourceNatOpnsenseController string = "source_nat"
+
 	addAutomationSourceNatCommand         opnsense.Command = "add_rule"
 	getAutomationSourceNatCommand         opnsense.Command = "get_rule"
 	setAutomationSourceNatCommand         opnsense.Command = "set_rule"
@@ -114,7 +116,7 @@ func automationSourceNatToHttpBody(automationSourceNat automationSourceNat) auto
 
 // addAutomationSourceNatRule creates an automation source nat rule on the OPNsense firewall. Returns the UUID on successful creation.
 func addAutomationSourceNatRule(client *opnsense.Client, automationSourceNat automationSourceNat) (string, error) {
-	path := fmt.Sprintf("%s/%s/%s", firewall.Module, sourceNatController, addAutomationSourceNatCommand)
+	path := fmt.Sprintf("%s/%s/%s", firewall.Module, sourceNatOpnsenseController, addAutomationSourceNatCommand)
 
 	// Generate API body from automation source nat rule object
 	body := automationSourceNatToHttpBody(automationSourceNat)
@@ -147,7 +149,7 @@ func addAutomationSourceNatRule(client *opnsense.Client, automationSourceNat aut
 
 // getAutomationSourceNatRule searches the OPNsense firewall for the automation source nat rule with a matching UUID.
 func getAutomationSourceNatRule(client *opnsense.Client, uuid string) (*automationSourceNat, error) {
-	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatController, getAutomationSourceNatCommand, uuid)
+	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatOpnsenseController, getAutomationSourceNatCommand, uuid)
 
 	httpResp, err := client.DoRequest(http.MethodGet, path, nil)
 	if err != nil {
@@ -233,7 +235,7 @@ func getAutomationSourceNatRule(client *opnsense.Client, uuid string) (*automati
 
 // setAutomationSourceNatRule updates an existing automation source nat rule on the OPNsense firewall with a matching UUID.
 func setAutomationSourceNatRule(client *opnsense.Client, automationSourceNat automationSourceNat, uuid string) error {
-	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatController, setAutomationSourceNatCommand, uuid)
+	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatOpnsenseController, setAutomationSourceNatCommand, uuid)
 
 	// Generate API body from automation source nat rule object
 	body := automationSourceNatToHttpBody(automationSourceNat)
@@ -266,7 +268,7 @@ func setAutomationSourceNatRule(client *opnsense.Client, automationSourceNat aut
 
 // deleteAutomationSourceNatRule removes an existing automation source nat rule from the OPNsense firewall with a matching UUID.
 func deleteAutomationSourceNatRule(client *opnsense.Client, uuid string) error {
-	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatController, deleteAutomationSourceNatCommand, uuid)
+	path := fmt.Sprintf("%s/%s/%s/%s", firewall.Module, sourceNatOpnsenseController, deleteAutomationSourceNatCommand, uuid)
 
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
@@ -297,7 +299,7 @@ func deleteAutomationSourceNatRule(client *opnsense.Client, uuid string) error {
 
 // applyAutomationSourceNatConfig applies the automation source nat configuration on the OPNsense firewall.
 func applyAutomationSourceNatConfig(client *opnsense.Client) error {
-	path := fmt.Sprintf("%s/%s/%s", firewall.Module, sourceNatController, applyAutomationSourceNatConfigCommand)
+	path := fmt.Sprintf("%s/%s/%s", firewall.Module, sourceNatOpnsenseController, applyAutomationSourceNatConfigCommand)
 
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
