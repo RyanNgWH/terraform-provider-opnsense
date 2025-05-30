@@ -50,6 +50,7 @@ type automationFilterRuleRequest struct {
 }
 
 // HTTP response types
+
 type getAutomationFilterResponse struct {
 	Rule automationFilterRuleResponse `json:"rule"`
 }
