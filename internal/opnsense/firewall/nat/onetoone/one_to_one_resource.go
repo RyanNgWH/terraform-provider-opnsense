@@ -80,14 +80,14 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the one-to-one nat entry.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when one-to-one nat entry was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s entry was last updated.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -209,7 +209,7 @@ func (r *natOneToOneResource) Configure(ctx context.Context, req resource.Config
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan natOneToOneResourceModel
@@ -226,11 +226,11 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Create one-to-one NAT on OPNsense
-	tflog.Debug(ctx, "Creating one-to-one NAT entry on OPNsense", map[string]any{"one-to-one NAT": oneToOneNat})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): oneToOneNat})
 
 	uuid, err := addOneToOneNat(r.client, oneToOneNat)
 	if err != nil {
-		resp.Diagnostics.AddError("Create one-to-one NAT entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -241,7 +241,7 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create one-to-one NAT entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -256,11 +256,13 @@ func (r *natOneToOneResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created one-to-one NAT entry")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state natOneToOneResourceModel
 
 	// Read Terraform prior state data into the model
@@ -270,18 +272,18 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get one-to-one NAT rule
-	tflog.Debug(ctx, "Getting one-to-one NAT rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	rule, err := getOneToOneNat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got one-to-one NAT rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(rule.Enabled)
@@ -308,11 +310,13 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating firewall one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan natOneToOneResourceModel
@@ -336,11 +340,11 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Update one-to-one NAT rule on OPNsense
-	tflog.Debug(ctx, "Updating one-to-one NAT rule on OPNsense", map[string]any{"one-to-one NAT rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): rule})
 
 	err := setOneToOneNat(r.client, rule, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -351,7 +355,7 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -367,12 +371,12 @@ func (r *natOneToOneResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated firewall one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting firewall one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state natOneToOneResourceModel
@@ -382,11 +386,11 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete one-to-one NAT rule on OPNsense
-	tflog.Debug(ctx, "Deleting one-to-one NAT rule on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteOneToOneNat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -397,7 +401,7 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 
 	err = applyOneToOneNatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -405,14 +409,18 @@ func (r *natOneToOneResource) Delete(ctx context.Context, req resource.DeleteReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *natOneToOneResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing firewall one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", resourceName))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }

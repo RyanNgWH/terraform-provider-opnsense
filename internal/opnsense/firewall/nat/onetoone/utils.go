@@ -17,6 +17,8 @@ import (
 
 const (
 	oneToOneController string = "one_to_one"
+
+	resourceName string = "one-to-one NAT rule"
 )
 
 type oneToOneNat struct {
