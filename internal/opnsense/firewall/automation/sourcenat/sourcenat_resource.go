@@ -291,11 +291,13 @@ func (r *automationSourceNatResource) Create(ctx context.Context, req resource.C
 		return
 	}
 
-	tflog.Info(ctx, fmt.Sprintf("Successfully created %s entry", resourceName))
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *automationSourceNatResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state automationSourceNatResourceModel
 
 	// Read Terraform prior state data into the model
@@ -346,6 +348,8 @@ func (r *automationSourceNatResource) Read(ctx context.Context, req resource.Rea
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
@@ -443,6 +447,8 @@ func (r *automationSourceNatResource) Delete(ctx context.Context, req resource.D
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
@@ -453,4 +459,6 @@ func (r *automationSourceNatResource) ImportState(ctx context.Context, req resou
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }
