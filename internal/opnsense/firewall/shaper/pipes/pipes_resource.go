@@ -90,14 +90,14 @@ func (r *shaperPipesResource) Schema(ctx context.Context, req resource.SchemaReq
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the traffic shaper pipe.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when traffic shaper pipe was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -298,7 +298,7 @@ func (r *shaperPipesResource) Configure(ctx context.Context, req resource.Config
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *shaperPipesResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating traffic shaper pipe")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan shaperPipesResourceModel
@@ -315,11 +315,11 @@ func (r *shaperPipesResource) Create(ctx context.Context, req resource.CreateReq
 	}
 
 	// Create traffic shaper pipe on OPNsense
-	tflog.Debug(ctx, "Creating traffic shaper pipe on OPNsense", map[string]any{"traffic shaper pipe": shaperPipe})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): shaperPipe})
 
 	uuid, err := addShaperPipe(r.client, shaperPipe)
 	if err != nil {
-		resp.Diagnostics.AddError("Create traffic shaper pipe entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -330,7 +330,7 @@ func (r *shaperPipesResource) Create(ctx context.Context, req resource.CreateReq
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create traffic shaper pipe entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -345,11 +345,13 @@ func (r *shaperPipesResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created traffic shaper pipe entry")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *shaperPipesResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state shaperPipesResourceModel
 
 	// Read Terraform prior state data into the model
@@ -359,18 +361,18 @@ func (r *shaperPipesResource) Read(ctx context.Context, req resource.ReadRequest
 	}
 
 	// Get traffic shaper pipe
-	tflog.Debug(ctx, "Getting traffic shaper pipe information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	pipe, err := getShaperPipe(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read traffic shaper pipe error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got traffic shaper pipe information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(pipe.Enabled)
@@ -427,11 +429,13 @@ func (r *shaperPipesResource) Read(ctx context.Context, req resource.ReadRequest
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *shaperPipesResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating traffic shaper pipe")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan shaperPipesResourceModel
@@ -455,11 +459,11 @@ func (r *shaperPipesResource) Update(ctx context.Context, req resource.UpdateReq
 	}
 
 	// Update traffic shaper pipe on OPNsense
-	tflog.Debug(ctx, "Updating traffic shaper pipe on OPNsense", map[string]any{"traffic shaper pipe": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): rule})
 
 	err := setShaperPipe(r.client, rule, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update traffic shaper pipe error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -470,7 +474,7 @@ func (r *shaperPipesResource) Update(ctx context.Context, req resource.UpdateReq
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update traffic shaper pipe error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -486,12 +490,12 @@ func (r *shaperPipesResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated traffic shaper pipe")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *shaperPipesResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting traffic shaper pipe")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state shaperPipesResourceModel
@@ -501,11 +505,11 @@ func (r *shaperPipesResource) Delete(ctx context.Context, req resource.DeleteReq
 	}
 
 	// Delete traffic shaper pipe on OPNsense
-	tflog.Debug(ctx, "Deleting traffic shaper pipe on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteShaperPipe(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete traffic shaper pipe error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -516,7 +520,7 @@ func (r *shaperPipesResource) Delete(ctx context.Context, req resource.DeleteReq
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete traffic shaper pipe error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -524,14 +528,18 @@ func (r *shaperPipesResource) Delete(ctx context.Context, req resource.DeleteReq
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *shaperPipesResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing traffic shaper pipe")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", resourceName))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }

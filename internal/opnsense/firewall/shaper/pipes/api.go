@@ -115,7 +115,7 @@ func addShaperPipe(client *opnsense.Client, shaperPipe shaperPipe) (string, erro
 	body := shaperPipeToHttpBody(shaperPipe)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Add traffic shaper pipe error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -124,17 +124,17 @@ func addShaperPipe(client *opnsense.Client, shaperPipe shaperPipe) (string, erro
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Add traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Add traffic shaper pipe error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add traffic shaper pipe error: failed to add traffic shaper pipe to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add %[1]s error: failed to add %[1]s to OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -149,7 +149,7 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response getShaperPipeResponse
@@ -157,9 +157,9 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("Get traffic shaper pipe error: traffic shaper pipe with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the traffic shaper pipe is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing traffic shaper pipe from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the %[1]s is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing %[1]s from the terraform state to rectify the error.", resourceName, uuid)
 		}
-		return nil, fmt.Errorf("Get traffic shaper pipe error (http): %s", err)
+		return nil, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 
 	// Extract values from response
@@ -185,7 +185,7 @@ func getShaperPipe(client *opnsense.Client, uuid string) (*shaperPipe, error) {
 		if value.Selected == 1 {
 			scheduler, exists = schedulers.GetByValue(name)
 			if !exists {
-				return nil, fmt.Errorf("Get traffic shaper pipe error: scheduler %s is not supported. Please contact the provider maintainers for assistance", name)
+				return nil, fmt.Errorf("Get %s error: scheduler %s is not supported. Please contact the provider maintainers for assistance", resourceName, name)
 			}
 			break
 		}
@@ -239,7 +239,7 @@ func setShaperPipe(client *opnsense.Client, shaperPipe shaperPipe, uuid string) 
 	body := shaperPipeToHttpBody(shaperPipe)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("Set traffic shaper pipe error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -248,17 +248,17 @@ func setShaperPipe(client *opnsense.Client, shaperPipe shaperPipe, uuid string) 
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Set traffic shaper pipe error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("Set traffic shaper pipe error: failed to update traffic shaper pipe on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return fmt.Errorf("Set %[1]s error: failed to update %[1]s on OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -271,7 +271,7 @@ func deleteShaperPipe(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("Delete traffic shaper pipe error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -283,26 +283,26 @@ func deleteShaperPipe(client *opnsense.Client, uuid string) error {
 		var resp opnsense.OpnsenseDelItemErrorResponse
 		err = json.NewDecoder(httpResp.Body).Decode(&resp)
 		if err != nil {
-			return fmt.Errorf("Delete traffic shaper pipe error (http): failed to decode http response - %s", err)
+			return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 		}
 
 		if strings.ToLower(resp.ErrorTitle) == "item in use by" {
-			return fmt.Errorf("Delete traffic shaper pipe error: pipe is currently in use by another object (usually a traffic shaper queue or rule).")
+			return fmt.Errorf("Delete %s error: pipe is currently in use by another object (usually a traffic shaper queue or rule).", resourceName)
 		}
 
-		return fmt.Errorf("Delete traffic shaper pipe error:\n  Error title: %s\n  Error message: %s", resp.ErrorTitle, resp.ErrorMessage)
+		return fmt.Errorf("Delete %s error:\n  Error title: %s\n  Error message: %s", resourceName, resp.ErrorTitle, resp.ErrorMessage)
 	} else if httpResp.StatusCode == 200 {
 		var resp opnsense.OpnsenseAddItemResponse
 		err = json.NewDecoder(httpResp.Body).Decode(&resp)
 		if err != nil {
-			return fmt.Errorf("Delete traffic shaper pipe error (http): failed to decode http response - %s", err)
+			return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 		}
 
 		if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-			return fmt.Errorf("Delete traffic shaper pipe error: failed to delete traffic shaper pipe on OPNsense. Please contact the provider maintainers for assistance")
+			return fmt.Errorf("Delete %[1]s error: failed to delete %[1]s on OPNsense. Please contact the provider maintainers for assistance", resourceName)
 		}
 	} else {
-		return fmt.Errorf("Delete traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 	return nil
 }
@@ -316,7 +316,7 @@ func checkShaperPipeExists(client *opnsense.Client, identifier string) (bool, er
 		return false, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return false, fmt.Errorf("Get traffic shaper pipe error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return false, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response getShaperPipeResponse
@@ -326,7 +326,7 @@ func checkShaperPipeExists(client *opnsense.Client, identifier string) (bool, er
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
 			return false, nil
 		}
-		return false, fmt.Errorf("Get traffic shaper pipe error (http): %s", err)
+		return false, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 	return true, nil
 }

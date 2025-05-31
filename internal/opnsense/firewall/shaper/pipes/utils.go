@@ -14,6 +14,8 @@ import (
 
 const (
 	pipesController string = "pipes"
+
+	resourceName string = "traffic shaper pipe"
 )
 
 type shaperPipe struct {
@@ -99,7 +101,7 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 	var diagnostics diag.Diagnostics
 
 	// Create traffic shaper pipe from plan
-	tflog.Debug(ctx, "Creating traffic shaper pipe object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	// Bandwidth
 	var planBandwidth bandwidthModel
@@ -140,7 +142,7 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 	// Scheduler
 	scheduler, exists := schedulers.GetByKey(plan.Scheduler.ValueString())
 	if !exists {
-		diagnostics.AddError("Create traffic shaper pipe error", fmt.Sprintf("Scheduler `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Scheduler.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Scheduler `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Scheduler.ValueString()))
 	}
 
 	shaperPipe := shaperPipe{
@@ -156,7 +158,7 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 		Description: plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created traffic shaper pipe object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return shaperPipe, diagnostics
 }
@@ -165,7 +167,7 @@ func createShaperPipe(ctx context.Context, plan shaperPipesResourceModel) (shape
 func VerifyShaperPipe(client *opnsense.Client, queue string) (bool, error) {
 	queueExists, err := checkShaperPipeExists(client, queue)
 	if err != nil {
-		return false, fmt.Errorf("Verify traffic shaper pipe exists error: %s", err)
+		return false, fmt.Errorf("Verify %s exists error: %s", resourceName, err)
 	}
 
 	if !queueExists {
