@@ -453,6 +453,8 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", aliasResourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.

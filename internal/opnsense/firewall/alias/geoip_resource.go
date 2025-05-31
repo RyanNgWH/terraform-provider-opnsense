@@ -255,6 +255,8 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s configuration", geoipResourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
@@ -269,4 +271,5 @@ func (r *geoIpResource) ImportState(ctx context.Context, req resource.ImportStat
 		return
 	}
 
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s configuration", geoipResourceName))
 }
