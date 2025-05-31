@@ -49,7 +49,7 @@ func (d *geoIpDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *geoIpDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about the firewall geoip configuration.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about the firewall %s configuration.", geoipResourceName),
 		Attributes: map[string]schema.Attribute{
 			"address_count": schema.Int64Attribute{
 				Computed:    true,

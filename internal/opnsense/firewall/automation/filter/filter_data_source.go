@@ -62,7 +62,7 @@ func (d *automationFilterDataSource) Metadata(ctx context.Context, req datasourc
 // Schema defines the schema for the datasource.
 func (d *automationFilterDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a firewall automation filter rule.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about a firewall %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,

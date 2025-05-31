@@ -51,7 +51,7 @@ func (d *groupDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall group.",
+		Description: fmt.Sprintf("Retrieves information about a firewall %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,

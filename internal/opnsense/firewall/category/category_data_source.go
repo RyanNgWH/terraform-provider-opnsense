@@ -47,7 +47,7 @@ func (d *categoryDataSource) Metadata(ctx context.Context, req datasource.Metada
 // Schema defines the schema for the datasource.
 func (d *categoryDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall category.",
+		Description: fmt.Sprintf("Retrieves information about a firewall %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
