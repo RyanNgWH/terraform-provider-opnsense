@@ -52,12 +52,12 @@ func (d *natNptv6DataSource) Metadata(ctx context.Context, req datasource.Metada
 // Schema defines the schema for the datasource.
 func (d *natNptv6DataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a NPTv6 NAT rule.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about a %s.", resourceName),
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the NPTv6 rule entry.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:            true,
@@ -122,7 +122,7 @@ func (d *natNptv6DataSource) Configure(_ context.Context, req datasource.Configu
 
 // Read refreshes the Terraform state with the latest data.
 func (d *natNptv6DataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
 
 	// Read Terraform configuration data into the model
 	var data natNptv6DataSourceModel
@@ -132,21 +132,21 @@ func (d *natNptv6DataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	// Get NPTv6 NAT rule
-	tflog.Debug(ctx, "Getting NPTv6 NAT rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 
 	rule, err := getNptv6Nat(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got NPTv6 NAT rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving NPTv6 NAT rule information to state", map[string]any{"rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{"rule": rule})
 
 	data.Enabled = types.BoolValue(rule.Enabled)
 	data.Log = types.BoolValue(rule.Log)
@@ -168,6 +168,6 @@ func (d *natNptv6DataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	tflog.Debug(ctx, "Saved NPTv6 NAT rule information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read NPTv6 NAT rule", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }

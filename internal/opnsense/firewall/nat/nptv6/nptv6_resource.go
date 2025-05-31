@@ -75,14 +75,14 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the NPTv6 rule entry.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when NPTv6 rule entry was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -171,7 +171,7 @@ func (r *natNptv6Resource) Configure(ctx context.Context, req resource.Configure
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *natNptv6Resource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan natNptv6ResourceModel
@@ -188,11 +188,11 @@ func (r *natNptv6Resource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	// Create NPTv6 NAT on OPNsense
-	tflog.Debug(ctx, "Creating NPTv6 NAT rule on OPNsense", map[string]any{"NPTv6 NAT": nptv6})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): nptv6})
 
 	uuid, err := addNptv6Nat(r.client, nptv6)
 	if err != nil {
-		resp.Diagnostics.AddError("Create NPTv6 NAT entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -203,7 +203,7 @@ func (r *natNptv6Resource) Create(ctx context.Context, req resource.CreateReques
 
 	err = applyNptv6NatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create NPTv6 NAT entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -218,11 +218,13 @@ func (r *natNptv6Resource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created NPTv6 NAT entry")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *natNptv6Resource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state natNptv6ResourceModel
 
 	// Read Terraform prior state data into the model
@@ -232,18 +234,18 @@ func (r *natNptv6Resource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	// Get NPTv6 NAT rule
-	tflog.Debug(ctx, "Getting NPTv6 NAT rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	rule, err := getNptv6Nat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got NPTv6 NAT rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(rule.Enabled)
@@ -266,11 +268,13 @@ func (r *natNptv6Resource) Read(ctx context.Context, req resource.ReadRequest, r
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *natNptv6Resource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating firewall NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan natNptv6ResourceModel
@@ -294,11 +298,11 @@ func (r *natNptv6Resource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	// Update NPTv6 NAT rule on OPNsense
-	tflog.Debug(ctx, "Updating NPTv6 NAT rule on OPNsense", map[string]any{"NPTv6 NAT rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): rule})
 
 	err := setNptv6Nat(r.client, rule, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -309,7 +313,7 @@ func (r *natNptv6Resource) Update(ctx context.Context, req resource.UpdateReques
 
 	err = applyNptv6NatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -325,12 +329,12 @@ func (r *natNptv6Resource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated firewall NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *natNptv6Resource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting firewall NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state natNptv6ResourceModel
@@ -340,11 +344,11 @@ func (r *natNptv6Resource) Delete(ctx context.Context, req resource.DeleteReques
 	}
 
 	// Delete NPTv6 NAT rule on OPNsense
-	tflog.Debug(ctx, "Deleting NPTv6 NAT rule on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteNptv6Nat(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -355,7 +359,7 @@ func (r *natNptv6Resource) Delete(ctx context.Context, req resource.DeleteReques
 
 	err = applyNptv6NatConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete NPTv6 NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -363,14 +367,18 @@ func (r *natNptv6Resource) Delete(ctx context.Context, req resource.DeleteReques
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *natNptv6Resource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing firewall NPTv6 NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", resourceName))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }
