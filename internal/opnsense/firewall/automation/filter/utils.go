@@ -236,10 +236,10 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 	if err != nil {
-		diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
-		diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
@@ -250,10 +250,10 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 
 		gatewayExists, err := gateways.VerifyGateway(client, plan.Gateway.ValueString())
 		if err != nil {
-			diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 		}
 		if !gatewayExists {
-			diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), "Gateway does not exist. Please verify that the specified gateway exist on your OPNsense firewall")
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "Gateway does not exist. Please verify that the specified gateway exist on your OPNsense firewall")
 		}
 
 		tflog.Debug(ctx, "Successfully verified gateway", map[string]any{"success": true})
@@ -266,7 +266,7 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -274,7 +274,7 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 	// IpVersion
 	ipVersion, exists := ipVersions.GetByKey(plan.IpVersion.ValueString())
 	if !exists {
-		diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
 	}
 
 	// Protocol
