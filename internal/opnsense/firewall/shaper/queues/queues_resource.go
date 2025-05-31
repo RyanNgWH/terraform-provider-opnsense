@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
+
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper"
 	"terraform-provider-opnsense/internal/utils"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -79,14 +80,14 @@ func (r *shaperQueuesResource) Schema(ctx context.Context, req resource.SchemaRe
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the traffic shaper queue.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when traffic shaper queue was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -213,7 +214,7 @@ func (r *shaperQueuesResource) Configure(ctx context.Context, req resource.Confi
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *shaperQueuesResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan shaperQueuesResourceModel
@@ -230,11 +231,11 @@ func (r *shaperQueuesResource) Create(ctx context.Context, req resource.CreateRe
 	}
 
 	// Create traffic shaper queue on OPNsense
-	tflog.Debug(ctx, "Creating traffic shaper queue on OPNsense", map[string]any{"traffic shaper queue": shaperQueue})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): shaperQueue})
 
 	uuid, err := addShaperQueue(r.client, shaperQueue)
 	if err != nil {
-		resp.Diagnostics.AddError("Create traffic shaper queue entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s entry error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -245,7 +246,7 @@ func (r *shaperQueuesResource) Create(ctx context.Context, req resource.CreateRe
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create traffic shaper queue entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s entry error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -260,11 +261,13 @@ func (r *shaperQueuesResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created traffic shaper queue entry")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *shaperQueuesResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state shaperQueuesResourceModel
 
 	// Read Terraform prior state data into the model
@@ -274,18 +277,18 @@ func (r *shaperQueuesResource) Read(ctx context.Context, req resource.ReadReques
 	}
 
 	// Get traffic shaper queue
-	tflog.Debug(ctx, "Getting traffic shaper queue information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	queue, err := getShaperQueue(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got traffic shaper queue information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(queue.Enabled)
@@ -322,11 +325,13 @@ func (r *shaperQueuesResource) Read(ctx context.Context, req resource.ReadReques
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *shaperQueuesResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan shaperQueuesResourceModel
@@ -350,11 +355,11 @@ func (r *shaperQueuesResource) Update(ctx context.Context, req resource.UpdateRe
 	}
 
 	// Update traffic shaper queue on OPNsense
-	tflog.Debug(ctx, "Updating traffic shaper queue on OPNsense", map[string]any{"traffic shaper queue": queue})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{"traffic shaper queue": queue})
 
 	err := setShaperQueue(r.client, queue, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -365,7 +370,7 @@ func (r *shaperQueuesResource) Update(ctx context.Context, req resource.UpdateRe
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -381,12 +386,12 @@ func (r *shaperQueuesResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *shaperQueuesResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state shaperQueuesResourceModel
@@ -396,11 +401,11 @@ func (r *shaperQueuesResource) Delete(ctx context.Context, req resource.DeleteRe
 	}
 
 	// Delete traffic shaper queue on OPNsense
-	tflog.Debug(ctx, "Deleting traffic shaper queue on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteShaperQueue(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -411,7 +416,7 @@ func (r *shaperQueuesResource) Delete(ctx context.Context, req resource.DeleteRe
 
 	err = shaper.ApplyShaperConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -419,14 +424,18 @@ func (r *shaperQueuesResource) Delete(ctx context.Context, req resource.DeleteRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *shaperQueuesResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", resourceName))
 
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("id"), req.ID)...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }

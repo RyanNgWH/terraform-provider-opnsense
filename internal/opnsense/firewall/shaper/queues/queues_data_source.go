@@ -52,11 +52,11 @@ func (d *shaperQueuesDataSource) Metadata(ctx context.Context, req datasource.Me
 // Schema defines the schema for the datasource.
 func (d *shaperQueuesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a traffic shaper queue.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about a %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the traffic shaper queue.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:    true,
@@ -135,7 +135,7 @@ func (d *shaperQueuesDataSource) Configure(_ context.Context, req datasource.Con
 
 // Read refreshes the Terraform state with the latest data.
 func (d *shaperQueuesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading traffic shaper queue")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
 
 	// Read Terraform configuration data into the model
 	var data shaperQueuesDataSourceModel
@@ -145,21 +145,21 @@ func (d *shaperQueuesDataSource) Read(ctx context.Context, req datasource.ReadRe
 	}
 
 	// Get traffic shaper queue
-	tflog.Debug(ctx, "Getting traffic shaper queue information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 
 	queue, err := getShaperQueue(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read traffic shaper queue error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got traffic shaper queue information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving traffic shaper queue information to state", map[string]any{"queue": queue})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): queue})
 
 	data.Enabled = types.BoolValue(queue.Enabled)
 	data.Pipe = types.StringValue(queue.Pipe)
@@ -196,6 +196,6 @@ func (d *shaperQueuesDataSource) Read(ctx context.Context, req datasource.ReadRe
 		return
 	}
 
-	tflog.Debug(ctx, "Saved traffic shaper queue information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read traffic shaper queue", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }
