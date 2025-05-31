@@ -128,7 +128,7 @@ func addShaperRule(client *opnsense.Client, shaperRule shaperRule) (string, erro
 	body := shaperRuleToHttpBody(shaperRule)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Add traffic shaper rule error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -137,17 +137,17 @@ func addShaperRule(client *opnsense.Client, shaperRule shaperRule) (string, erro
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Add traffic shaper rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Add traffic shaper rule error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add traffic shaper rule error: failed to add traffic shaper rule to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add %[1]s error: failed to add %[1]s to OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -162,7 +162,7 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get traffic shaper rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response getShaperRuleResponse
@@ -170,9 +170,9 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("Get traffic shaper rule error: traffic shaper rule with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the traffic shaper rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing traffic shaper rule from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the %[1]s is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing traffic shaper rule from the terraform state to rectify the error.", resourceName, uuid)
 		}
-		return nil, fmt.Errorf("Get traffic shaper rule error (http): %s", err)
+		return nil, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 
 	// Extract values from response
@@ -219,7 +219,7 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 		if value.Selected == 1 {
 			dscpValue, exists := dscp.GetByValue(name)
 			if !exists {
-				return nil, fmt.Errorf("Get traffic shaper rule error: Dscp value `%s` not supported. Please contact the provider maintainers.", name)
+				return nil, fmt.Errorf("Get %s error: Dscp value `%s` not supported. Please contact the provider maintainers.", resourceName, name)
 			}
 			dscpValues = append(dscpValues, dscpValue)
 		}
@@ -231,7 +231,7 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 			var exists bool
 			direction, exists = directions.GetByValue(name)
 			if !exists {
-				return nil, fmt.Errorf("Get traffic shaper rule error: Direction `%s` not supported. Please contact the provider maintainers.", name)
+				return nil, fmt.Errorf("Get %s error: Direction `%s` not supported. Please contact the provider maintainers.", resourceName, name)
 			}
 			break
 		}
@@ -278,7 +278,7 @@ func setShaperRule(client *opnsense.Client, shaperRule shaperRule, uuid string) 
 	body := shaperRuleToHttpBody(shaperRule)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("Set traffic shaper rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -287,17 +287,17 @@ func setShaperRule(client *opnsense.Client, shaperRule shaperRule, uuid string) 
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set traffic shaper rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Set traffic shaper rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("Set traffic shaper rule error: failed to update traffic shaper rule on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return fmt.Errorf("Set %[1]s error: failed to update %[1]s on OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -310,7 +310,7 @@ func deleteShaperRule(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("Delete traffic shaper rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -319,17 +319,17 @@ func deleteShaperRule(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Delete traffic shaper rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var resp opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("Delete traffic shaper rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("Delete traffic shaper rule error: failed to delete traffic shaper rule on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Delete %[1]s error: failed to delete %[1]s on OPNsense. Please contact the provider maintainers for assistance", resourceName)
 	}
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/pipes"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/queues"
@@ -16,6 +17,8 @@ import (
 
 const (
 	rulesController string = "rules"
+
+	resourceName string = "traffic shaper rule"
 )
 
 type shaperRule struct {
@@ -160,10 +163,10 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 	if err != nil {
-		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
-		diagnostics.AddError("Create traffic shaper rule error", "One or more interfaces not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "One or more interfaces not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
@@ -173,16 +176,16 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 
 	pipeExists, err := pipes.VerifyShaperPipe(client, plan.Target.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	queueExists, err := queues.VerifyShaperQueue(client, plan.Target.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	if !pipeExists && !queueExists {
-		diagnostics.AddError("Create traffic shaper pipe error", fmt.Sprintf("Target pipe or queue with uuid %s does not exist. Please verify that the specified pipe or queue exists on your OPNsense firewall", plan.Target.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Target pipe or queue with uuid %s does not exist. Please verify that the specified pipe or queue exists on your OPNsense firewall", plan.Target.ValueString()))
 	}
 
 	tflog.Debug(ctx, "Successfully verified target", map[string]any{"success": true})
@@ -190,7 +193,7 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	// Direction
 	direction, exists := directions.GetByKey(plan.Direction.ValueString())
 	if !exists {
-		diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("Direction `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Direction.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Direction `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.Direction.ValueString()))
 	}
 
 	// Dscp
@@ -198,13 +201,13 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	for _, value := range plan.Dscp {
 		dscp, exists := dscp.GetByKey(value.ValueString())
 		if !exists {
-			diagnostics.AddError("Create traffic shaper rule error", fmt.Sprintf("Dscp value `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", value.ValueString()))
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Dscp value `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", value.ValueString()))
 		}
 		dscpValues = append(dscpValues, dscp)
 	}
 
 	// Create traffic shaper rule from plan
-	tflog.Debug(ctx, "Creating traffic shaper queue rule from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	sources := utils.StringListTerraformToGo(plan.Sources)
 	destinations := utils.StringListTerraformToGo(plan.Destinations)
@@ -233,7 +236,7 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 		Description:     plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created traffic shaper rule object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return shaperRule, diagnostics
 }
