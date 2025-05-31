@@ -4,6 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"terraform-provider-opnsense/internal/opnsense"
+	"terraform-provider-opnsense/internal/opnsense/firewall"
+	"terraform-provider-opnsense/internal/utils"
+
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -12,10 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
-
-	"terraform-provider-opnsense/internal/opnsense"
-	"terraform-provider-opnsense/internal/opnsense/firewall"
-	"terraform-provider-opnsense/internal/utils"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -62,7 +62,7 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the alias.",
+				Description: fmt.Sprintf("Identifier of the %s.", aliasResourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:    true,
@@ -174,7 +174,7 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 		uuid, err := getAliasUuid(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
+			resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", aliasResourceName), fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -186,18 +186,18 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	// Get alias
-	tflog.Debug(ctx, "Getting alias information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", aliasResourceName))
 	tflog.SetField(ctx, "alias_name", data.Name.ValueString())
 
 	alias, err := getAlias(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got alias information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", aliasResourceName), map[string]any{"success": true})
 
 	// Map response to model
 	tflog.Debug(ctx, "Saving alias information to state", map[string]any{
@@ -258,6 +258,6 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved alias information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read firewall alias", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", aliasResourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", aliasResourceName), map[string]any{"success": true})
 }
