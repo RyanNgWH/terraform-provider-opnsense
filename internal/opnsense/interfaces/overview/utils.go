@@ -7,6 +7,8 @@ import (
 
 const (
 	controller = "overview"
+
+	resourceName string = "interface"
 )
 
 // VerifyInterfaces checks if the specified list of interfaces exist on the OPNsense firewall.
@@ -28,7 +30,7 @@ func VerifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, e
 func VerifyInterface(client *opnsense.Client, iface string) (bool, error) {
 	ifaceExists, err := checkInterfaceExists(client, iface)
 	if err != nil {
-		return false, fmt.Errorf("Verify interface exists error: %s", err)
+		return false, fmt.Errorf("Verify %s exists error: %s", resourceName, err)
 	}
 
 	if !ifaceExists {
