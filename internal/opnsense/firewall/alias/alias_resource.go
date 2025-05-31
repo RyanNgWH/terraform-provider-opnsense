@@ -384,7 +384,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", aliasResourceName), map[string]any{"alias": alias})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", aliasResourceName), map[string]any{fmt.Sprintf("%s", aliasResourceName): alias})
 
 	err := setAlias(r.client, alias, state.Id.ValueString())
 	if err != nil {
