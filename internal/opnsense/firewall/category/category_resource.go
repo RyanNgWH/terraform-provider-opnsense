@@ -58,14 +58,14 @@ func (r *categoryResource) Schema(ctx context.Context, req resource.SchemaReques
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the category.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when alias was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", resourceName),
 			},
 			"name": schema.StringAttribute{
 				Required:    true,
@@ -110,7 +110,7 @@ func (r *categoryResource) Configure(ctx context.Context, req resource.Configure
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *categoryResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating category alias")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan categoryResourceModel
@@ -123,11 +123,11 @@ func (r *categoryResource) Create(ctx context.Context, req resource.CreateReques
 	category := createCategory(ctx, plan)
 
 	// Create alias on OPNsense
-	tflog.Debug(ctx, "Creating category on OPNsense", map[string]any{"category": category})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): category})
 
 	uuid, err := addCategory(r.client, category)
 	if err != nil {
-		resp.Diagnostics.AddError("Create category error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -143,11 +143,13 @@ func (r *categoryResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created firewall category")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *categoryResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	// Read Terraform prior state data into the model
 	var state categoryResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -161,13 +163,13 @@ func (r *categoryResource) Read(ctx context.Context, req resource.ReadRequest, r
 
 	category, err := GetCategory(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read category error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got category information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Name = types.StringValue(category.Name)
@@ -179,11 +181,13 @@ func (r *categoryResource) Read(ctx context.Context, req resource.ReadRequest, r
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *categoryResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating firewall category")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan categoryResourceModel
@@ -203,11 +207,11 @@ func (r *categoryResource) Update(ctx context.Context, req resource.UpdateReques
 	category := createCategory(ctx, plan)
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, "Updating category on OPNsense", map[string]any{"category": category})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): category})
 
 	err := setCategory(r.client, category, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -224,12 +228,12 @@ func (r *categoryResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated firewall category")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *categoryResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state categoryResourceModel
@@ -239,25 +243,25 @@ func (r *categoryResource) Delete(ctx context.Context, req resource.DeleteReques
 	}
 
 	// Delete alias on OPNsense
-	tflog.Debug(ctx, "Deleting category on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteCategory(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
-	tflog.Info(ctx, "Successfully deleted firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *categoryResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing firewall category")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", resourceName))
 
 	// Get category UUID from name
 	tflog.Debug(ctx, "Getting category UUID", map[string]any{"name": req.ID})
 
 	uuid, err := searchCategory(r.client, req.ID)
 	if err != nil {
-		resp.Diagnostics.AddError("Import category error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Import %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -269,4 +273,6 @@ func (r *categoryResource) ImportState(ctx context.Context, req resource.ImportS
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }

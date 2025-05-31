@@ -11,6 +11,8 @@ import (
 
 const (
 	controller string = "category"
+
+	resourceName string = "category"
 )
 
 type category struct {
@@ -31,7 +33,7 @@ func createCategory(ctx context.Context, plan categoryResourceModel) category {
 		Color: plan.Color.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created category object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return category
 }
