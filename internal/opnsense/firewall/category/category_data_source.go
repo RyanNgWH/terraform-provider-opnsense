@@ -47,12 +47,12 @@ func (d *categoryDataSource) Metadata(ctx context.Context, req datasource.Metada
 // Schema defines the schema for the datasource.
 func (d *categoryDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall category.",
+		Description: fmt.Sprintf("Retrieves information about a firewall %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the category.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
@@ -97,7 +97,7 @@ func (d *categoryDataSource) Configure(_ context.Context, req datasource.Configu
 
 // Read refreshes the Terraform state with the latest data.
 func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading firewall category")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
 
 	// Read Terraform configuration data into the model
 	var data categoryDataSourceModel
@@ -112,7 +112,7 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 
 		uuid, err := searchCategory(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
+			resp.Diagnostics.AddError(fmt.Sprintf("Get %s error", resourceName), fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -124,21 +124,21 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 	}
 
 	// Get category
-	tflog.Debug(ctx, "Getting category information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "category_name", data.Name.ValueString())
 
 	category, err := GetCategory(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get category error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Get %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got category information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving category information to state", map[string]any{
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{
 		"id":        data.Id.ValueString(),
 		"name":      category.Name,
 		"auto":      category.Auto,
@@ -159,6 +159,6 @@ func (d *categoryDataSource) Read(ctx context.Context, req datasource.ReadReques
 		return
 	}
 
-	tflog.Debug(ctx, "Saved category information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read firewall category", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }

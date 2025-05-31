@@ -85,7 +85,7 @@ func (r *geoIpResource) Configure(ctx context.Context, req resource.ConfigureReq
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating GeoIP configuration")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s configuration", geoipResourceName))
 
 	// Read Terraform plan data into the model
 	var plan geoIpResourceModel
@@ -95,11 +95,11 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Set geoip config on OPNsense
-	tflog.Debug(ctx, "Setting geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Setting %s configuration on OPNsense", geoipResourceName), map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Set geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Set %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -110,7 +110,7 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Set %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -124,11 +124,13 @@ func (r *geoIpResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created GeoIP configuration")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s configuration", geoipResourceName))
 }
 
 // Read resource information.
 func (r *geoIpResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s configuration", geoipResourceName))
+
 	// Read Terraform prior state data into the model
 	var state geoIpResourceModel
 	resp.Diagnostics.Append(req.State.Get(ctx, &state)...)
@@ -137,17 +139,17 @@ func (r *geoIpResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 
 	// Get geoip configuration
-	tflog.Debug(ctx, "Getting geoip configuration")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s configuration", geoipResourceName))
 
 	geoip, err := getGeoIp(r.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got geoip configuration", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s configuration", geoipResourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Url = types.StringValue(geoip.Url)
@@ -160,11 +162,13 @@ func (r *geoIpResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s configuration", geoipResourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating GeoIP configuration")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s configuration", geoipResourceName))
 
 	// Read Terraform plan data into the model
 	var plan geoIpResourceModel
@@ -181,11 +185,11 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update geoip on OPNsense
-	tflog.Debug(ctx, "Updating geoip configuration on OPNsense", map[string]any{"url": plan.Url.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s configuration on OPNsense", geoipResourceName), map[string]any{"url": plan.Url.ValueString()})
 
 	err := setGeoIp(r.client, plan.Url.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -196,7 +200,7 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Set geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -212,12 +216,12 @@ func (r *geoIpResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated GeoIP configuration")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s configuration", geoipResourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting GeoIP configuration")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s configuration", geoipResourceName))
 
 	// Read Terraform prior state data into the model
 	var state geoIpResourceModel
@@ -227,11 +231,11 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Remove geoip configuration on OPNsense
-	tflog.Debug(ctx, "Removing geoip configuration on OPNsense")
+	tflog.Debug(ctx, fmt.Sprintf("Removing %s configuration on OPNsense", geoipResourceName))
 
 	err := setGeoIp(r.client, "")
 	if err != nil {
-		resp.Diagnostics.AddError("Delete geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	}
 
 	if resp.Diagnostics.HasError() {
@@ -243,7 +247,7 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -251,11 +255,13 @@ func (r *geoIpResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s configuration", geoipResourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *geoIpResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing firewall geoip configuration")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s configuration", geoipResourceName))
 
 	// Nothing special needs to be done since the geoip read function does not require any attributes.
 	// Setting url to an empty string to prevent terraform from throwing a missing resource import state
@@ -265,4 +271,5 @@ func (r *geoIpResource) ImportState(ctx context.Context, req resource.ImportStat
 		return
 	}
 
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s configuration", geoipResourceName))
 }

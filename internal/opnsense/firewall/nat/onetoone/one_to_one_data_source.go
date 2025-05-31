@@ -56,12 +56,12 @@ func (d *oneToOneNatDataSource) Metadata(ctx context.Context, req datasource.Met
 // Schema defines the schema for the datasource.
 func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a one-to-one NAT rule.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about a %s.", resourceName),
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the one-to-one nat entry.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:            true,
@@ -142,7 +142,7 @@ func (d *oneToOneNatDataSource) Configure(_ context.Context, req datasource.Conf
 
 // Read refreshes the Terraform state with the latest data.
 func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading one-to-one NAT rule")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
 
 	// Read Terraform configuration data into the model
 	var data oneToOneNatDataSourceModel
@@ -152,21 +152,21 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Get one-to-one NAT rule
-	tflog.Debug(ctx, "Getting one-to-one NAT rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 
 	rule, err := getOneToOneNat(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read one-to-one NAT rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got one-to-one NAT rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving one-to-one NAT rule information to state", map[string]any{"rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{"rule": rule})
 
 	data.Enabled = types.BoolValue(rule.Enabled)
 	data.Log = types.BoolValue(rule.Log)
@@ -192,6 +192,6 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	tflog.Debug(ctx, "Saved one-to-one NAT information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read one-to-one NAT rule", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }

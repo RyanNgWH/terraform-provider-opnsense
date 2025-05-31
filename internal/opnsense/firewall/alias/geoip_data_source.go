@@ -49,7 +49,7 @@ func (d *geoIpDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *geoIpDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about the firewall geoip configuration.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about the firewall %s configuration.", geoipResourceName),
 		Attributes: map[string]schema.Attribute{
 			"address_count": schema.Int64Attribute{
 				Computed:    true,
@@ -117,7 +117,7 @@ func (d *geoIpDataSource) Configure(_ context.Context, req datasource.ConfigureR
 
 // Read refreshes the Terraform state with the latest data.
 func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading firewall geoip configuration")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s configuration", geoipResourceName))
 
 	// Read Terraform configuration data into the model
 	var data geoIpDataSourceModel
@@ -129,14 +129,14 @@ func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	// Get geoip configuration
 	geoip, err := getGeoIp(d.client)
 	if err != nil {
-		resp.Diagnostics.AddError("Read geoip error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", geoipResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving geoip information to state", map[string]any{"geoip": geoip})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", geoipResourceName), map[string]any{"geoip": geoip})
 
 	data.AddressCount = types.Int64Value(geoip.AddressCount)
 
@@ -169,6 +169,6 @@ func (d *geoIpDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved geoip information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read firewall geoip configuration", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", geoipResourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s configuration", geoipResourceName), map[string]any{"success": true})
 }

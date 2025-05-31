@@ -86,14 +86,14 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the alias.",
+				Description: fmt.Sprintf("Identifier of the %s.", aliasResourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when alias was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", aliasResourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -234,7 +234,7 @@ func (r *aliasResource) Configure(ctx context.Context, req resource.ConfigureReq
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", aliasResourceName))
 
 	// Read Terraform plan data into the model
 	var plan aliasResourceModel
@@ -251,11 +251,11 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 	}
 
 	// Create alias on OPNsense
-	tflog.Debug(ctx, "Creating alias on OPNsense", map[string]any{"alias": alias})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", aliasResourceName), map[string]any{"alias": alias})
 
 	uuid, err := addAlias(r.client, alias)
 	if err != nil {
-		resp.Diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -266,7 +266,7 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -281,11 +281,13 @@ func (r *aliasResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", aliasResourceName))
 }
 
 // Read resource information.
 func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", aliasResourceName))
+
 	var state aliasResourceModel
 
 	// Read Terraform prior state data into the model
@@ -295,18 +297,18 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 
 	// Get alias
-	tflog.Debug(ctx, "Getting alias information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", aliasResourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	alias, err := getAlias(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got alias information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", aliasResourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(alias.Enabled)
@@ -352,11 +354,13 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", aliasResourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", aliasResourceName))
 
 	// Read Terraform plan data into the model
 	var plan aliasResourceModel
@@ -380,11 +384,11 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	}
 
 	// Update alias on OPNsense
-	tflog.Debug(ctx, "Updating alias on OPNsense", map[string]any{"alias": alias})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", aliasResourceName), map[string]any{fmt.Sprintf("%s", aliasResourceName): alias})
 
 	err := setAlias(r.client, alias, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -395,7 +399,7 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -411,12 +415,12 @@ func (r *aliasResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", aliasResourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", aliasResourceName))
 
 	// Read Terraform prior state data into the model
 	var state aliasResourceModel
@@ -426,11 +430,11 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	}
 
 	// Delete alias on OPNsense
-	tflog.Debug(ctx, "Deleting alias on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", aliasResourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteAlias(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -441,7 +445,7 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	err = applyConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -449,18 +453,20 @@ func (r *aliasResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", aliasResourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
 func (r *aliasResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	tflog.Info(ctx, "Importing firewall alias")
+	tflog.Info(ctx, fmt.Sprintf("Importing %s", aliasResourceName))
 
 	// Get alias UUID from name
 	tflog.Debug(ctx, "Getting alias UUID", map[string]any{"name": req.ID})
 
 	uuid, err := getAliasUuid(r.client, req.ID)
 	if err != nil {
-		resp.Diagnostics.AddError("Import alias error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Import %s error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -472,4 +478,6 @@ func (r *aliasResource) ImportState(ctx context.Context, req resource.ImportStat
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", aliasResourceName))
 }

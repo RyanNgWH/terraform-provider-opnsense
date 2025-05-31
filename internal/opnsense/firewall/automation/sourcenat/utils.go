@@ -210,17 +210,17 @@ func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, pla
 	var diagnostics diag.Diagnostics
 
 	// Create automation source nat rule from plan
-	tflog.Debug(ctx, "Creating automation source nat object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	// Verify interfaces
 	tflog.Debug(ctx, "Verifying interface", map[string]any{"interface": plan.Interface})
 
 	interfaceExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfaceExist {
-		diagnostics.AddError("Create automation source nat error", "The specified interface does not exist. Please verify that the specified interfaces exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "The specified interface does not exist. Please verify that the specified interfaces exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
@@ -232,7 +232,7 @@ func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, pla
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -240,7 +240,7 @@ func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, pla
 	// IpVersion
 	ipVersion, exists := ipVersions.GetByKey(plan.IpVersion.ValueString())
 	if !exists {
-		diagnostics.AddError("Create automation source nat error", fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Ip version `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", plan.IpVersion.ValueString()))
 	}
 
 	// Protocol
@@ -269,7 +269,7 @@ func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, pla
 		Description:     plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created automation source nat object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return automationSourceNat, diagnostics
 }

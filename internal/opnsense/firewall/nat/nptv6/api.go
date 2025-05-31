@@ -95,7 +95,7 @@ func addNptv6Nat(client *opnsense.Client, nptv6 nptv6) (string, error) {
 	body := nptv6ToHttpBody(nptv6)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Add NPTv6 NAT rule error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -104,17 +104,17 @@ func addNptv6Nat(client *opnsense.Client, nptv6 nptv6) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Add NPTv6 NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Add NPTv6 NAT rule error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add NPTv6 NAT rule error: failed to add one-to-one NAT rule to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add %[1]s error: failed to add %[1]s to OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -129,7 +129,7 @@ func getNptv6Nat(client *opnsense.Client, uuid string) (*nptv6, error) {
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get NPTv6 NAT error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response getNptv6Response
@@ -137,9 +137,9 @@ func getNptv6Nat(client *opnsense.Client, uuid string) (*nptv6, error) {
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("Get NPTv6 NAT rule error: NPTv6 NAT rule with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the NPTv6 NAT rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing NPTv6 NAT rule from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the %[1]s is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing %[1]s from the terraform state to rectify the error.", resourceName, uuid)
 		}
-		return nil, fmt.Errorf("Get NPTv6 NAT rule error (http): %s", err)
+		return nil, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 
 	// Extract values from response
@@ -164,7 +164,7 @@ func getNptv6Nat(client *opnsense.Client, uuid string) (*nptv6, error) {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
 			if err != nil {
-				return nil, fmt.Errorf("Get NPTv6 NAT rule error: failed to get category - %s", err)
+				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
 			categories = append(categories, categoryName)
@@ -195,7 +195,7 @@ func setNptv6Nat(client *opnsense.Client, nptv6 nptv6, uuid string) error {
 	body := nptv6ToHttpBody(nptv6)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("Set NPTv6 NAT rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -204,17 +204,17 @@ func setNptv6Nat(client *opnsense.Client, nptv6 nptv6, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set NPTv6 NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Set NPTv6 NAT rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("Set NPTv6 NAT rule error: failed to update NPTv6 NAT rule on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return fmt.Errorf("Set %[1]s error: failed to update %[1]s on OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -227,7 +227,7 @@ func deleteNptv6Nat(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("Delete NPTv6 NAT rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -236,17 +236,17 @@ func deleteNptv6Nat(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Delete NPTv6 NAT rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var resp opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("Delete NPTv6 NAT rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("Delete NPTv6 NAT rule error: failed to delete NPTv6 NAT rule on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Delete %[1]s error: failed to delete %[1]s on OPNsense. Please contact the provider maintainers for assistance", resourceName)
 	}
 	return nil
 }

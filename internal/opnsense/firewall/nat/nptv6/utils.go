@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
+
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
 	"terraform-provider-opnsense/internal/opnsense/interfaces/overview"
@@ -15,6 +16,8 @@ import (
 
 const (
 	nptv6Controller string = "nptv6"
+
+	resourceName string = "NPTv6 NAT rule"
 )
 
 type nptv6 struct {
@@ -42,7 +45,7 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create NPTv6 NAT error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -52,10 +55,10 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 
 	interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create NPTv6 NAT error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
-		diagnostics.AddError("Create NPTv6 NAT error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
@@ -66,17 +69,17 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 
 		interfacesExist, err := overview.VerifyInterface(client, plan.TrackInterface.ValueString())
 		if err != nil {
-			diagnostics.AddError("Create NPTv6 NAT error", fmt.Sprintf("%s", err))
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 		}
 		if !interfacesExist {
-			diagnostics.AddError("Create NPTv6 NAT error", "Track interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "Track interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
 		}
 
 		tflog.Debug(ctx, "Successfully verified track interface", map[string]any{"success": true})
 	}
 
 	// Create NPTv6 NAT rule from plan
-	tflog.Debug(ctx, "Creating NPTv6 NAT object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	// Sort lists for predictable output
 	sort.Strings(categoryUuids)
@@ -93,7 +96,7 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 		Description:    plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created NPTv6 NAT object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return nptv6, diagnostics
 }

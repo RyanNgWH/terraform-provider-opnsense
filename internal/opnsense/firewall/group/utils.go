@@ -14,6 +14,8 @@ import (
 
 const (
 	controller string = "group"
+
+	resourceName string = "group"
 )
 
 type group struct {
@@ -39,16 +41,16 @@ func createGroup(ctx context.Context, client *opnsense.Client, plan groupResourc
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 	if err != nil {
-		diagnostics.AddError("Create group error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
-		diagnostics.AddError("Create group error", "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "One or more interfaces does not exist. Please verify that all specified interfaces exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interfaces", map[string]any{"success": true})
 
 	// Create group from plan
-	tflog.Debug(ctx, "Creating group object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	group := group{
 		Name:        plan.Name.ValueString(),
@@ -58,7 +60,7 @@ func createGroup(ctx context.Context, client *opnsense.Client, plan groupResourc
 		Description: plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created group object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return group, diagnostics
 }

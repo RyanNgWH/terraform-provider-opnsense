@@ -60,11 +60,11 @@ func (d *shaperRulesDataSource) Metadata(ctx context.Context, req datasource.Met
 // Schema defines the schema for the datasource.
 func (d *shaperRulesDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Retrieves information about a traffic shaper rule.",
+		MarkdownDescription: fmt.Sprintf("Retrieves information about a %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:    true,
-				Description: "Identifier of the traffic shaper rule.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Computed:    true,
@@ -160,7 +160,7 @@ func (d *shaperRulesDataSource) Configure(_ context.Context, req datasource.Conf
 
 // Read refreshes the Terraform state with the latest data.
 func (d *shaperRulesDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	tflog.Info(ctx, "Reading traffic shaper rule")
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
 
 	// Read Terraform configuration data into the model
 	var data shaperRulesDataSourceModel
@@ -170,21 +170,21 @@ func (d *shaperRulesDataSource) Read(ctx context.Context, req datasource.ReadReq
 	}
 
 	// Get traffic shaper rule
-	tflog.Debug(ctx, "Getting traffic shaper rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", data.Id.ValueString())
 
 	rule, err := getShaperRule(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read traffic shaper rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got traffic shaper rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving traffic shaper rule information to state", map[string]any{"rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): rule})
 
 	data.Enabled = types.BoolValue(rule.Enabled)
 	data.Sequence = types.Int32Value(rule.Sequence)
@@ -213,6 +213,6 @@ func (d *shaperRulesDataSource) Read(ctx context.Context, req datasource.ReadReq
 		return
 	}
 
-	tflog.Debug(ctx, "Saved traffic shaper rule information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read traffic shaper rule", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }

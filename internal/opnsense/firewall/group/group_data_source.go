@@ -51,12 +51,12 @@ func (d *groupDataSource) Metadata(ctx context.Context, req datasource.MetadataR
 // Schema defines the schema for the datasource.
 func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Retrieves information about a firewall group.",
+		Description: fmt.Sprintf("Retrieves information about a firewall %s.", resourceName),
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Optional:    true,
 				Computed:    true,
-				Description: "Identifier of the group.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 			},
 			"name": schema.StringAttribute{
 				Optional:    true,
@@ -125,7 +125,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 
 		uuid, err := searchGroup(d.client, data.Name.ValueString())
 		if err != nil {
-			resp.Diagnostics.AddError("Get group error", fmt.Sprintf("%s", err))
+			resp.Diagnostics.AddError(fmt.Sprintf("Get %s error", resourceName), fmt.Sprintf("%s", err))
 		}
 		if resp.Diagnostics.HasError() {
 			return
@@ -137,21 +137,21 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	}
 
 	// Get group
-	tflog.Debug(ctx, "Getting group information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "group_name", data.Name.ValueString())
 
 	group, err := getGroup(d.client, data.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Get group error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Get %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got group information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Map response to model
-	tflog.Debug(ctx, "Saving group information to state", map[string]any{"group": data})
+	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): data})
 
 	data.Name = types.StringValue(group.Name)
 	data.Members = utils.StringListGoToTerraform(group.Members)
@@ -169,6 +169,6 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 		return
 	}
 
-	tflog.Debug(ctx, "Saved group information to state", map[string]any{"success": true})
-	tflog.Info(ctx, "Successfully read firewall group", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Saved %s information to state", resourceName), map[string]any{"success": true})
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName), map[string]any{"success": true})
 }

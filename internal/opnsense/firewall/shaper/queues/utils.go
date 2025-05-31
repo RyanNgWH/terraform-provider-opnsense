@@ -13,6 +13,8 @@ import (
 
 const (
 	queuesController string = "queues"
+
+	resourceName string = "traffic shaper queue"
 )
 
 type shaperQueue struct {
@@ -52,16 +54,16 @@ func createShaperQueue(ctx context.Context, client *opnsense.Client, plan shaper
 
 	pipeExists, err := pipes.VerifyShaperPipe(client, plan.Pipe.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create traffic shaper queue error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !pipeExists {
-		diagnostics.AddError("Create traffic shaper queue error", fmt.Sprintf("Pipe with uuid %s does not exist. Please verify that the specified pipe exists on your OPNsense firewall", plan.Pipe.ValueString()))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Pipe with uuid %s does not exist. Please verify that the specified pipe exists on your OPNsense firewall", plan.Pipe.ValueString()))
 	}
 
 	tflog.Debug(ctx, "Successfully verified pipe", map[string]any{"success": true})
 
 	// Create traffic shaper queue from plan
-	tflog.Debug(ctx, "Creating traffic shaper queue object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	// Codel
 	var planCodel codelModel
@@ -91,7 +93,7 @@ func createShaperQueue(ctx context.Context, client *opnsense.Client, plan shaper
 		Description: plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created traffic shaper queue object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return shaperQueue, diagnostics
 }
@@ -100,7 +102,7 @@ func createShaperQueue(ctx context.Context, client *opnsense.Client, plan shaper
 func VerifyShaperQueue(client *opnsense.Client, queue string) (bool, error) {
 	queueExists, err := checkShaperQueueExists(client, queue)
 	if err != nil {
-		return false, fmt.Errorf("Verify traffic shaper queue exists error: %s", err)
+		return false, fmt.Errorf("Verify %s exists error: %s", resourceName, err)
 	}
 
 	if !queueExists {

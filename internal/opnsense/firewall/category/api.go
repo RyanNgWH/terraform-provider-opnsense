@@ -82,7 +82,7 @@ func searchCategory(client *opnsense.Client, name string) (string, error) {
 
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Search category error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Search %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -91,13 +91,13 @@ func searchCategory(client *opnsense.Client, name string) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Search category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Search %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var searchCategoryResponse searchCategoryResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&searchCategoryResponse)
 	if err != nil {
-		return "", fmt.Errorf("Search category error (http): %s", err)
+		return "", fmt.Errorf("Search %s error (http): %s", resourceName, err)
 	}
 
 	for _, category := range searchCategoryResponse.Rows {
@@ -118,16 +118,16 @@ func GetCategory(client *opnsense.Client, uuid string) (*category, error) {
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var resp getCategoryResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return nil, fmt.Errorf("Get category error (http): %s", err)
+		return nil, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 	if resp == (getCategoryResponse{}) {
-		return nil, fmt.Errorf("Get category error: category with uuid `%s` does not exist", uuid)
+		return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%s` does not exist", resourceName, uuid)
 	}
 
 	return &category{
@@ -154,7 +154,7 @@ func addCategory(client *opnsense.Client, category category) (string, error) {
 	body := categoryToHttpBody(category)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Add category error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -163,17 +163,17 @@ func addCategory(client *opnsense.Client, category category) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Add category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Add category error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add category error: failed to add category to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add %[1]s error: failed to add %[1]s to OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -187,7 +187,7 @@ func setCategory(client *opnsense.Client, category category, uuid string) error 
 	body := categoryToHttpBody(category)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("Set category error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -196,17 +196,17 @@ func setCategory(client *opnsense.Client, category category, uuid string) error 
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Set category error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("Set category error: failed to update category on OPNsense - failed validations:/n%s", opnsense.ValidationsToString(response.Validations))
+		return fmt.Errorf("Set %[1]s error: failed to update %[1]s on OPNsense - failed validations:/n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -219,7 +219,7 @@ func deleteCategory(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("Delete category error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -228,17 +228,17 @@ func deleteCategory(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Delete category error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Delete category error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) != "deleted" && strings.ToLower(response.Result) != "not found" {
-		return fmt.Errorf("Delete item error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Delete %s error: failed to delete alias on OPNsense. Please contact the provider maintainers for assistance", resourceName)
 	}
 	return nil
 }

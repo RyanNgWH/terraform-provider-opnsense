@@ -133,7 +133,7 @@ func addAutomationFilterRule(client *opnsense.Client, automationFilter automatio
 	body := automationFilterToHttpBody(automationFilter)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Add automation filter rule error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Add %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -142,17 +142,17 @@ func addAutomationFilterRule(client *opnsense.Client, automationFilter automatio
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Add automation filter rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Add %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Add automation filter rule error (http): failed to decode http response - %s", err)
+		return "", fmt.Errorf("Add %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return "", fmt.Errorf("Add automation filter rule error: failed to add automation filter rule to OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return "", fmt.Errorf("Add %[1]s error: failed to add %[1]s to OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return response.Uuid, nil
@@ -167,7 +167,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 		return nil, fmt.Errorf("OPNsense client error: %s", err)
 	}
 	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get automation filter rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response getAutomationFilterResponse
@@ -175,9 +175,9 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 	if err != nil {
 		var jsonTypeError *json.UnmarshalTypeError
 		if errors.As(err, &jsonTypeError) && jsonTypeError.Value == "array" {
-			return nil, fmt.Errorf("Get automation filter rule error: automation filter rule with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the automation filter rule is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing automation filter rule from the terraform state to rectify the error.", uuid)
+			return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%s` does not exist.\n\nIf this occurs in a resource block, it is usually because the %[1]s is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing %[1]s from the terraform state to rectify the error.", resourceName, uuid)
 		}
-		return nil, fmt.Errorf("Get automation filter rule error (http): %s", err)
+		return nil, fmt.Errorf("Get %s error (http): %s", resourceName, err)
 	}
 
 	// Extract values from response
@@ -210,7 +210,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 			var exists bool
 			ipVersion, exists = ipVersions.GetByValue(name)
 			if !exists {
-				return nil, fmt.Errorf("Get automation filter rule error: Ip version `%s` not supported. Please contact the provider maintainers.", name)
+				return nil, fmt.Errorf("Get %s error: Ip version `%s` not supported. Please contact the provider maintainers.", resourceName, name)
 			}
 			break
 		}
@@ -237,7 +237,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
 			if err != nil {
-				return nil, fmt.Errorf("Get automation filter rule error: failed to get category - %s", err)
+				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
 			categories = append(categories, categoryName)
@@ -278,7 +278,7 @@ func setAutomationFilterRule(client *opnsense.Client, automationFilter automatio
 	body := automationFilterToHttpBody(automationFilter)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return fmt.Errorf("Set automation filter rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Set %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -287,17 +287,17 @@ func setAutomationFilterRule(client *opnsense.Client, automationFilter automatio
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Set automation filter rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Set %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return fmt.Errorf("Set automation filter rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Set %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(response.Result) == "failed" {
-		return fmt.Errorf("Set automation filter rule error: failed to update traffic shaper rule on OPNsense - failed validations:\n%s", opnsense.ValidationsToString(response.Validations))
+		return fmt.Errorf("Set %%[1]s error: failed to update %[1]s on OPNsense - failed validations:\n%s", resourceName, opnsense.ValidationsToString(response.Validations))
 	}
 
 	return nil
@@ -310,7 +310,7 @@ func deleteAutomationFilterRule(client *opnsense.Client, uuid string) error {
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
 	if err != nil {
-		return fmt.Errorf("Delete automation filter rule error: failed to marshal json body - %s", err)
+		return fmt.Errorf("Delete %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -319,17 +319,17 @@ func deleteAutomationFilterRule(client *opnsense.Client, uuid string) error {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return fmt.Errorf("Delete automation filter rule error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return fmt.Errorf("Delete %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var resp opnsense.OpnsenseAddItemResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&resp)
 	if err != nil {
-		return fmt.Errorf("Delete automation filter rule error (http): failed to decode http response - %s", err)
+		return fmt.Errorf("Delete %s error (http): failed to decode http response - %s", resourceName, err)
 	}
 
 	if strings.ToLower(resp.Result) != "deleted" && strings.ToLower(resp.Result) != "not found" {
-		return fmt.Errorf("Delete automation filter rule error: failed to delete automation filter rule on OPNsense. Please contact the provider maintainers for assistance")
+		return fmt.Errorf("Delete %[1]s error: failed to delete %[1]s on OPNsense. Please contact the provider maintainers for assistance", resourceName)
 	}
 	return nil
 }

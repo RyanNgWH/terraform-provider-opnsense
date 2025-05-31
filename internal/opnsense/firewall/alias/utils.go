@@ -22,6 +22,9 @@ import (
 
 const (
 	controller string = "alias"
+
+	aliasResourceName string = "alias"
+	geoipResourceName string = "geoip"
 )
 
 type alias struct {
@@ -98,15 +101,13 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	var diagnostics diag.Diagnostics
 
 	// Verify all categories exist
-	tflog.Debug(ctx, "Verifying categories", map[string]any{
-		"categories": plan.Categories,
-	})
+	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
 
 	categories := utils.StringListTerraformToGo(plan.Categories)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", aliasResourceName), fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -123,17 +124,17 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 
 		interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 		if err != nil {
-			diagnostics.AddError("Create alias error", fmt.Sprintf("%s", err))
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", aliasResourceName), fmt.Sprintf("%s", err))
 		}
 		if !interfacesExist {
-			diagnostics.AddError("Create alias error", "Interface does not exist. Please verify that the specified interface exists on your OPNsense firewall")
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", aliasResourceName), "Interface does not exist. Please verify that the specified interface exists on your OPNsense firewall")
 		}
 
 		tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
 	}
 
 	// Create alias from plan
-	tflog.Debug(ctx, "Creating alias object from plan", map[string]any{"plan": plan})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", aliasResourceName), map[string]any{"plan": plan})
 
 	// Compute update frequency
 	var planUpdateFreq updateFreqModel
@@ -200,7 +201,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 		Interface:   plan.Interface.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created alias object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", aliasResourceName), map[string]any{"success": true})
 
 	return alias, diagnostics
 }

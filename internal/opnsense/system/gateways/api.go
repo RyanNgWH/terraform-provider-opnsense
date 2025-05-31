@@ -50,7 +50,7 @@ func searchGateway(client *opnsense.Client, name string) (string, error) {
 
 	reqBody, err := json.Marshal(body)
 	if err != nil {
-		return "", fmt.Errorf("Search gateway error: failed to marshal json body - %s", err)
+		return "", fmt.Errorf("Search %s error: failed to marshal json body - %s", resourceName, err)
 	}
 
 	httpResp, err := client.DoRequest(http.MethodPost, path, reqBody)
@@ -59,13 +59,13 @@ func searchGateway(client *opnsense.Client, name string) (string, error) {
 	}
 
 	if httpResp.StatusCode != 200 {
-		return "", fmt.Errorf("Search gateway error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", httpResp.StatusCode)
+		return "", fmt.Errorf("Search %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
 	}
 
 	var response searchGatewayResponse
 	err = json.NewDecoder(httpResp.Body).Decode(&response)
 	if err != nil {
-		return "", fmt.Errorf("Search gateway error (http): %s", err)
+		return "", fmt.Errorf("Search %s error (http): %s", resourceName, err)
 	}
 
 	for _, gateway := range response.Rows {
