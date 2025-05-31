@@ -85,14 +85,14 @@ func (r *automationFilterResource) Schema(ctx context.Context, req resource.Sche
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:    true,
-				Description: "Identifier of the automation filter rule.",
+				Description: fmt.Sprintf("Identifier of the %s.", resourceName),
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
 			},
 			"last_updated": schema.StringAttribute{
 				Computed:    true,
-				Description: "DateTime when automation filter rule was last updated.",
+				Description: fmt.Sprintf("DateTime when the %s was last updated.", resourceName),
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:            true,
@@ -279,7 +279,7 @@ func (r *automationFilterResource) Configure(ctx context.Context, req resource.C
 
 // Create creates the resource and sets the initial Terraform state.
 func (r *automationFilterResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
-	tflog.Info(ctx, "Creating automation filter rule")
+	tflog.Info(ctx, fmt.Sprintf("Creating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan automationFilterResourceModel
@@ -296,11 +296,11 @@ func (r *automationFilterResource) Create(ctx context.Context, req resource.Crea
 	}
 
 	// Create automation filter rule on OPNsense
-	tflog.Debug(ctx, "Creating automation filter rule on OPNsense", map[string]any{"automation filter rule": automationFilter})
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): automationFilter})
 
 	uuid, err := addAutomationFilterRule(r.client, automationFilter)
 	if err != nil {
-		resp.Diagnostics.AddError("Create automation filter rule entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Create %s entry error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -311,7 +311,7 @@ func (r *automationFilterResource) Create(ctx context.Context, req resource.Crea
 
 	err = applyAutomationFilterConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Create automation filter rule entry error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Create %s entry error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -326,11 +326,13 @@ func (r *automationFilterResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	tflog.Info(ctx, "Successfully created automation filter rule entry")
+	tflog.Info(ctx, fmt.Sprintf("Successfully created %s", resourceName))
 }
 
 // Read resource information.
 func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRequest, resp *resource.ReadResponse) {
+	tflog.Info(ctx, fmt.Sprintf("Reading %s", resourceName))
+
 	var state automationFilterResourceModel
 
 	// Read Terraform prior state data into the model
@@ -340,18 +342,18 @@ func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRe
 	}
 
 	// Get automation filter rule
-	tflog.Debug(ctx, "Getting automation filter rule information")
+	tflog.Debug(ctx, fmt.Sprintf("Getting %s information", resourceName))
 	tflog.SetField(ctx, "uuid", state.Id.ValueString())
 
 	rule, err := getAutomationFilterRule(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Read automation filter rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Read %s entry error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	tflog.Debug(ctx, "Successfully got automation filter rule information", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
 	state.Enabled = types.BoolValue(rule.Enabled)
@@ -382,11 +384,13 @@ func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRe
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully read %s", resourceName))
 }
 
 // Update updates the resource on OPNsense and the Terraform state.
 func (r *automationFilterResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
-	tflog.Info(ctx, "Updating automation filter rule")
+	tflog.Info(ctx, fmt.Sprintf("Updating %s", resourceName))
 
 	// Read Terraform plan data into the model
 	var plan automationFilterResourceModel
@@ -410,11 +414,11 @@ func (r *automationFilterResource) Update(ctx context.Context, req resource.Upda
 	}
 
 	// Update automation filter rule on OPNsense
-	tflog.Debug(ctx, "Updating automation filter rule on OPNsense", map[string]any{"automation filter rule": rule})
+	tflog.Debug(ctx, fmt.Sprintf("Updating %s on OPNsense", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): rule})
 
 	err := setAutomationFilterRule(r.client, rule, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Update automation filter rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -425,7 +429,7 @@ func (r *automationFilterResource) Update(ctx context.Context, req resource.Upda
 
 	err = applyAutomationFilterConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Update automation filter rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Update %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -441,12 +445,12 @@ func (r *automationFilterResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	tflog.Info(ctx, "Successfully updated automation filter rule")
+	tflog.Info(ctx, fmt.Sprintf("Successfully updated %s", resourceName))
 }
 
 // Delete removes the resource on OPNsense and from the Terraform state.
 func (r *automationFilterResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	tflog.Info(ctx, "Deleting automation filter rule")
+	tflog.Info(ctx, fmt.Sprintf("Deleting %s", resourceName))
 
 	// Read Terraform prior state data into the model
 	var state automationFilterResourceModel
@@ -456,11 +460,11 @@ func (r *automationFilterResource) Delete(ctx context.Context, req resource.Dele
 	}
 
 	// Delete automation filter rule on OPNsense
-	tflog.Debug(ctx, "Deleting automation filter rule on OPNsense", map[string]any{"uuid": state.Id.ValueString()})
+	tflog.Debug(ctx, fmt.Sprintf("Deleting %s on OPNsense", resourceName), map[string]any{"uuid": state.Id.ValueString()})
 
 	err := deleteAutomationFilterRule(r.client, state.Id.ValueString())
 	if err != nil {
-		resp.Diagnostics.AddError("Delete automation filter rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddError(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if resp.Diagnostics.HasError() {
 		return
@@ -471,7 +475,7 @@ func (r *automationFilterResource) Delete(ctx context.Context, req resource.Dele
 
 	err = applyAutomationFilterConfig(r.client)
 	if err != nil {
-		resp.Diagnostics.AddWarning("Delete automation filter rule error", fmt.Sprintf("%s", err))
+		resp.Diagnostics.AddWarning(fmt.Sprintf("Delete %s error", resourceName), fmt.Sprintf("%s", err))
 	} else {
 		tflog.Debug(ctx, "Successfully applied configuration on OPNsense", map[string]any{"success": true})
 	}
@@ -479,6 +483,8 @@ func (r *automationFilterResource) Delete(ctx context.Context, req resource.Dele
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully deleted %s", resourceName))
 }
 
 // ImportState imports the resource from OPNsense and enables Terraform to begin managing the resource.
@@ -489,4 +495,6 @@ func (r *automationFilterResource) ImportState(ctx context.Context, req resource
 	if resp.Diagnostics.HasError() {
 		return
 	}
+
+	tflog.Info(ctx, fmt.Sprintf("Successfully imported %s", resourceName))
 }
