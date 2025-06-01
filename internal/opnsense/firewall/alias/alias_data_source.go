@@ -36,17 +36,17 @@ type aliasDataSource struct {
 
 // aliasDataSourceModel describes the data source data model.
 type aliasDataSourceModel struct {
-	Id          types.String   `tfsdk:"id"`
-	Enabled     types.Bool     `tfsdk:"enabled"`
-	Name        types.String   `tfsdk:"name"`
-	Type        types.String   `tfsdk:"type"`
-	Counters    types.Bool     `tfsdk:"counters"`
-	UpdateFreq  types.Object   `tfsdk:"updatefreq"`
-	Description types.String   `tfsdk:"description"`
-	Proto       types.Object   `tfsdk:"proto"`
-	Categories  []types.String `tfsdk:"categories"`
-	Content     []types.String `tfsdk:"content"`
-	Interface   types.String   `tfsdk:"interface"`
+	Id          types.String `tfsdk:"id"`
+	Enabled     types.Bool   `tfsdk:"enabled"`
+	Name        types.String `tfsdk:"name"`
+	Type        types.String `tfsdk:"type"`
+	Counters    types.Bool   `tfsdk:"counters"`
+	UpdateFreq  types.Object `tfsdk:"updatefreq"`
+	Description types.String `tfsdk:"description"`
+	Proto       types.Object `tfsdk:"proto"`
+	Categories  types.Set    `tfsdk:"categories"`
+	Content     types.Set    `tfsdk:"content"`
+	Interface   types.String `tfsdk:"interface"`
 }
 
 // Metadata returns the data source type name.
@@ -118,12 +118,12 @@ func (d *aliasDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					},
 				},
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the alias.",
 			},
-			"content": schema.ListAttribute{
+			"content": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The content of the alias.",
@@ -244,8 +244,14 @@ func (d *aliasDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	resp.Diagnostics.Append(diags...)
 	data.Proto = proto
 
-	data.Categories = utils.StringListGoToTerraform(alias.Categories)
-	data.Content = utils.StringListGoToTerraform(alias.Content)
+	categories, diags := utils.SetGoToTerraform(ctx, alias.Categories)
+	resp.Diagnostics.Append(diags...)
+	data.Categories = categories
+
+	content, diags := utils.SetGoToTerraform(ctx, alias.Content)
+	resp.Diagnostics.Append(diags...)
+	data.Content = content
+
 	data.Interface = types.StringValue(alias.Interface)
 
 	if resp.Diagnostics.HasError() {

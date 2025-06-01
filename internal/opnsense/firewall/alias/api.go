@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"sort"
 	"strings"
 	"time"
 
@@ -129,9 +128,9 @@ func aliasToHttpBody(alias alias) aliasHttpBody {
 			Name:        alias.Name,
 			Type:        alias.Type,
 			Proto:       strings.Join(alias.Proto, ","),
-			Categories:  strings.Join(alias.Categories, ","),
+			Categories:  strings.Join(alias.Categories.Elements(), ","),
 			UpdateFreq:  alias.UpdateFreq,
-			Content:     strings.Join(alias.Content, "\n"),
+			Content:     strings.Join(alias.Content.Elements(), "\n"),
 			Counters:    utils.BoolToInt(alias.Counters),
 			Description: alias.Description,
 			Interface:   alias.Interface,
@@ -210,14 +209,14 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 		}
 	}
 
-	contents := make([]string, 0)
+	contents := utils.NewSet()
 	for name, value := range aliasResponse.Alias.Content {
 		if value.Selected == 1 && value.Value != "" {
-			contents = append(contents, name)
+			contents.Add(name)
 		}
 	}
 
-	categories := make([]string, 0)
+	categories := utils.NewSet()
 	for name, value := range aliasResponse.Alias.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
@@ -225,7 +224,7 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 				return nil, fmt.Errorf("Get %s error: %s", aliasResourceName, err)
 			}
 
-			categories = append(categories, categoryName)
+			categories.Add(categoryName)
 		}
 	}
 
@@ -236,10 +235,6 @@ func getAlias(client *opnsense.Client, uuid string) (*alias, error) {
 			break
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(categories)
-	sort.Strings(contents)
 
 	return &alias{
 		Enabled:     aliasResponse.Alias.Enabled == 1,

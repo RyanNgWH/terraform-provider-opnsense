@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -35,8 +34,8 @@ type alias struct {
 	UpdateFreq  float64
 	Description string
 	Proto       []string
-	Categories  []string
-	Content     []string
+	Categories  *utils.Set
+	Content     *utils.Set
 	Interface   string
 }
 
@@ -103,7 +102,8 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
 
-	categories := utils.StringListTerraformToGo(plan.Categories)
+	categories, diags := utils.SetTerraformToGo(ctx, plan.Categories)
+	diagnostics.Append(diags...)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
@@ -139,7 +139,7 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 	// Compute update frequency
 	var planUpdateFreq updateFreqModel
 
-	diags := plan.UpdateFreq.As(ctx, &planUpdateFreq, basetypes.ObjectAsOptions{})
+	diags = plan.UpdateFreq.As(ctx, &planUpdateFreq, basetypes.ObjectAsOptions{})
 	diagnostics.Append(diags...)
 
 	var days int32
@@ -182,11 +182,8 @@ func createAlias(ctx context.Context, client *opnsense.Client, plan aliasResourc
 		protos = append(protos, "IPv6")
 	}
 
-	content := utils.StringListTerraformToGo(plan.Content)
-
-	// Sort lists for predictable output
-	sort.Strings(categoryUuids)
-	sort.Strings(content)
+	content, diags := utils.SetTerraformToGo(ctx, plan.Content)
+	diagnostics.Append(diags...)
 
 	alias := alias{
 		Enabled:     plan.Enabled.ValueBool(),

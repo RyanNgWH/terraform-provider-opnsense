@@ -1,10 +1,15 @@
 package utils
 
 import (
+	"context"
+	"fmt"
 	"sort"
+	"strings"
 	"sync"
 
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 )
 
 // BidirectionalMap is a map with both key-to-value and value-to-key lookups.
@@ -117,6 +122,89 @@ func (bm *BidirectionalMap) Size() int {
 	return len(bm.keyToValue)
 }
 
+// Set is an unordered collection of a single element type
+type Set struct {
+	elements map[string]struct{}
+	mutex    sync.Mutex
+}
+
+// NewSet creates a new empty set
+func NewSet() *Set {
+	return &Set{elements: make(map[string]struct{})}
+}
+
+// Add adds an element to the set
+func (s *Set) Add(value string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.elements[value] = struct{}{}
+}
+
+// AddSlice adds a slice of elements to the set
+func (s *Set) AddSlice(slice []string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	for _, element := range slice {
+		s.elements[element] = struct{}{}
+	}
+}
+
+// Remove removes an element from the set
+func (s *Set) Remove(value string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	delete(s.elements, value)
+}
+
+// Contains checks if an element is in the set
+func (s *Set) Contains(value string) bool {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	_, exists := s.elements[value]
+	return exists
+}
+
+// Size returns the number of elements in the set
+func (s *Set) Size() int {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	return len(s.elements)
+}
+
+// Clear removes all elements from the set
+func (s *Set) Clear() {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.elements = make(map[string]struct{})
+}
+
+// String outputs the contents of the set
+func (s *Set) String() string {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	var elements []string
+	for key := range s.elements {
+		elements = append(elements, key)
+	}
+
+	return fmt.Sprintf("{ %s }", strings.Join(elements, ", "))
+}
+
+// Elements returns a slice of all elements in the set
+func (s *Set) Elements() []string {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+
+	elements := make([]string, 0, len(s.elements))
+	for element := range s.elements {
+		elements = append(elements, element)
+	}
+
+	sort.Strings(elements)
+	return elements
+}
+
 // BoolToInt converts a `true` value to `1` and a `false` value to `0`.
 func BoolToInt(b bool) uint8 {
 	if b {
@@ -141,4 +229,28 @@ func StringListGoToTerraform(goList []string) []types.String {
 		result = append(result, types.StringValue(element))
 	}
 	return result
+}
+
+// SetTerraformToGo converts a Terraform set to a Go set.
+func SetTerraformToGo(ctx context.Context, terraformSet types.Set) (*Set, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+	result := NewSet()
+
+	elements := make([]types.String, 0, len(terraformSet.Elements()))
+	diags := terraformSet.ElementsAs(ctx, &elements, false)
+	diagnostics.Append(diags...)
+
+	result.AddSlice(StringListTerraformToGo(elements))
+
+	return result, diagnostics
+}
+
+// SetGoToTerraform converts a Go set to a Terraform set
+func SetGoToTerraform(ctx context.Context, goSet *Set) (types.Set, diag.Diagnostics) {
+	var diagnostics diag.Diagnostics
+
+	result, diags := basetypes.NewSetValueFrom(ctx, types.StringType, goSet.Elements())
+	diagnostics.Append(diags...)
+
+	return result, diagnostics
 }
