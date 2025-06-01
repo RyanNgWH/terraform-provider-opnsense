@@ -13,7 +13,7 @@ import (
 	"terraform-provider-opnsense/internal/utils"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
-	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -21,8 +21,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -50,24 +50,24 @@ type shaperRulesResource struct {
 
 // shaperRulesResourceModel describes the resource data model.
 type shaperRulesResourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	LastUpdated     types.String   `tfsdk:"last_updated"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Interface       types.String   `tfsdk:"interface"`
-	Interface2      types.String   `tfsdk:"interface2"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	MaxPacketLength types.Int32    `tfsdk:"max_packet_length"`
-	Sources         []types.String `tfsdk:"sources"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destinations    []types.String `tfsdk:"destinations"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Dscp            []types.String `tfsdk:"dscp"`
-	Direction       types.String   `tfsdk:"direction"`
-	Target          types.String   `tfsdk:"target"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	LastUpdated     types.String `tfsdk:"last_updated"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Interface       types.String `tfsdk:"interface"`
+	Interface2      types.String `tfsdk:"interface2"`
+	Protocol        types.String `tfsdk:"protocol"`
+	MaxPacketLength types.Int32  `tfsdk:"max_packet_length"`
+	Sources         types.Set    `tfsdk:"sources"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destinations    types.Set    `tfsdk:"destinations"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Dscp            types.Set    `tfsdk:"dscp"`
+	Direction       types.String `tfsdk:"direction"`
+	Target          types.String `tfsdk:"target"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -77,8 +77,8 @@ func (r *shaperRulesResource) Metadata(ctx context.Context, req resource.Metadat
 
 // Schema defines the schema for the resource.
 func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	defaultSourcesAndDestinations, _ := basetypes.NewListValue(types.StringType, []attr.Value{basetypes.NewStringValue("any")})
-	defaultDscp, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	defaultSourcesAndDestinations, _ := basetypes.NewSetValue(types.StringType, []attr.Value{basetypes.NewStringValue("any")})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		Description: "Traffic shaping rules are used to apply the shaping to a certain package flow. The shaping rules are handled independently from the firewall rules and other settings.",
@@ -143,13 +143,13 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				Validators:  []validator.Int32{int32validator.Between(1, 65535)},
 				Default:     int32default.StaticInt32(-1),
 			},
-			"sources": schema.ListAttribute{
+			"sources": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the sources are in lexicographical order, else the provider will detect a change on every execution.",
-				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
-				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
+				MarkdownDescription: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.",
+				Validators:          []validator.Set{setvalidator.SizeAtLeast(1)},
+				Default:             setdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"source_not": schema.BoolAttribute{
 				Optional:            true,
@@ -163,13 +163,13 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Source port number or well known name (`imap`, `imaps`, `http`, `https`, ...), for ranges use a dash. Defaults to `any`",
 				Default:             stringdefault.StaticString("any"),
 			},
-			"destinations": schema.ListAttribute{
+			"destinations": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the destinations are in lexicographical order, else the provider will detect a change on every execution.",
-				Validators:          []validator.List{listvalidator.SizeAtLeast(1)},
-				Default:             listdefault.StaticValue(defaultSourcesAndDestinations),
+				MarkdownDescription: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.",
+				Validators:          []validator.Set{setvalidator.SizeAtLeast(1)},
+				Default:             setdefault.StaticValue(defaultSourcesAndDestinations),
 			},
 			"destination_not": schema.BoolAttribute{
 				Optional:            true,
@@ -183,12 +183,12 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Destination port number or well known name (`imap`, `imaps`, `http`, `https`, ...), for ranges use a dash. Defaults to `any`",
 				Default:             stringdefault.StaticString("any"),
 			},
-			"dscp": schema.ListAttribute{
+			"dscp": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
 				MarkdownDescription: fmt.Sprintf(
-					"Match against one or multiple DSCP values. Allowed values: %s. Ensure that the dscp values are in lexicographical order, else the provider will detect a change on every execution.", strings.Join(
+					"Match against one or multiple DSCP values. Allowed values: %s.", strings.Join(
 						// Surround each type with backticks (`)
 						utils.SliceMap(getDscp(), func(dscp string) string {
 							return fmt.Sprintf("`%s`", dscp)
@@ -196,11 +196,11 @@ func (r *shaperRulesResource) Schema(ctx context.Context, req resource.SchemaReq
 						", ",
 					),
 				),
-				Validators: []validator.List{
+				Validators: []validator.Set{
 					// Must be one of the listed values
-					listvalidator.ValueStringsAre(stringvalidator.OneOf(getDscp()...)),
+					setvalidator.ValueStringsAre(stringvalidator.OneOf(getDscp()...)),
 				},
-				Default: listdefault.StaticValue(defaultDscp),
+				Default: setdefault.StaticValue(emptySet),
 			},
 			"direction": schema.StringAttribute{
 				Optional: true,
@@ -339,13 +339,25 @@ func (r *shaperRulesResource) Read(ctx context.Context, req resource.ReadRequest
 	state.Interface2 = types.StringValue(rule.Interface2)
 	state.Protocol = types.StringValue(rule.Protocol)
 	state.MaxPacketLength = types.Int32Value(rule.MaxPacketLength)
-	state.Sources = utils.StringListGoToTerraform(rule.Sources)
+
+	sources, diags := utils.SetGoToTerraform(ctx, rule.Sources)
+	resp.Diagnostics.Append(diags...)
+	state.Sources = sources
+
 	state.SourceNot = types.BoolValue(rule.SourceNot)
 	state.SourcePort = types.StringValue(rule.SourcePort)
-	state.Destinations = utils.StringListGoToTerraform(rule.Destinations)
+
+	destinations, diags := utils.SetGoToTerraform(ctx, rule.Destinations)
+	resp.Diagnostics.Append(diags...)
+	state.Destinations = destinations
+
 	state.DestinationNot = types.BoolValue(rule.DestinationNot)
 	state.DestinationPort = types.StringValue(rule.DestinationPort)
-	state.Dscp = utils.StringListGoToTerraform(rule.Dscp)
+
+	dscp, diags := utils.SetGoToTerraform(ctx, rule.Dscp)
+	resp.Diagnostics.Append(diags...)
+	state.Dscp = dscp
+
 	state.Direction = types.StringValue(rule.Direction)
 	state.Target = types.StringValue(rule.Target)
 	state.Description = types.StringValue(rule.Description)

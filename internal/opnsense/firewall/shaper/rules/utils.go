@@ -3,7 +3,6 @@ package rules
 import (
 	"context"
 	"fmt"
-	"sort"
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/shaper/pipes"
@@ -28,13 +27,13 @@ type shaperRule struct {
 	Interface2      string
 	Protocol        string
 	MaxPacketLength int32
-	Sources         []string
+	Sources         *utils.Set
 	SourceNot       bool
 	SourcePort      string
-	Destinations    []string
+	Destinations    *utils.Set
 	DestinationNot  bool
 	DestinationPort string
-	Dscp            []string
+	Dscp            *utils.Set
 	Direction       string
 	Target          string
 	Description     string
@@ -156,9 +155,10 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	// Verify interfaces
 	tflog.Debug(ctx, "Verifying interfaces", map[string]any{"interfaces": []string{plan.Interface.ValueString(), plan.Interface2.ValueString()}})
 
-	interfaces := []string{plan.Interface.ValueString()}
+	interfaces := utils.NewSet()
+	interfaces.Add(plan.Interface.ValueString())
 	if plan.Interface2.ValueString() != "" {
-		interfaces = append(interfaces, plan.Interface2.ValueString())
+		interfaces.Add(plan.Interface2.ValueString())
 	}
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
@@ -197,25 +197,26 @@ func createShaperRule(ctx context.Context, client *opnsense.Client, plan shaperR
 	}
 
 	// Dscp
-	var dscpValues []string
-	for _, value := range plan.Dscp {
-		dscp, exists := dscp.GetByKey(value.ValueString())
+	dscpValues := utils.NewSet()
+	dscpSet, diags := utils.SetTerraformToGo(ctx, plan.Dscp)
+	diagnostics.Append(diags...)
+
+	for _, value := range dscpSet.Elements() {
+		dscp, exists := dscp.GetByKey(value)
 		if !exists {
-			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Dscp value `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", value.ValueString()))
+			diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("Dscp value `%s` not supported. Please contact the provider maintainers if you believe this should be supported.", value))
 		}
-		dscpValues = append(dscpValues, dscp)
+		dscpValues.Add(dscp)
 	}
 
 	// Create traffic shaper rule from plan
 	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
-	sources := utils.StringListTerraformToGo(plan.Sources)
-	destinations := utils.StringListTerraformToGo(plan.Destinations)
+	sources, diags := utils.SetTerraformToGo(ctx, plan.Sources)
+	diagnostics.Append(diags...)
 
-	// Sort lists for predictable output
-	sort.Strings(sources)
-	sort.Strings(destinations)
-	sort.Strings(dscpValues)
+	destinations, diags := utils.SetTerraformToGo(ctx, plan.Destinations)
+	diagnostics.Append(diags...)
 
 	shaperRule := shaperRule{
 		Enabled:         plan.Enabled.ValueBool(),
