@@ -19,8 +19,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -48,21 +48,21 @@ type natOneToOneResource struct {
 
 // natOneToOneResourceModel describes the resource data model.
 type natOneToOneResourceModel struct {
-	Id             types.String   `tfsdk:"id"`
-	LastUpdated    types.String   `tfsdk:"last_updated"`
-	Enabled        types.Bool     `tfsdk:"enabled"`
-	Log            types.Bool     `tfsdk:"log"`
-	Sequence       types.Int32    `tfsdk:"sequence"`
-	Interface      types.String   `tfsdk:"interface"`
-	Type           types.String   `tfsdk:"type"`
-	Source         types.String   `tfsdk:"source"`
-	SourceNot      types.Bool     `tfsdk:"source_not"`
-	Destination    types.String   `tfsdk:"destination"`
-	DestinationNot types.Bool     `tfsdk:"destination_not"`
-	External       types.String   `tfsdk:"external"`
-	NatReflection  types.String   `tfsdk:"nat_reflection"`
-	Categories     []types.String `tfsdk:"categories"`
-	Description    types.String   `tfsdk:"description"`
+	Id             types.String `tfsdk:"id"`
+	LastUpdated    types.String `tfsdk:"last_updated"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int32  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	Type           types.String `tfsdk:"type"`
+	Source         types.String `tfsdk:"source"`
+	SourceNot      types.Bool   `tfsdk:"source_not"`
+	Destination    types.String `tfsdk:"destination"`
+	DestinationNot types.Bool   `tfsdk:"destination_not"`
+	External       types.String `tfsdk:"external"`
+	NatReflection  types.String `tfsdk:"nat_reflection"`
+	Categories     types.Set    `tfsdk:"categories"`
+	Description    types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -72,7 +72,7 @@ func (r *natOneToOneResource) Metadata(ctx context.Context, req resource.Metadat
 
 // Schema defines the schema for the resource.
 func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	defaultCategories, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "One-to-one NAT will translate two IPs one-to-one, rather than one-to-many as is most common.",
@@ -169,12 +169,12 @@ func (r *natOneToOneResource) Schema(ctx context.Context, req resource.SchemaReq
 				},
 				Default: stringdefault.StaticString("default"),
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(defaultCategories),
+				Description: "The categories of the rule.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
@@ -299,7 +299,9 @@ func (r *natOneToOneResource) Read(ctx context.Context, req resource.ReadRequest
 	state.NatReflection = types.StringValue(rule.NatRefection)
 	state.Description = types.StringValue(rule.Description)
 
-	state.Categories = utils.StringListGoToTerraform(rule.Categories)
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	state.Categories = categories
 
 	if resp.Diagnostics.HasError() {
 		return
