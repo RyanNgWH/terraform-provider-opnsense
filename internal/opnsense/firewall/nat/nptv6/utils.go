@@ -3,7 +3,6 @@ package nptv6
 import (
 	"context"
 	"fmt"
-	"sort"
 
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall/category"
@@ -28,7 +27,7 @@ type nptv6 struct {
 	InternalPrefix string
 	ExternalPrefix string
 	TrackInterface string
-	Categories     []string
+	Categories     *utils.Set
 	Description    string
 }
 
@@ -41,7 +40,8 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
 
-	categories := utils.StringListTerraformToGo(plan.Categories)
+	categories, diags := utils.SetTerraformToGo(ctx, plan.Categories)
+	diagnostics.Append(diags...)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
@@ -80,9 +80,6 @@ func createNptv6Nat(ctx context.Context, client *opnsense.Client, plan natNptv6R
 
 	// Create NPTv6 NAT rule from plan
 	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
-
-	// Sort lists for predictable output
-	sort.Strings(categoryUuids)
 
 	nptv6 := nptv6{
 		Enabled:        plan.Enabled.ValueBool(),
