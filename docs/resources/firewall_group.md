@@ -32,7 +32,7 @@ resource "opnsense_firewall_group" "resource_example" {
 
 ### Required
 
-- `members` (List of String) Member interfaces of the group. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.
+- `members` (Set of String) Member interfaces of the group. Use the interface identifiers (e.g `lan`, `opt1`)
 - `name` (String) The name of the group.
 
 ### Optional
@@ -44,7 +44,7 @@ resource "opnsense_firewall_group" "resource_example" {
 ### Read-Only
 
 - `id` (String) Identifier of the group.
-- `last_updated` (String) DateTime when group was last updated.
+- `last_updated` (String) DateTime when the group was last updated.
 
 ## Import
 

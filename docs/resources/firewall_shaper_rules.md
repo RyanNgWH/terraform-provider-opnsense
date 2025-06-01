@@ -55,9 +55,9 @@ resource "opnsense_firewall_shaper_rules" "example_shaper_rule" {
 - `description` (String) Description to identify this rule.
 - `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`.
 - `destination_port` (String) Destination port number or well known name (`imap`, `imaps`, `http`, `https`, ...), for ranges use a dash. Defaults to `any`
-- `destinations` (List of String) Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the destinations are in lexicographical order, else the provider will detect a change on every execution.
+- `destinations` (Set of String) Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.
 - `direction` (String) Direction of packet matching. Must be one of: `both`, `in`, `out`. Defaults to `both`.
-- `dscp` (List of String) Match against one or multiple DSCP values. Allowed values: `af11`, `af12`, `af13`, `af21`, `af22`, `af23`, `af31`, `af32`, `af33`, `af41`, `af42`, `best effort`, `cs1`, `cs2`, `cs3`, `cs4`, `cs5`, `cs6`, `cs7`, `expedited forwarding`. Ensure that the dscp values are in lexicographical order, else the provider will detect a change on every execution.
+- `dscp` (Set of String) Match against one or multiple DSCP values. Allowed values: `af11`, `af12`, `af13`, `af21`, `af22`, `af23`, `af31`, `af32`, `af33`, `af41`, `af42`, `best effort`, `cs1`, `cs2`, `cs3`, `cs4`, `cs5`, `cs6`, `cs7`, `expedited forwarding`.
 - `enabled` (Boolean) Whether the traffic shaper rule is enabled. Defaults to `true`.
 - `interface2` (String) The secondary interface, matches packets traveling to/from interface (1) to/from interface (2). Can be combined with direction.
 - `max_packet_length` (Number) Specifies the maximum size of packets to match in bytes.
@@ -65,12 +65,12 @@ resource "opnsense_firewall_shaper_rules" "example_shaper_rule" {
 - `sequence` (Number) Order in which the rule will be evaluated (lowest first). Defaults to `1`.
 - `source_not` (Boolean) Whether the source matching should be inverted. Defaults to `false`.
 - `source_port` (String) Source port number or well known name (`imap`, `imaps`, `http`, `https`, ...), for ranges use a dash. Defaults to `any`
-- `sources` (List of String) Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`. Ensure that the sources are in lexicographical order, else the provider will detect a change on every execution.
+- `sources` (Set of String) Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`. Defaults to be `any`.
 
 ### Read-Only
 
 - `id` (String) Identifier of the traffic shaper rule.
-- `last_updated` (String) DateTime when traffic shaper rule was last updated.
+- `last_updated` (String) DateTime when the traffic shaper rule was last updated.
 
 ## Import
 

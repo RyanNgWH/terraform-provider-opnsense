@@ -51,7 +51,7 @@ resource "opnsense_firewall_shaper_queues" "example_shaper_queue" {
 ### Read-Only
 
 - `id` (String) Identifier of the traffic shaper queue.
-- `last_updated` (String) DateTime when traffic shaper queue was last updated.
+- `last_updated` (String) DateTime when the traffic shaper queue was last updated.
 
 <a id="nestedatt--codel"></a>
 ### Nested Schema for `codel`

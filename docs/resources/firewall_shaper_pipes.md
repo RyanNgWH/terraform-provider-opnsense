@@ -61,7 +61,7 @@ resource "opnsense_firewall_shaper_pipes" "example_shaper_pipe" {
 ### Read-Only
 
 - `id` (String) Identifier of the traffic shaper pipe.
-- `last_updated` (String) DateTime when traffic shaper pipe was last updated.
+- `last_updated` (String) DateTime when the traffic shaper pipe was last updated.
 
 <a id="nestedatt--bandwidth"></a>
 ### Nested Schema for `bandwidth`

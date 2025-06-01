@@ -43,7 +43,7 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
 
 ### Optional
 
-- `categories` (List of String) The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) The description of the rule.
 - `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`.
 - `enabled` (Boolean) Whether the one-to-one nat entry is enabled. Defaults to `true`.
@@ -54,8 +54,8 @@ resource "opnsense_firewall_nat_one_to_one" "resource_example" {
 
 ### Read-Only
 
-- `id` (String) Identifier of the one-to-one nat entry.
-- `last_updated` (String) DateTime when one-to-one nat entry was last updated.
+- `id` (String) Identifier of the one-to-one NAT rule.
+- `last_updated` (String) DateTime when the one-to-one NAT rule entry was last updated.
 
 ## Import
 

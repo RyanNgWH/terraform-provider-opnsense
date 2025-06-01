@@ -24,11 +24,11 @@ data "opnsense_firewall_nat_nptv6" "data_source_via_id" {
 
 ### Required
 
-- `id` (String) Identifier of the NPTv6 rule entry.
+- `id` (String) Identifier of the NPTv6 NAT rule.
 
 ### Read-Only
 
-- `categories` (List of String) The categories of the rule.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) The description of the rule.
 - `enabled` (Boolean) Whether the NPTv6 rule entry is enabled.
 - `external_prefix` (String) The external IPv6 prefix. This will replace the prefix of the source address in outbound packets. Leave empty to auto-detect the prefix address using the specified tracking interface instead. The prefix size specified for the internal prefix will also be applied to the external prefix.

@@ -35,6 +35,6 @@ data "opnsense_firewall_group" "data_source_via_name" {
 ### Read-Only
 
 - `description` (String) The description of the group.
-- `members` (List of String) Member interfaces of the group.
+- `members` (Set of String) Member interfaces of the group.
 - `no_group` (Boolean) If grouping these members in the interfaces menu section should be prevented.
 - `sequence` (Number) Priority sequence used in sorting the groups.

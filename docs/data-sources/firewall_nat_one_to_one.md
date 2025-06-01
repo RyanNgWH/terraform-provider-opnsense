@@ -24,11 +24,11 @@ data "opnsense_firewall_nat_one_to_one" "data_source_via_id" {
 
 ### Required
 
-- `id` (String) Identifier of the one-to-one nat entry.
+- `id` (String) Identifier of the one-to-one NAT rule.
 
 ### Read-Only
 
-- `categories` (List of String) The categories of the rule.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) The description of the rule.
 - `destination` (String) The 1:1 mapping will only be used for connections to or from the specified destination.
 - `destination_not` (Boolean) Whether the destination matching should be inverted.

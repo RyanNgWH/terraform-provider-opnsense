@@ -24,12 +24,12 @@ data "opnsense_firewall_automation_filter" "data_source_via_id" {
 
 ### Required
 
-- `id` (String) Identifier of the firewall automation filter rule.
+- `id` (String) Identifier of the automation filter rule.
 
 ### Read-Only
 
 - `action` (String) Action taken with packets that match the criteria specified. The difference between block and reject is that with reject, a packet (TCP RST or ICMP port unreachable for UDP) is returned to the sender, whereas with block the packet is dropped silently. In either case, the original packet is discarded.
-- `categories` (List of String) The categories of the rule.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) Description to identify this rule.
 - `destination` (String) Destination IP or network.
 - `destination_not` (Boolean) Whether the destination matching should be inverted.
@@ -37,7 +37,7 @@ data "opnsense_firewall_automation_filter" "data_source_via_id" {
 - `direction` (String) Direction of packet matching.
 - `enabled` (Boolean) Whether the rule is enabled.
 - `gateway` (String) Gateway utilized in policy based routing. An empty value uses the system routing table.
-- `interfaces` (List of String) Interfaces this rule applies to.
+- `interfaces` (Set of String) Interfaces this rule applies to.
 - `ip_version` (String) The applicable ip version this for this rule.
 - `log` (Boolean) Whether packets that are handled by this rule should be logged.
 - `protocol` (String) The applicable protocol for this rule.

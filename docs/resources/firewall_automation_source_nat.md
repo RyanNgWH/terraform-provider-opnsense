@@ -47,7 +47,7 @@ resource "opnsense_firewall_automation_filter" "test_acc_resource_filter" {
 
 ### Optional
 
-- `categories` (List of String) The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) Description to identify this rule.
 - `destination` (String) Destination IP or network. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`). Defaults to `any`
 - `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`.
