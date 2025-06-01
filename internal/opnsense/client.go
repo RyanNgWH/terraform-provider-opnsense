@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 )
@@ -35,12 +36,7 @@ func isSupportedHttpMethod(method string) bool {
 		"POST",
 	}
 
-	for _, m := range validMethods {
-		if strings.ToUpper(method) == m {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(validMethods, strings.ToUpper(method))
 }
 
 // NewClient creates and initialises a client instance.
