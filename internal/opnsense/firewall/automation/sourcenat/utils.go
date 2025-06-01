@@ -35,7 +35,7 @@ type automationSourceNat struct {
 	Target          string
 	TargetPort      string
 	Log             bool
-	Categories      []string
+	Categories      *utils.Set
 	Description     string
 }
 
@@ -228,7 +228,8 @@ func createAutomationSourceNat(ctx context.Context, client *opnsense.Client, pla
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
 
-	categories := utils.StringListTerraformToGo(plan.Categories)
+	categories, diags := utils.SetTerraformToGo(ctx, plan.Categories)
+	diagnostics.Append(diags...)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {

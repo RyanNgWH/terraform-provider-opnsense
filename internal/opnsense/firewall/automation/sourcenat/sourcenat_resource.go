@@ -20,8 +20,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -49,25 +49,25 @@ type automationSourceNatResource struct {
 
 // automationSourceNatResourceModel describes the resource data model.
 type automationSourceNatResourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	LastUpdated     types.String   `tfsdk:"last_updated"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	NoNat           types.Bool     `tfsdk:"no_nat"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Interface       types.String   `tfsdk:"interface"`
-	IpVersion       types.String   `tfsdk:"ip_version"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	Source          types.String   `tfsdk:"source"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destination     types.String   `tfsdk:"destination"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Target          types.String   `tfsdk:"target"`
-	TargetPort      types.String   `tfsdk:"target_port"`
-	Log             types.Bool     `tfsdk:"log"`
-	Categories      []types.String `tfsdk:"categories"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	LastUpdated     types.String `tfsdk:"last_updated"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	NoNat           types.Bool   `tfsdk:"no_nat"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Interface       types.String `tfsdk:"interface"`
+	IpVersion       types.String `tfsdk:"ip_version"`
+	Protocol        types.String `tfsdk:"protocol"`
+	Source          types.String `tfsdk:"source"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destination     types.String `tfsdk:"destination"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Target          types.String `tfsdk:"target"`
+	TargetPort      types.String `tfsdk:"target_port"`
+	Log             types.Bool   `tfsdk:"log"`
+	Categories      types.Set    `tfsdk:"categories"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -77,7 +77,7 @@ func (r *automationSourceNatResource) Metadata(ctx context.Context, req resource
 
 // Schema defines the schema for the resource.
 func (r *automationSourceNatResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	emptyList, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		Description: "When a client on an internal network makes an outbound request, the gateway will have to change the source IP to the external IP of the gateway, since the outside server will not be able to send an answer back otherwise. Source NAT is also known as Outbound NAT or Masquerading.",
@@ -205,12 +205,12 @@ func (r *automationSourceNatResource) Schema(ctx context.Context, req resource.S
 				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(emptyList),
+				Description: "The categories of the rule.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
@@ -336,7 +336,11 @@ func (r *automationSourceNatResource) Read(ctx context.Context, req resource.Rea
 	state.Target = types.StringValue(rule.Target)
 	state.TargetPort = types.StringValue(rule.TargetPort)
 	state.Log = types.BoolValue(rule.Log)
-	state.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	state.Categories = categories
+
 	state.Description = types.StringValue(rule.Description)
 
 	if resp.Diagnostics.HasError() {
