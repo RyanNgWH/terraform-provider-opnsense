@@ -35,12 +35,12 @@ type groupDataSource struct {
 
 // groupDataSourceModel describes the data source data model.
 type groupDataSourceModel struct {
-	Id          types.String   `tfsdk:"id"`
-	Name        types.String   `tfsdk:"name"`
-	Members     []types.String `tfsdk:"members"`
-	NoGroup     types.Bool     `tfsdk:"no_group"`
-	Sequence    types.Int32    `tfsdk:"sequence"`
-	Description types.String   `tfsdk:"description"`
+	Id          types.String `tfsdk:"id"`
+	Name        types.String `tfsdk:"name"`
+	Members     types.Set    `tfsdk:"members"`
+	NoGroup     types.Bool   `tfsdk:"no_group"`
+	Sequence    types.Int32  `tfsdk:"sequence"`
+	Description types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -68,7 +68,7 @@ func (d *groupDataSource) Schema(ctx context.Context, req datasource.SchemaReque
 					}...),
 				},
 			},
-			"members": schema.ListAttribute{
+			"members": schema.SetAttribute{
 				Computed:            true,
 				ElementType:         types.StringType,
 				MarkdownDescription: "Member interfaces of the group.",
@@ -154,7 +154,11 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	tflog.Debug(ctx, fmt.Sprintf("Saving %s information to state", resourceName), map[string]any{fmt.Sprintf("%s", resourceName): data})
 
 	data.Name = types.StringValue(group.Name)
-	data.Members = utils.StringListGoToTerraform(group.Members)
+
+	members, diags := utils.SetGoToTerraform(ctx, group.Members)
+	resp.Diagnostics.Append(diags...)
+	data.Members = members
+
 	data.NoGroup = types.BoolValue(group.NoGroup)
 	data.Sequence = types.Int32Value(group.Sequence)
 	data.Description = types.StringValue(group.Description)

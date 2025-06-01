@@ -41,13 +41,13 @@ type groupResource struct {
 
 // groupResourceModel describes the resource data model.
 type groupResourceModel struct {
-	Id          types.String   `tfsdk:"id"`
-	LastUpdated types.String   `tfsdk:"last_updated"`
-	Name        types.String   `tfsdk:"name"`
-	Members     []types.String `tfsdk:"members"`
-	NoGroup     types.Bool     `tfsdk:"no_group"`
-	Sequence    types.Int32    `tfsdk:"sequence"`
-	Description types.String   `tfsdk:"description"`
+	Id          types.String `tfsdk:"id"`
+	LastUpdated types.String `tfsdk:"last_updated"`
+	Name        types.String `tfsdk:"name"`
+	Members     types.Set    `tfsdk:"members"`
+	NoGroup     types.Bool   `tfsdk:"no_group"`
+	Sequence    types.Int32  `tfsdk:"sequence"`
+	Description types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -76,10 +76,10 @@ func (r *groupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Required:    true,
 				Description: "The name of the group.",
 			},
-			"members": schema.ListAttribute{
+			"members": schema.SetAttribute{
 				Required:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Member interfaces of the group. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.",
+				MarkdownDescription: "Member interfaces of the group. Use the interface identifiers (e.g `lan`, `opt1`)",
 			},
 			"no_group": schema.BoolAttribute{
 				Optional:    true,
@@ -203,7 +203,11 @@ func (r *groupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 	// Overwite items with refreshed state
 	state.Name = types.StringValue(group.Name)
-	state.Members = utils.StringListGoToTerraform(group.Members)
+
+	members, diags := utils.SetGoToTerraform(ctx, group.Members)
+	resp.Diagnostics.Append(diags...)
+	state.Members = members
+
 	state.NoGroup = types.BoolValue(group.NoGroup)
 	state.Sequence = types.Int32Value(group.Sequence)
 	state.Description = types.StringValue(group.Description)

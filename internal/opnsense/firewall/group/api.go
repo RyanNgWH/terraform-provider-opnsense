@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -82,7 +81,7 @@ func groupToHttpBody(group group) groupHttpBody {
 	return groupHttpBody{
 		Group: groupRequest{
 			IfName:      group.Name,
-			Members:     strings.Join(group.Members, ","),
+			Members:     strings.Join(group.Members.Elements(), ","),
 			NoGroup:     utils.BoolToInt(group.NoGroup),
 			Sequence:    group.Sequence,
 			Description: group.Description,
@@ -154,15 +153,12 @@ func getGroup(client *opnsense.Client, uuid string) (*group, error) {
 	}
 
 	// Extract values from response
-	var members []string
+	members := utils.NewSet()
 	for name, value := range resp.Group.Members {
 		if value.Selected == 1 {
-			members = append(members, name)
+			members.Add(name)
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(members)
 
 	return &group{
 		Name:        resp.Group.IfName,

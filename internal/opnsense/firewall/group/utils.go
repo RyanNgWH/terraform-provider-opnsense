@@ -20,7 +20,7 @@ const (
 
 type group struct {
 	Name        string
-	Members     []string
+	Members     *utils.Set
 	NoGroup     bool
 	Sequence    int32
 	Description string
@@ -37,7 +37,8 @@ func createGroup(ctx context.Context, client *opnsense.Client, plan groupResourc
 		"interfaces": plan.Members,
 	})
 
-	interfaces := utils.StringListTerraformToGo(plan.Members)
+	interfaces, diags := utils.SetTerraformToGo(ctx, plan.Members)
+	diagnostics.Append(diags...)
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 	if err != nil {
