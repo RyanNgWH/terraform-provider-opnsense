@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -107,7 +106,7 @@ func automationFilterToHttpBody(automationFilter automationFilter) automationFil
 			Sequence:        automationFilter.Sequence,
 			Action:          automationFilter.Action,
 			Quick:           utils.BoolToInt(automationFilter.Quick),
-			Interfaces:      strings.Join(automationFilter.Interfaces, ","),
+			Interfaces:      strings.Join(automationFilter.Interfaces.Elements(), ","),
 			Direction:       automationFilter.Direction,
 			IpVersion:       automationFilter.IpVersion,
 			Protocol:        automationFilter.Protocol,
@@ -119,7 +118,7 @@ func automationFilterToHttpBody(automationFilter automationFilter) automationFil
 			DestinationPort: automationFilter.DestinationPort,
 			Gateway:         automationFilter.Gateway,
 			Log:             utils.BoolToInt(automationFilter.Log),
-			Categories:      strings.Join(automationFilter.Categories, ","),
+			Categories:      strings.Join(automationFilter.Categories.Elements(), ","),
 			Description:     automationFilter.Description,
 		},
 	}
@@ -189,10 +188,10 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 		}
 	}
 
-	var interfaces []string
+	interfaces := utils.NewSet()
 	for name, value := range response.Rule.Interfaces {
 		if value.Selected == 1 {
-			interfaces = append(interfaces, name)
+			interfaces.Add(name)
 		}
 	}
 
@@ -232,7 +231,7 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 		}
 	}
 
-	categories := make([]string, 0)
+	categories := utils.NewSet()
 	for name, value := range response.Rule.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
@@ -240,13 +239,9 @@ func getAutomationFilterRule(client *opnsense.Client, uuid string) (*automationF
 				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
-			categories = append(categories, categoryName)
+			categories.Add(categoryName)
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(interfaces)
-	sort.Strings(categories)
 
 	return &automationFilter{
 		Enabled:         response.Rule.Enabled == 1,
