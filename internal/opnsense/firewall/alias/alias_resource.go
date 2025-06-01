@@ -13,9 +13,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -47,18 +47,18 @@ type aliasResource struct {
 
 // aliasResourceModel describes the resource data model.
 type aliasResourceModel struct {
-	Id          types.String   `tfsdk:"id"`
-	LastUpdated types.String   `tfsdk:"last_updated"`
-	Enabled     types.Bool     `tfsdk:"enabled"`
-	Name        types.String   `tfsdk:"name"`
-	Type        types.String   `tfsdk:"type"`
-	Counters    types.Bool     `tfsdk:"counters"`
-	UpdateFreq  types.Object   `tfsdk:"updatefreq"`
-	Description types.String   `tfsdk:"description"`
-	Proto       types.Object   `tfsdk:"proto"`
-	Categories  []types.String `tfsdk:"categories"`
-	Content     []types.String `tfsdk:"content"`
-	Interface   types.String   `tfsdk:"interface"`
+	Id          types.String `tfsdk:"id"`
+	LastUpdated types.String `tfsdk:"last_updated"`
+	Enabled     types.Bool   `tfsdk:"enabled"`
+	Name        types.String `tfsdk:"name"`
+	Type        types.String `tfsdk:"type"`
+	Counters    types.Bool   `tfsdk:"counters"`
+	UpdateFreq  types.Object `tfsdk:"updatefreq"`
+	Description types.String `tfsdk:"description"`
+	Proto       types.Object `tfsdk:"proto"`
+	Categories  types.Set    `tfsdk:"categories"`
+	Content     types.Set    `tfsdk:"content"`
+	Interface   types.String `tfsdk:"interface"`
 }
 
 type updateFreqModel struct {
@@ -78,7 +78,7 @@ func (r *aliasResource) Metadata(ctx context.Context, req resource.MetadataReque
 
 // Schema defines the schema for the resource.
 func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	emptyList, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Aliases are named lists of networks, hosts or ports that can be used as one entity by referencing the alias name in the various supported sections of the firewall. These aliases are particularly useful to condense firewall rules and minimize changes.",
@@ -187,19 +187,19 @@ func (r *aliasResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 					},
 				)),
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the alias. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(emptyList),
+				Description: "The categories of the alias.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
-			"content": schema.ListAttribute{
+			"content": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The content of the alias. Ensure that the content are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(emptyList),
+				Description: "The content of the alias.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
 			"interface": schema.StringAttribute{
 				Optional:    true,
@@ -341,8 +341,14 @@ func (r *aliasResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	resp.Diagnostics.Append(diags...)
 	state.Proto = proto
 
-	state.Categories = utils.StringListGoToTerraform(alias.Categories)
-	state.Content = utils.StringListGoToTerraform(alias.Content)
+	categories, diags := utils.SetGoToTerraform(ctx, alias.Categories)
+	resp.Diagnostics.Append(diags...)
+	state.Categories = categories
+
+	content, diags := utils.SetGoToTerraform(ctx, alias.Content)
+	resp.Diagnostics.Append(diags...)
+	state.Content = content
+
 	state.Interface = types.StringValue(alias.Interface)
 
 	if resp.Diagnostics.HasError() {

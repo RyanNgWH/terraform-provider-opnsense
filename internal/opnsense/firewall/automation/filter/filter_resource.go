@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
+
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
 	"terraform-provider-opnsense/internal/opnsense/firewall/automation"
 	"terraform-provider-opnsense/internal/utils"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int32validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -19,8 +20,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -48,26 +49,26 @@ type automationFilterResource struct {
 
 // automationFilterResourceModel describes the resource data model.
 type automationFilterResourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	LastUpdated     types.String   `tfsdk:"last_updated"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Action          types.String   `tfsdk:"action"`
-	Quick           types.Bool     `tfsdk:"quick"`
-	Interfaces      []types.String `tfsdk:"interfaces"`
-	Direction       types.String   `tfsdk:"direction"`
-	IpVersion       types.String   `tfsdk:"ip_version"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	Source          types.String   `tfsdk:"source"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destination     types.String   `tfsdk:"destination"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Gateway         types.String   `tfsdk:"gateway"`
-	Log             types.Bool     `tfsdk:"log"`
-	Categories      []types.String `tfsdk:"categories"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	LastUpdated     types.String `tfsdk:"last_updated"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Action          types.String `tfsdk:"action"`
+	Quick           types.Bool   `tfsdk:"quick"`
+	Interfaces      types.Set    `tfsdk:"interfaces"`
+	Direction       types.String `tfsdk:"direction"`
+	IpVersion       types.String `tfsdk:"ip_version"`
+	Protocol        types.String `tfsdk:"protocol"`
+	Source          types.String `tfsdk:"source"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destination     types.String `tfsdk:"destination"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Gateway         types.String `tfsdk:"gateway"`
+	Log             types.Bool   `tfsdk:"log"`
+	Categories      types.Set    `tfsdk:"categories"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -77,7 +78,7 @@ func (r *automationFilterResource) Metadata(ctx context.Context, req resource.Me
 
 // Schema defines the schema for the resource.
 func (r *automationFilterResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	emptyList, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		Description: "Controls the stateful packet filter, which can be used to restrict or allow traffic from and/or to specific networks as well as influence how traffic should be forwarded.",
@@ -131,12 +132,12 @@ func (r *automationFilterResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "If a packet matches a rule specifying quick, then that rule is considered the last matching rule and the specified action is taken. When a rule does not have quick enabled, the last matching rule wins. Defaults to `true`",
 				Default:             booldefault.StaticBool(true),
 			},
-			"interfaces": schema.ListAttribute{
+			"interfaces": schema.SetAttribute{
 				Optional:            true,
 				Computed:            true,
 				ElementType:         types.StringType,
-				MarkdownDescription: "Interfaces this rule applies to. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:             listdefault.StaticValue(emptyList),
+				MarkdownDescription: "Interfaces this rule applies to. Use the interface identifiers (e.g `lan`, `opt1`).",
+				Default:             setdefault.StaticValue(emptySet),
 			},
 			"direction": schema.StringAttribute{
 				Optional: true,
@@ -240,12 +241,12 @@ func (r *automationFilterResource) Schema(ctx context.Context, req resource.Sche
 				MarkdownDescription: "Whether packets that are handled by this rule should be logged. Defaults to `false`.",
 				Default:             booldefault.StaticBool(false),
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(emptyList),
+				Description: "The categories of the rule.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
@@ -360,7 +361,11 @@ func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRe
 	state.Sequence = types.Int32Value(rule.Sequence)
 	state.Action = types.StringValue(rule.Action)
 	state.Quick = types.BoolValue(rule.Quick)
-	state.Interfaces = utils.StringListGoToTerraform(rule.Interfaces)
+
+	interfaces, diags := utils.SetGoToTerraform(ctx, rule.Interfaces)
+	resp.Diagnostics.Append(diags...)
+	state.Interfaces = interfaces
+
 	state.Direction = types.StringValue(rule.Direction)
 	state.IpVersion = types.StringValue(rule.IpVersion)
 	state.Protocol = types.StringValue(rule.Protocol)
@@ -372,7 +377,11 @@ func (r *automationFilterResource) Read(ctx context.Context, req resource.ReadRe
 	state.DestinationPort = types.StringValue(rule.DestinationPort)
 	state.Gateway = types.StringValue(rule.Gateway)
 	state.Log = types.BoolValue(rule.Log)
-	state.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	state.Categories = categories
+
 	state.Description = types.StringValue(rule.Description)
 
 	if resp.Diagnostics.HasError() {

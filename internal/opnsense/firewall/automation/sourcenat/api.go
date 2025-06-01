@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 	"terraform-provider-opnsense/internal/opnsense"
 	"terraform-provider-opnsense/internal/opnsense/firewall"
@@ -108,7 +107,7 @@ func automationSourceNatToHttpBody(automationSourceNat automationSourceNat) auto
 			Target:          automationSourceNat.Target,
 			TargetPort:      automationSourceNat.TargetPort,
 			Log:             utils.BoolToInt(automationSourceNat.Log),
-			Categories:      strings.Join(automationSourceNat.Categories, ","),
+			Categories:      strings.Join(automationSourceNat.Categories.Elements(), ","),
 			Description:     automationSourceNat.Description,
 		},
 	}
@@ -197,7 +196,7 @@ func getAutomationSourceNatRule(client *opnsense.Client, uuid string) (*automati
 		}
 	}
 
-	categories := make([]string, 0)
+	categories := utils.NewSet()
 	for name, value := range response.Rule.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
@@ -205,12 +204,9 @@ func getAutomationSourceNatRule(client *opnsense.Client, uuid string) (*automati
 				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
-			categories = append(categories, categoryName)
+			categories.Add(categoryName)
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(categories)
 
 	return &automationSourceNat{
 		Enabled:         response.Rule.Enabled == 1,

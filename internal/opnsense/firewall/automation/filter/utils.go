@@ -25,7 +25,7 @@ type automationFilter struct {
 	Sequence        int32
 	Action          string
 	Quick           bool
-	Interfaces      []string
+	Interfaces      *utils.Set
 	Direction       string
 	IpVersion       string
 	Protocol        string
@@ -37,7 +37,7 @@ type automationFilter struct {
 	DestinationPort string
 	Gateway         string
 	Log             bool
-	Categories      []string
+	Categories      *utils.Set
 	Description     string
 }
 
@@ -232,7 +232,8 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 	// Verify interfaces
 	tflog.Debug(ctx, "Verifying interfaces", map[string]any{"interfaces": plan.Interfaces})
 
-	interfaces := utils.StringListTerraformToGo(plan.Interfaces)
+	interfaces, diags := utils.SetTerraformToGo(ctx, plan.Interfaces)
+	diagnostics.Append(diags...)
 
 	interfacesExist, err := overview.VerifyInterfaces(client, interfaces)
 	if err != nil {
@@ -262,7 +263,7 @@ func createAutomationFilter(ctx context.Context, client *opnsense.Client, plan a
 	// Verify all categories exist
 	tflog.Debug(ctx, "Verifying categories", map[string]any{"categories": plan.Categories})
 
-	categories := utils.StringListTerraformToGo(plan.Categories)
+	categories, diags := utils.SetTerraformToGo(ctx, plan.Categories)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {

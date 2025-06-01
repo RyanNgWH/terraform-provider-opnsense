@@ -33,23 +33,23 @@ type shaperRulesDataSource struct {
 
 // shaperRulesDataSourceModel describes the resource data model.
 type shaperRulesDataSourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Interface       types.String   `tfsdk:"interface"`
-	Interface2      types.String   `tfsdk:"interface2"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	MaxPacketLength types.Int32    `tfsdk:"max_packet_length"`
-	Sources         []types.String `tfsdk:"sources"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destinations    []types.String `tfsdk:"destinations"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Dscp            []types.String `tfsdk:"dscp"`
-	Direction       types.String   `tfsdk:"direction"`
-	Target          types.String   `tfsdk:"target"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Interface       types.String `tfsdk:"interface"`
+	Interface2      types.String `tfsdk:"interface2"`
+	Protocol        types.String `tfsdk:"protocol"`
+	MaxPacketLength types.Int32  `tfsdk:"max_packet_length"`
+	Sources         types.Set    `tfsdk:"sources"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destinations    types.Set    `tfsdk:"destinations"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Dscp            types.Set    `tfsdk:"dscp"`
+	Direction       types.String `tfsdk:"direction"`
+	Target          types.String `tfsdk:"target"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -90,7 +90,7 @@ func (d *shaperRulesDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:    true,
 				Description: "Specifies the maximum size of packets to match in bytes. Negative values are treated as default (i.e empty)",
 			},
-			"sources": schema.ListAttribute{
+			"sources": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`.",
@@ -103,7 +103,7 @@ func (d *shaperRulesDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:    true,
 				Description: "Source port number or well known name.",
 			},
-			"destinations": schema.ListAttribute{
+			"destinations": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`.",
@@ -116,7 +116,7 @@ func (d *shaperRulesDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:    true,
 				Description: "Destination port number or well known name.",
 			},
-			"dscp": schema.ListAttribute{
+			"dscp": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "Match against one or multiple DSCP values.",
@@ -192,13 +192,25 @@ func (d *shaperRulesDataSource) Read(ctx context.Context, req datasource.ReadReq
 	data.Interface2 = types.StringValue(rule.Interface2)
 	data.Protocol = types.StringValue(rule.Protocol)
 	data.MaxPacketLength = types.Int32Value(rule.MaxPacketLength)
-	data.Sources = utils.StringListGoToTerraform(rule.Sources)
+
+	sources, diags := utils.SetGoToTerraform(ctx, rule.Sources)
+	resp.Diagnostics.Append(diags...)
+	data.Sources = sources
+
 	data.SourceNot = types.BoolValue(rule.SourceNot)
 	data.SourcePort = types.StringValue(rule.SourcePort)
-	data.Destinations = utils.StringListGoToTerraform(rule.Destinations)
+
+	destinations, diags := utils.SetGoToTerraform(ctx, rule.Destinations)
+	resp.Diagnostics.Append(diags...)
+	data.Destinations = destinations
+
 	data.DestinationNot = types.BoolValue(rule.DestinationNot)
 	data.DestinationPort = types.StringValue(rule.DestinationPort)
-	data.Dscp = utils.StringListGoToTerraform(rule.Dscp)
+
+	dscp, diags := utils.SetGoToTerraform(ctx, rule.Dscp)
+	resp.Diagnostics.Append(diags...)
+	data.Dscp = dscp
+
 	data.Direction = types.StringValue(rule.Direction)
 	data.Target = types.StringValue(rule.Target)
 	data.Description = types.StringValue(rule.Description)

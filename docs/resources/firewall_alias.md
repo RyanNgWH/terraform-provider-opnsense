@@ -36,8 +36,8 @@ resource "opnsense_firewall_alias" "resource_example" {
 
 ### Optional
 
-- `categories` (List of String) The categories of the alias. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
-- `content` (List of String) The content of the alias. Ensure that the content are in lexicographical order, else the provider will detect a change on every execution.
+- `categories` (Set of String) The categories of the alias.
+- `content` (Set of String) The content of the alias.
 - `counters` (Boolean) Whether the statistics of the alias is enabled. Defaults to `false`.
 - `description` (String) The description of the alias.
 - `enabled` (Boolean) Whether the alias is enabled. Defaults to `true`.
@@ -48,7 +48,7 @@ resource "opnsense_firewall_alias" "resource_example" {
 ### Read-Only
 
 - `id` (String) Identifier of the alias.
-- `last_updated` (String) DateTime when alias was last updated.
+- `last_updated` (String) DateTime when the alias was last updated.
 
 <a id="nestedatt--proto"></a>
 ### Nested Schema for `proto`

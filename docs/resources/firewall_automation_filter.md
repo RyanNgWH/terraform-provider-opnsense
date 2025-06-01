@@ -47,7 +47,7 @@ resource "opnsense_firewall_automation_filter" "test_acc_resource_filter" {
 ### Optional
 
 - `action` (String) Choose what to do with packets that match the criteria specified. The difference between block and reject is that with reject, a packet (TCP RST or ICMP port unreachable for UDP) is returned to the sender, whereas with block the packet is dropped silently. In either case, the original packet is discarded. Must be one of: `pass`, `block`, `reject`. Defaults to `pass`
-- `categories` (List of String) The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) Description to identify this rule.
 - `destination` (String) Destination IP or network. Can be a single network/host, alias or predefined network. For interface addresses, add `ip` to the end of the interface name (e.g `opt1ip`). Defaults to `any`
 - `destination_not` (Boolean) Whether the destination matching should be inverted. Defaults to `false`.
@@ -55,7 +55,7 @@ resource "opnsense_firewall_automation_filter" "test_acc_resource_filter" {
 - `direction` (String) Direction of packet matching. Must be one of: `in`, `out`. Defaults to `in`.
 - `enabled` (Boolean) Whether the rule is enabled. Defaults to `true`.
 - `gateway` (String) Choose a gateway to utilize policy based routing. Leave empty to use the system routing table.
-- `interfaces` (List of String) Interfaces this rule applies to. Use the interface identifiers (e.g `lan`, `opt1`) Ensure that the interfaces are in lexicographical order, else the provider will detect a change on every execution.
+- `interfaces` (Set of String) Interfaces this rule applies to. Use the interface identifiers (e.g `lan`, `opt1`).
 - `ip_version` (String) The applicable ip version this for this rule. Must be one of: `ipv4`, `ipv6`. Defaults to `ipv4`.
 - `log` (Boolean) Whether packets that are handled by this rule should be logged. Defaults to `false`.
 - `protocol` (String) The applicable protocol for this rule. Must be one of: `any`, `icmp`, `igmp`, `ggp`, `ipencap`, `st2`, `tcp`, `cbt`, `egp`, `igp`, `bbn-rcc`, `nvp`, `pup`, `argus`, `emcon`, `xnet`, `chaos`, `udp`, `mux`, `dcn`, `hmp`, `prm`, `xns-idp`, `trunk-1`, `trunk-2`, `leaf-1`, `leaf-2`, `rdp`, `irtp`, `iso-tp4`, `netblt`, `mfe-nsp`, `merit-inp`, `dccp`, `3pc`, `idpr`, `xtp`, `ddp`, `idpr-cmtp`, `tp++`, `il`, `ipv6`, `sdrp`, `idrp`, `rsvp`, `gre`, `dsr`, `bna`, `esp`, `ah`, `i-nlsp`, `swipe`, `narp`, `mobile`, `tlsp`, `skip`, `ipv6-icmp`, `cftp`, `sat-expak`, `kryptolan`, `rvd`, `ippc`, `sat-mon`, `visa`, `ipcv`, `cpnx`, `cphb`, `wsn`, `pvp`, `br-sat-mon`, `sun-nd`, `wb-mon`, `wb-expak`, `iso-ip`, `vmtp`, `secure-vmtp`, `vines`, `ttp`, `nsfnet-igp`, `dgp`, `tcf`, `eigrp`, `ospf`, `sprite-rpc`, `larp`, `mtp`, `ax.25`, `ipip`, `micp`, `scc-sp`, `etherip`, `encap`, `gmtp`, `ifmp`, `pnni`, `pim`, `aris`, `scps`, `qnx`, `a/n`, `ipcomp`, `snp`, `compaq-peer`, `ipx-in-ip`, `carp`, `pgm`, `l2tp`, `ddx`, `iatp`, `stp`, `srp`, `uti`, `smp`, `sm`, `ptp`, `isis`, `crtp`, `crudp`, `sps`, `pipe`, `sctp`, `fc`, `rsvp-e2e-ignore`, `udplite`, `mpls-in-ip`, `manet`, `hip`, `shim6`, `wesp`, `rohc`, `pfsync`, `divert`. Defaults to `any`.
@@ -68,7 +68,7 @@ resource "opnsense_firewall_automation_filter" "test_acc_resource_filter" {
 ### Read-Only
 
 - `id` (String) Identifier of the automation filter rule.
-- `last_updated` (String) DateTime when automation filter rule was last updated.
+- `last_updated` (String) DateTime when the automation filter rule was last updated.
 
 ## Import
 

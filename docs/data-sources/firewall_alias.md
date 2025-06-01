@@ -34,8 +34,8 @@ data "opnsense_firewall_alias" "data_source_via_name" {
 
 ### Read-Only
 
-- `categories` (List of String) The categories of the alias.
-- `content` (List of String) The content of the alias.
+- `categories` (Set of String) The categories of the alias.
+- `content` (Set of String) The content of the alias.
 - `counters` (Boolean) Whether the statistics of the alias is enabled.
 - `description` (String) The description of the alias.
 - `enabled` (Boolean) Whether the alias is enabled.

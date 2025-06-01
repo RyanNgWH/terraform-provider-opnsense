@@ -35,7 +35,7 @@ resource "opnsense_firewall_category" "resource_example" {
 ### Read-Only
 
 - `id` (String) Identifier of the category.
-- `last_updated` (String) DateTime when alias was last updated.
+- `last_updated` (String) DateTime when the category was last updated.
 
 ## Import
 

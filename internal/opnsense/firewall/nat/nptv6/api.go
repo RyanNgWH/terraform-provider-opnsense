@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -81,7 +80,7 @@ func nptv6ToHttpBody(nptv6 nptv6) nptv6HttpBody {
 			InternalPrefix: nptv6.InternalPrefix,
 			ExternalPrefix: nptv6.ExternalPrefix,
 			TrackInterface: nptv6.TrackInterface,
-			Categories:     strings.Join(nptv6.Categories, ","),
+			Categories:     strings.Join(nptv6.Categories.Elements(), ","),
 			Description:    nptv6.Description,
 		},
 	}
@@ -159,7 +158,7 @@ func getNptv6Nat(client *opnsense.Client, uuid string) (*nptv6, error) {
 		}
 	}
 
-	categories := make([]string, 0)
+	categories := utils.NewSet()
 	for name, value := range response.Rule.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
@@ -167,12 +166,9 @@ func getNptv6Nat(client *opnsense.Client, uuid string) (*nptv6, error) {
 				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
-			categories = append(categories, categoryName)
+			categories.Add(categoryName)
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(categories)
 
 	return &nptv6{
 		Enabled:        response.Rule.Enabled == 1,

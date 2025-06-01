@@ -33,24 +33,24 @@ type automationSourceNatDataSource struct {
 
 // automationSourceNatDataSourceModel describes the resource data model.
 type automationSourceNatDataSourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	NoNat           types.Bool     `tfsdk:"no_nat"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Interface       types.String   `tfsdk:"interface"`
-	IpVersion       types.String   `tfsdk:"ip_version"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	Source          types.String   `tfsdk:"source"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destination     types.String   `tfsdk:"destination"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Target          types.String   `tfsdk:"target"`
-	TargetPort      types.String   `tfsdk:"target_port"`
-	Log             types.Bool     `tfsdk:"log"`
-	Categories      []types.String `tfsdk:"categories"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	NoNat           types.Bool   `tfsdk:"no_nat"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Interface       types.String `tfsdk:"interface"`
+	IpVersion       types.String `tfsdk:"ip_version"`
+	Protocol        types.String `tfsdk:"protocol"`
+	Source          types.String `tfsdk:"source"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destination     types.String `tfsdk:"destination"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Target          types.String `tfsdk:"target"`
+	TargetPort      types.String `tfsdk:"target_port"`
+	Log             types.Bool   `tfsdk:"log"`
+	Categories      types.Set    `tfsdk:"categories"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -127,7 +127,7 @@ func (d *automationSourceNatDataSource) Schema(ctx context.Context, req datasour
 				Computed:    true,
 				Description: "Whether packets that are handled by this rule should be logged.",
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule.",
@@ -204,7 +204,11 @@ func (d *automationSourceNatDataSource) Read(ctx context.Context, req datasource
 	data.Target = types.StringValue(rule.Target)
 	data.TargetPort = types.StringValue(rule.TargetPort)
 	data.Log = types.BoolValue(rule.Log)
-	data.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	data.Categories = categories
+
 	data.Description = types.StringValue(rule.Description)
 
 	if resp.Diagnostics.HasError() {

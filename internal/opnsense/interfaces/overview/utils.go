@@ -3,6 +3,7 @@ package overview
 import (
 	"fmt"
 	"terraform-provider-opnsense/internal/opnsense"
+	"terraform-provider-opnsense/internal/utils"
 )
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 // VerifyInterfaces checks if the specified list of interfaces exist on the OPNsense firewall.
-func VerifyInterfaces(client *opnsense.Client, interfacesList []string) (bool, error) {
-	for _, iface := range interfacesList {
+func VerifyInterfaces(client *opnsense.Client, interfacesList *utils.Set) (bool, error) {
+	for _, iface := range interfacesList.Elements() {
 		ifaceExists, err := VerifyInterface(client, iface)
 		if err != nil {
 			return false, fmt.Errorf("%s", err)

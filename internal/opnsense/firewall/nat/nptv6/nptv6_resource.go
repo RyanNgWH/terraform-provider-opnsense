@@ -18,8 +18,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/booldefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int32default"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/setdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -47,17 +47,17 @@ type natNptv6Resource struct {
 
 // natNptv6ResourceModel describes the resource data model.
 type natNptv6ResourceModel struct {
-	Id             types.String   `tfsdk:"id"`
-	LastUpdated    types.String   `tfsdk:"last_updated"`
-	Enabled        types.Bool     `tfsdk:"enabled"`
-	Log            types.Bool     `tfsdk:"log"`
-	Sequence       types.Int32    `tfsdk:"sequence"`
-	Interface      types.String   `tfsdk:"interface"`
-	InternalPrefix types.String   `tfsdk:"internal_prefix"`
-	ExternalPrefix types.String   `tfsdk:"external_prefix"`
-	TrackInterface types.String   `tfsdk:"track_interface"`
-	Categories     []types.String `tfsdk:"categories"`
-	Description    types.String   `tfsdk:"description"`
+	Id             types.String `tfsdk:"id"`
+	LastUpdated    types.String `tfsdk:"last_updated"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int32  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	InternalPrefix types.String `tfsdk:"internal_prefix"`
+	ExternalPrefix types.String `tfsdk:"external_prefix"`
+	TrackInterface types.String `tfsdk:"track_interface"`
+	Categories     types.Set    `tfsdk:"categories"`
+	Description    types.String `tfsdk:"description"`
 }
 
 // Metadata returns the resource type name.
@@ -67,7 +67,7 @@ func (r *natNptv6Resource) Metadata(ctx context.Context, req resource.MetadataRe
 
 // Schema defines the schema for the resource.
 func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
-	defaultCategories, _ := basetypes.NewListValue(types.StringType, []attr.Value{})
+	emptySet, _ := basetypes.NewSetValue(types.StringType, []attr.Value{})
 
 	resp.Schema = schema.Schema{
 		Description: "Network Prefix Translation, shortened to NPTv6, is used to translate IPv6 addresses.",
@@ -132,12 +132,12 @@ func (r *natNptv6Resource) Schema(ctx context.Context, req resource.SchemaReques
 					}...),
 				},
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Optional:    true,
 				Computed:    true,
 				ElementType: types.StringType,
-				Description: "The categories of the rule. Ensure that the categories are in lexicographical order, else the provider will detect a change on every execution.",
-				Default:     listdefault.StaticValue(defaultCategories),
+				Description: "The categories of the rule.",
+				Default:     setdefault.StaticValue(emptySet),
 			},
 			"description": schema.StringAttribute{
 				Optional:    true,
@@ -257,7 +257,9 @@ func (r *natNptv6Resource) Read(ctx context.Context, req resource.ReadRequest, r
 	state.TrackInterface = types.StringValue(rule.TrackInterface)
 	state.Description = types.StringValue(rule.Description)
 
-	state.Categories = utils.StringListGoToTerraform(rule.Categories)
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	state.Categories = categories
 
 	if resp.Diagnostics.HasError() {
 		return

@@ -31,9 +31,9 @@ data "opnsense_firewall_shaper_rules" "data_source_via_id" {
 - `description` (String) Description to identify this rule.
 - `destination_not` (Boolean) Whether the destination matching should be inverted.
 - `destination_port` (String) Destination port number or well known name.
-- `destinations` (List of String) Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`.
+- `destinations` (Set of String) Destination ips or networks, examples `10.0.0.0/24`, `10.0.0.1`.
 - `direction` (String) Direction of packet matching.
-- `dscp` (List of String) Match against one or multiple DSCP values.
+- `dscp` (Set of String) Match against one or multiple DSCP values.
 - `enabled` (Boolean) Whether the traffic shaper rule is enabled.
 - `interface` (String) The interface this rule applies to.
 - `interface2` (String) The secondary interface, matches packets traveling to/from interface (1) to/from interface (2). Can be combined with direction.
@@ -42,5 +42,5 @@ data "opnsense_firewall_shaper_rules" "data_source_via_id" {
 - `sequence` (Number) Order in which the rule will be evaluated (lowest first).
 - `source_not` (Boolean) Whether the source matching should be inverted.
 - `source_port` (String) Source port number or well known name.
-- `sources` (List of String) Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`.
+- `sources` (Set of String) Source IPs or networks, examples `10.0.0.0/24`, `10.0.0.1`.
 - `target` (String) Target pipe or queue.

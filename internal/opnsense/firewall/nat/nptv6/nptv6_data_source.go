@@ -32,16 +32,16 @@ type natNptv6DataSource struct {
 
 // natNptv6DataSourceModel describes the resource data model.
 type natNptv6DataSourceModel struct {
-	Id             types.String   `tfsdk:"id"`
-	Enabled        types.Bool     `tfsdk:"enabled"`
-	Log            types.Bool     `tfsdk:"log"`
-	Sequence       types.Int32    `tfsdk:"sequence"`
-	Interface      types.String   `tfsdk:"interface"`
-	InternalPrefix types.String   `tfsdk:"internal_prefix"`
-	ExternalPrefix types.String   `tfsdk:"external_prefix"`
-	TrackInterface types.String   `tfsdk:"track_interface"`
-	Categories     []types.String `tfsdk:"categories"`
-	Description    types.String   `tfsdk:"description"`
+	Id             types.String `tfsdk:"id"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int32  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	InternalPrefix types.String `tfsdk:"internal_prefix"`
+	ExternalPrefix types.String `tfsdk:"external_prefix"`
+	TrackInterface types.String `tfsdk:"track_interface"`
+	Categories     types.Set    `tfsdk:"categories"`
+	Description    types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -87,7 +87,7 @@ func (d *natNptv6DataSource) Schema(ctx context.Context, req datasource.SchemaRe
 				Computed:    true,
 				Description: "Use prefix defined on the selected interface instead of the interface this rule applies to when target prefix is not provided.",
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule.",
@@ -156,7 +156,10 @@ func (d *natNptv6DataSource) Read(ctx context.Context, req datasource.ReadReques
 	data.ExternalPrefix = types.StringValue(rule.ExternalPrefix)
 	data.TrackInterface = types.StringValue(rule.TrackInterface)
 	data.Description = types.StringValue(rule.Description)
-	data.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	data.Categories = categories
 
 	if resp.Diagnostics.HasError() {
 		return

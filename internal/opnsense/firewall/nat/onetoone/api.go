@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -94,7 +93,7 @@ func oneToOneNatToHttpBody(oneToOneNat oneToOneNat) oneToOneNatHttpBody {
 			DestinationNot: utils.BoolToInt(oneToOneNat.DestinationNot),
 			External:       oneToOneNat.External,
 			NatRefection:   oneToOneNat.NatRefection,
-			Categories:     strings.Join(oneToOneNat.Categories, ","),
+			Categories:     strings.Join(oneToOneNat.Categories.Elements(), ","),
 			Description:    oneToOneNat.Description,
 		},
 	}
@@ -184,7 +183,7 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 		}
 	}
 
-	categories := make([]string, 0)
+	categories := utils.NewSet()
 	for name, value := range response.Rule.Categories {
 		if value.Selected == 1 && value.Value != "" {
 			categoryName, err := category.GetCategoryName(client, name)
@@ -192,12 +191,9 @@ func getOneToOneNat(client *opnsense.Client, uuid string) (*oneToOneNat, error) 
 				return nil, fmt.Errorf("Get %s error: failed to get category - %s", resourceName, err)
 			}
 
-			categories = append(categories, categoryName)
+			categories.Add(categoryName)
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(categories)
 
 	return &oneToOneNat{
 		Enabled:        response.Rule.Enabled == 1,

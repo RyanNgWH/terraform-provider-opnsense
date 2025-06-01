@@ -33,25 +33,25 @@ type automationFilterDataSource struct {
 
 // automationFilterDataSourceModel describes the resource data model.
 type automationFilterDataSourceModel struct {
-	Id              types.String   `tfsdk:"id"`
-	Enabled         types.Bool     `tfsdk:"enabled"`
-	Sequence        types.Int32    `tfsdk:"sequence"`
-	Action          types.String   `tfsdk:"action"`
-	Quick           types.Bool     `tfsdk:"quick"`
-	Interfaces      []types.String `tfsdk:"interfaces"`
-	Direction       types.String   `tfsdk:"direction"`
-	IpVersion       types.String   `tfsdk:"ip_version"`
-	Protocol        types.String   `tfsdk:"protocol"`
-	Source          types.String   `tfsdk:"source"`
-	SourceNot       types.Bool     `tfsdk:"source_not"`
-	SourcePort      types.String   `tfsdk:"source_port"`
-	Destination     types.String   `tfsdk:"destination"`
-	DestinationNot  types.Bool     `tfsdk:"destination_not"`
-	DestinationPort types.String   `tfsdk:"destination_port"`
-	Gateway         types.String   `tfsdk:"gateway"`
-	Log             types.Bool     `tfsdk:"log"`
-	Categories      []types.String `tfsdk:"categories"`
-	Description     types.String   `tfsdk:"description"`
+	Id              types.String `tfsdk:"id"`
+	Enabled         types.Bool   `tfsdk:"enabled"`
+	Sequence        types.Int32  `tfsdk:"sequence"`
+	Action          types.String `tfsdk:"action"`
+	Quick           types.Bool   `tfsdk:"quick"`
+	Interfaces      types.Set    `tfsdk:"interfaces"`
+	Direction       types.String `tfsdk:"direction"`
+	IpVersion       types.String `tfsdk:"ip_version"`
+	Protocol        types.String `tfsdk:"protocol"`
+	Source          types.String `tfsdk:"source"`
+	SourceNot       types.Bool   `tfsdk:"source_not"`
+	SourcePort      types.String `tfsdk:"source_port"`
+	Destination     types.String `tfsdk:"destination"`
+	DestinationNot  types.Bool   `tfsdk:"destination_not"`
+	DestinationPort types.String `tfsdk:"destination_port"`
+	Gateway         types.String `tfsdk:"gateway"`
+	Log             types.Bool   `tfsdk:"log"`
+	Categories      types.Set    `tfsdk:"categories"`
+	Description     types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -84,7 +84,7 @@ func (d *automationFilterDataSource) Schema(ctx context.Context, req datasource.
 				Computed:    true,
 				Description: "If a packet matches a rule specifying quick, then that rule is considered the last matching rule and the specified action is taken. When a rule does not have quick enabled, the last matching rule wins.",
 			},
-			"interfaces": schema.ListAttribute{
+			"interfaces": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "Interfaces this rule applies to.",
@@ -133,7 +133,7 @@ func (d *automationFilterDataSource) Schema(ctx context.Context, req datasource.
 				Computed:    true,
 				Description: "Whether packets that are handled by this rule should be logged.",
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule.",
@@ -199,7 +199,11 @@ func (d *automationFilterDataSource) Read(ctx context.Context, req datasource.Re
 	data.Sequence = types.Int32Value(rule.Sequence)
 	data.Action = types.StringValue(rule.Action)
 	data.Quick = types.BoolValue(rule.Quick)
-	data.Interfaces = utils.StringListGoToTerraform(rule.Interfaces)
+
+	interfaces, diags := utils.SetGoToTerraform(ctx, rule.Interfaces)
+	resp.Diagnostics.Append(diags...)
+	data.Interfaces = interfaces
+
 	data.Direction = types.StringValue(rule.Direction)
 	data.IpVersion = types.StringValue(rule.IpVersion)
 	data.Protocol = types.StringValue(rule.Protocol)
@@ -211,7 +215,11 @@ func (d *automationFilterDataSource) Read(ctx context.Context, req datasource.Re
 	data.DestinationPort = types.StringValue(rule.DestinationPort)
 	data.Gateway = types.StringValue(rule.Gateway)
 	data.Log = types.BoolValue(rule.Log)
-	data.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	data.Categories = categories
+
 	data.Description = types.StringValue(rule.Description)
 
 	if resp.Diagnostics.HasError() {

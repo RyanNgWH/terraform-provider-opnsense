@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -106,13 +105,13 @@ func shaperRuleToHttpBody(shaperRule shaperRule) shaperRuleHttpBody {
 			Interface2:      shaperRule.Interface2,
 			Protocol:        shaperRule.Protocol,
 			MaxPacketLength: opnsense.Pint32AsString(shaperRule.MaxPacketLength),
-			Sources:         strings.Join(shaperRule.Sources, ","),
+			Sources:         strings.Join(shaperRule.Sources.Elements(), ","),
 			SourceNot:       utils.BoolToInt(shaperRule.SourceNot),
 			SourcePort:      shaperRule.SourcePort,
-			Destinations:    strings.Join(shaperRule.Destinations, ","),
+			Destinations:    strings.Join(shaperRule.Destinations.Elements(), ","),
 			DestinationNot:  utils.BoolToInt(shaperRule.DestinationNot),
 			DestinationPort: shaperRule.DestinationPort,
-			Dscp:            strings.Join(shaperRule.Dscp, ","),
+			Dscp:            strings.Join(shaperRule.Dscp.Elements(), ","),
 			Direction:       shaperRule.Direction,
 			Target:          shaperRule.Target,
 			Description:     shaperRule.Description,
@@ -200,28 +199,29 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 		}
 	}
 
-	var sources []string
+	sources := utils.NewSet()
 	for name, value := range response.Rule.Sources {
 		if value.Selected == 1 {
-			sources = append(sources, name)
+			sources.Add(name)
 		}
 	}
 
-	var destinations []string
+	destinations := utils.NewSet()
 	for name, value := range response.Rule.Destinations {
 		if value.Selected == 1 {
-			destinations = append(destinations, name)
+			destinations.Add(name)
 		}
 
 	}
-	var dscpValues []string
+
+	dscpValues := utils.NewSet()
 	for name, value := range response.Rule.Dscp {
 		if value.Selected == 1 {
 			dscpValue, exists := dscp.GetByValue(name)
 			if !exists {
 				return nil, fmt.Errorf("Get %s error: Dscp value `%s` not supported. Please contact the provider maintainers.", resourceName, name)
 			}
-			dscpValues = append(dscpValues, dscpValue)
+			dscpValues.Add(dscpValue)
 		}
 	}
 
@@ -244,11 +244,6 @@ func getShaperRule(client *opnsense.Client, uuid string) (*shaperRule, error) {
 			break
 		}
 	}
-
-	// Sort lists for predictable output
-	sort.Strings(sources)
-	sort.Strings(destinations)
-	sort.Strings(dscpValues)
 
 	return &shaperRule{
 		Enabled:         response.Rule.Enabled == 1,

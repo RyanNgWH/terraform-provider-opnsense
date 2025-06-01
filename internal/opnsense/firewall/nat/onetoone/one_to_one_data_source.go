@@ -32,20 +32,20 @@ type oneToOneNatDataSource struct {
 
 // oneToOneNatDataSourceModel describes the data source data model.
 type oneToOneNatDataSourceModel struct {
-	Id             types.String   `tfsdk:"id"`
-	Enabled        types.Bool     `tfsdk:"enabled"`
-	Log            types.Bool     `tfsdk:"log"`
-	Sequence       types.Int32    `tfsdk:"sequence"`
-	Interface      types.String   `tfsdk:"interface"`
-	Type           types.String   `tfsdk:"type"`
-	Source         types.String   `tfsdk:"source"`
-	SourceNot      types.Bool     `tfsdk:"source_not"`
-	Destination    types.String   `tfsdk:"destination"`
-	DestinationNot types.Bool     `tfsdk:"destination_not"`
-	External       types.String   `tfsdk:"external"`
-	NatReflection  types.String   `tfsdk:"nat_reflection"`
-	Categories     []types.String `tfsdk:"categories"`
-	Description    types.String   `tfsdk:"description"`
+	Id             types.String `tfsdk:"id"`
+	Enabled        types.Bool   `tfsdk:"enabled"`
+	Log            types.Bool   `tfsdk:"log"`
+	Sequence       types.Int32  `tfsdk:"sequence"`
+	Interface      types.String `tfsdk:"interface"`
+	Type           types.String `tfsdk:"type"`
+	Source         types.String `tfsdk:"source"`
+	SourceNot      types.Bool   `tfsdk:"source_not"`
+	Destination    types.String `tfsdk:"destination"`
+	DestinationNot types.Bool   `tfsdk:"destination_not"`
+	External       types.String `tfsdk:"external"`
+	NatReflection  types.String `tfsdk:"nat_reflection"`
+	Categories     types.Set    `tfsdk:"categories"`
+	Description    types.String `tfsdk:"description"`
 }
 
 // Metadata returns the data source type name.
@@ -107,7 +107,7 @@ func (d *oneToOneNatDataSource) Schema(ctx context.Context, req datasource.Schem
 				Computed:            true,
 				MarkdownDescription: "Whether nat reflection should be enabled.",
 			},
-			"categories": schema.ListAttribute{
+			"categories": schema.SetAttribute{
 				Computed:    true,
 				ElementType: types.StringType,
 				Description: "The categories of the rule.",
@@ -180,7 +180,10 @@ func (d *oneToOneNatDataSource) Read(ctx context.Context, req datasource.ReadReq
 	data.External = types.StringValue(rule.External)
 	data.NatReflection = types.StringValue(rule.NatRefection)
 	data.Description = types.StringValue(rule.Description)
-	data.Categories = utils.StringListGoToTerraform(rule.Categories)
+
+	categories, diags := utils.SetGoToTerraform(ctx, rule.Categories)
+	resp.Diagnostics.Append(diags...)
+	data.Categories = categories
 
 	if resp.Diagnostics.HasError() {
 		return

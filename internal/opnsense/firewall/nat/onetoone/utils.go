@@ -3,7 +3,6 @@ package onetoone
 import (
 	"context"
 	"fmt"
-	"sort"
 	"strings"
 
 	"terraform-provider-opnsense/internal/opnsense"
@@ -33,7 +32,7 @@ type oneToOneNat struct {
 	DestinationNot bool
 	External       string
 	NatRefection   string
-	Categories     []string
+	Categories     *utils.Set
 	Description    string
 }
 
@@ -65,11 +64,12 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		"categories": plan.Categories,
 	})
 
-	categories := utils.StringListTerraformToGo(plan.Categories)
+	categories, diags := utils.SetTerraformToGo(ctx, plan.Categories)
+	diagnostics.Append(diags...)
 
 	categoryUuids, err := category.GetCategoryUuids(client, categories)
 	if err != nil {
-		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 
 	tflog.Debug(ctx, "Successfully verified categories", map[string]any{"success": true})
@@ -81,19 +81,16 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 
 	interfacesExist, err := overview.VerifyInterface(client, plan.Interface.ValueString())
 	if err != nil {
-		diagnostics.AddError("Create one-to-one NAT error", fmt.Sprintf("%s", err))
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), fmt.Sprintf("%s", err))
 	}
 	if !interfacesExist {
-		diagnostics.AddError("Create one-to-one NAT error", "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
+		diagnostics.AddError(fmt.Sprintf("Create %s object error", resourceName), "Interface does not exist. Please verify that the specified interface exist on your OPNsense firewall")
 	}
 
 	tflog.Debug(ctx, "Successfully verified interface", map[string]any{"success": true})
 
 	// Create one-to-one NAT rule from plan
-	tflog.Debug(ctx, "Creating one-to-one NAT object from plan", map[string]any{"plan": plan})
-
-	// Sort lists for predictable output
-	sort.Strings(categoryUuids)
+	tflog.Debug(ctx, fmt.Sprintf("Creating %s object from plan", resourceName), map[string]any{"plan": plan})
 
 	// Check for default nat reflection
 	natReflection := strings.ToLower(plan.NatReflection.ValueString())
@@ -117,7 +114,7 @@ func createOneToOneNat(ctx context.Context, client *opnsense.Client, plan natOne
 		Description:    plan.Description.ValueString(),
 	}
 
-	tflog.Debug(ctx, "Successfully created one-to-one NAT object from plan", map[string]any{"success": true})
+	tflog.Debug(ctx, fmt.Sprintf("Successfully created %s object from plan", resourceName), map[string]any{"success": true})
 
 	return oneToOneNat, diagnostics
 }

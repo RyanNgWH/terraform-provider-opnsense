@@ -28,7 +28,7 @@ data "opnsense_firewall_automation_source_nat" "data_source_via_id" {
 
 ### Read-Only
 
-- `categories` (List of String) The categories of the rule.
+- `categories` (Set of String) The categories of the rule.
 - `description` (String) Description to identify this rule.
 - `destination` (String) Destination IP or network.
 - `destination_not` (Boolean) Whether the destination matching should be inverted.
