@@ -65,7 +65,7 @@ func captivePortalTemplateToHttpBody(captivePortalTemplate captivePortalTemplate
 
 // searchCaptivePortalTemplateName searches the OPNsense firewall for the captive portal template with a matching name, returning its uuid & file id if it exists.
 func searchCaptivePortalTemplateName(client *opnsense.Client, name string) (string, string, error) {
-	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesController, searchCaptivePortalTemplateCommand)
+	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesOpnsenseController, searchCaptivePortalTemplateCommand)
 
 	body := searchTemplatesRequestBody{
 		SearchPhrase: name,
@@ -103,7 +103,7 @@ func searchCaptivePortalTemplateName(client *opnsense.Client, name string) (stri
 
 // searchCaptivePortalTemplateUuid searches the OPNsense firewall for the captive portal template with a matching uuid, returning its name & file id if it exists.
 func searchCaptivePortalTemplateUuid(client *opnsense.Client, uuid string) (string, string, error) {
-	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesController, searchCaptivePortalTemplateCommand)
+	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesOpnsenseController, searchCaptivePortalTemplateCommand)
 
 	body := searchTemplatesRequestBody{
 		RowCount: -1,
@@ -200,7 +200,7 @@ func getCaptivePortalTemplate(client *opnsense.Client, uuid string) (*captivePor
 
 // setCaptivePortalTemplate updates an existing captive portal template on the OPNsense firewall with a matching UUID. Returns the file id on successful update
 func setCaptivePortalTemplate(client *opnsense.Client, captivePortalTemplate captivePortalTemplate, uuid string) (string, error) {
-	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesController, setCaptivePortalTemplateCommand)
+	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesOpnsenseController, setCaptivePortalTemplateCommand)
 
 	// Generate API body from captive portal template object
 	body := captivePortalTemplateToHttpBody(captivePortalTemplate, uuid)
@@ -229,7 +229,7 @@ func setCaptivePortalTemplate(client *opnsense.Client, captivePortalTemplate cap
 
 // deleteCaptivePortalTemplate removes an existing captive portal template from the OPNsense firewall with a matching UUID.
 func deleteCaptivePortalTemplate(client *opnsense.Client, uuid string) error {
-	path := fmt.Sprintf("%s/%s/%s/%s", captiveportal.Module, templatesController, deleteCaptivePortalTemplateCommand, uuid)
+	path := fmt.Sprintf("%s/%s/%s/%s", captiveportal.Module, templatesOpnsenseController, deleteCaptivePortalTemplateCommand, uuid)
 
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
@@ -260,7 +260,7 @@ func deleteCaptivePortalTemplate(client *opnsense.Client, uuid string) error {
 
 // applyCaptivePortalTemplateConfig applies the captive portal template configuration on the OPNsense firewall.
 func applyCaptivePortalTemplateConfig(client *opnsense.Client) error {
-	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesController, applyCaptivePortalTemplateConfigCommand)
+	path := fmt.Sprintf("%s/%s/%s", captiveportal.Module, templatesOpnsenseController, applyCaptivePortalTemplateConfigCommand)
 
 	// Generate empty body
 	reqBody, err := json.Marshal(nil)
