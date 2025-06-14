@@ -46,6 +46,7 @@ The provider requires the following permissions on your OPNsense server.
 - `Firewall: NAT: 1:1`
 - `Firewall: NAT: NPTv6`
 - `Firewall: Shaper`
+- `Services: Captive Portal`
 - `Status: Interfaces`
 - `System: Gateways`
 
