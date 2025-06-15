@@ -14,6 +14,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 
 	"terraform-provider-opnsense/internal/opnsense"
+	"terraform-provider-opnsense/internal/opnsense/captiveportal/templates"
 	"terraform-provider-opnsense/internal/opnsense/firewall/alias"
 	"terraform-provider-opnsense/internal/opnsense/firewall/automation/filter"
 	"terraform-provider-opnsense/internal/opnsense/firewall/automation/sourcenat"
@@ -262,6 +263,7 @@ func (p *opnsenseProvider) Resources(ctx context.Context) []func() resource.Reso
 		queues.NewShaperQueuesResource,
 		rules.NewShaperRulesResource,
 		sourcenat.NewAutomationSourceNatResource,
+		templates.NewCaptivePortalTemplatesResource,
 	}
 }
 
