@@ -39,12 +39,12 @@ type captivePortalTemplatesResource struct {
 
 // captivePortalTemplatesResourceModel describes the resource data model.
 type captivePortalTemplatesResourceModel struct {
-	Id             types.String `tfsdk:"id"`
-	LastUpdated    types.String `tfsdk:"last_updated"`
-	Template       types.String `tfsdk:"template"`
-	TemplateSha512 types.String `tfsdk:"template_sha512"`
-	FileId         types.String `tfsdk:"file_id"`
-	Name           types.String `tfsdk:"name"`
+	Id           types.String `tfsdk:"id"`
+	LastUpdated  types.String `tfsdk:"last_updated"`
+	Template     types.String `tfsdk:"template"`
+	TemplateHash types.String `tfsdk:"template_hash"`
+	FileId       types.String `tfsdk:"file_id"`
+	Name         types.String `tfsdk:"name"`
 }
 
 // Metadata returns the resource type name.
@@ -81,11 +81,9 @@ func (r *captivePortalTemplatesResource) Schema(ctx context.Context, req resourc
 				Required:    true,
 				Description: "Name of the template. Please ensure that each template has a unique name, otherwise, OPNsense will override the previous template with the same name.",
 			},
-			"template_sha512": schema.StringAttribute{
-				Required:    false,
-				Optional:    false,
-				Computed:    true,
-				Description: "SHA512 hash of the template file. Used to detect changes in the template file on OPNsense and locally.",
+			"template_hash": schema.StringAttribute{
+				Required:            true,
+				MarkdownDescription: "SHA512 hash of the template file. Used to detect changes in the template file locally (**Does not track changes made to template remotely on OPNsense**). The usual way to set this is `filesha512(\"file.zip\")`, where `file.zip` is the path to the template (same as the `template` attribute).",
 			},
 			"file_id": schema.StringAttribute{
 				Required:    false,
@@ -157,7 +155,6 @@ func (r *captivePortalTemplatesResource) Create(ctx context.Context, req resourc
 	}
 
 	// Update plan file id & sha512 hashed template fields
-	plan.TemplateSha512 = types.StringValue(captivePortalTemplate.TemplateSha512)
 	plan.FileId = types.StringValue(fileid)
 
 	// Update plan ID & last_updated fields
@@ -200,7 +197,6 @@ func (r *captivePortalTemplatesResource) Read(ctx context.Context, req resource.
 	tflog.Debug(ctx, fmt.Sprintf("Successfully got %s information", resourceName), map[string]any{"success": true})
 
 	// Overwite items with refreshed state
-	state.TemplateSha512 = types.StringValue(template.TemplateSha512)
 	state.FileId = types.StringValue(template.FileId)
 	state.Name = types.StringValue(template.Name)
 
@@ -264,7 +260,6 @@ func (r *captivePortalTemplatesResource) Update(ctx context.Context, req resourc
 	}
 
 	// Update plan file id & sha512 hashed template fields
-	plan.TemplateSha512 = types.StringValue(template.TemplateSha512)
 	plan.FileId = types.StringValue(fileid)
 
 	// Update last_updated field (if change detected)

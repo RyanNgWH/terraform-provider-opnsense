@@ -1,11 +1,8 @@
 package templates
 
 import (
-	"crypto/sha512"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"strings"
 
@@ -174,27 +171,9 @@ func getCaptivePortalTemplate(client *opnsense.Client, uuid string) (*captivePor
 		return nil, fmt.Errorf("Get %[1]s error: %[1]s with uuid `%[2]s` does not exist.\n\nIf this occurs in a resource block, it is usually because the %[1]s is removed from OPNsense (not using terraform) but is still present in the terraform state. Remove the missing %[1]s from the terraform state to rectify the error.", resourceName, uuid)
 	}
 
-	path := fmt.Sprintf("%s/%s/%s/%s", captiveportal.Module, templatesOpnsenseController, getCaptivePortalTemplateCommand, fileid)
-
-	httpResp, err := client.DoRequest(http.MethodGet, path, nil)
-	if err != nil {
-		return nil, fmt.Errorf("OPNsense client error: %s", err)
-	}
-	if httpResp.StatusCode != 200 {
-		return nil, fmt.Errorf("Get %s error (http): abnormal status code %d in HTTP response. Please contact the provider for assistance", resourceName, httpResp.StatusCode)
-	}
-
-	// Extract values from response
-	templateFile, err := io.ReadAll(httpResp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("Get %s error (http): failed to read file in http body. Please contact the provider for assistance", resourceName)
-	}
-	sha512Template := hex.EncodeToString(sha512.New().Sum(templateFile))
-
 	return &captivePortalTemplate{
-		TemplateSha512: sha512Template,
-		Name:           name,
-		FileId:         fileid,
+		Name:   name,
+		FileId: fileid,
 	}, nil
 }
 

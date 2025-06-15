@@ -45,7 +45,9 @@ func createCaptivePortalTemplate(ctx context.Context, plan captivePortalTemplate
 	}
 	base64Template := base64.StdEncoding.EncodeToString(content)
 
-	sha512Template := hex.EncodeToString(sha512.New().Sum(content))
+	sha512 := sha512.New()
+	sha512.Write(content)
+	sha512Template := hex.EncodeToString(sha512.Sum(nil))
 
 	captivePortalTemplate := captivePortalTemplate{
 		Template:       plan.Template.ValueString(),
