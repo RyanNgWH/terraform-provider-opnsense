@@ -1,0 +1,27 @@
+---
+page_title: {{ .Name }} {{ .Type }} - {{ .ProviderShortName }}
+description: |-
+  {{ .Description }}
+---
+
+# {{ .Name }} ({{ .Type }})
+
+{{ .Description }}
+
+-> Currently, we are unable to verify and track changes in the template on OPNsense. Multiple downloads of the same template from OPNsense have different hashes, therefore, there is no reliable way to verify if templates on OPNsense match the local file. Only local changes to the template file can be tracked and uploaded to OPNsense.
+
+{{ if .HasExample -}}
+## Example Usage
+
+{{ codefile "terraform" .ExampleFile }}
+{{- end }}
+
+{{ .SchemaMarkdown | trimspace }}
+
+{{- if .HasImport }}
+## Import
+
+Import is supported using the following syntax:
+
+{{ codefile "shell" .ImportFile }}
+{{- end }}
