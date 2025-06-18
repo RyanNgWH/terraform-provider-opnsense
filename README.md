@@ -18,7 +18,7 @@ It is currently under active development. While we aim to maintain backwards com
 
 # Requirements
 
-- [OPNsense Community Edition](https://opnsense.org/) - 25.1.7+
+- [OPNsense Community Edition](https://opnsense.org/) - 25.1.9+
 - [Terraform](https://www.terraform.io/) - 1.8+ / [OpenTofu](https://opentofu.org/) - 1.8+
 - [Go](https://go.dev/) - 1.23+ (Only for building the provider plugin)
 
